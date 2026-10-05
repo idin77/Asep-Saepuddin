@@ -1,0 +1,6 @@
+{
+  "name": "Sedot WC Bogor 24 Jam – Mitra Bersih",
+  "description": "Jasa sedot WC Bogor & kuras septic tank profesional 24 jam. Layanan sedot tinja, saluran mampet, septic tank penuh, dan limbah IPAL di Kota dan Kabupaten Bogor.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
