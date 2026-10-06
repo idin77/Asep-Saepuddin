@@ -3,11 +3,38 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import articleImg1 from './assets/images/septic_tank_signs_1791232849125.jpg';
 import articleImg2 from './assets/images/septic_vacuum_truck_1791232864840.jpg';
 import articleImg3 from './assets/images/clogged_drain_cleaning_1791232881201.jpg';
 import articleImg4 from './assets/images/fresh_drain_garden_1791232895094.jpg';
+
+function highlightMatch(text: string, query: string): React.ReactNode {
+  if (!query || !query.trim()) return text;
+  const trimmed = query.trim();
+  const escaped = trimmed.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(`(${escaped})`, 'gi');
+  const parts = text.split(regex);
+  if (parts.length === 1) return text;
+  return parts.map((part, i) =>
+    regex.test(part) ? (
+      <mark
+        key={i}
+        style={{
+          background: '#FEF08A',
+          color: '#854D0E',
+          padding: '1px 3px',
+          borderRadius: '3px',
+          fontWeight: 700
+        }}
+      >
+        {part}
+      </mark>
+    ) : (
+      part
+    )
+  );
+}
 
 interface GalleryItem {
   id: number;
@@ -100,13 +127,39 @@ const BOGOR_AREAS = [
 interface FAQItem {
   id: number;
   question: string;
+  category: string;
+  keywords: string[];
   answer: React.ReactNode;
+  answerText: string;
+  waTopicText?: string;
 }
+
+const FAQ_CATEGORIES = [
+  'Semua',
+  'Pemesanan',
+  'Tarif & Biaya',
+  'Garansi',
+  'Armada & Waktu',
+  'Tanpa Bongkar',
+  '24 Jam Nonstop'
+];
+
+const ARTICLE_CATEGORIES = [
+  'Semua',
+  'Panduan Sanitasi',
+  'Tips Perawatan',
+  'Solusi Saluran',
+  'Kesehatan Rumah'
+];
 
 const FAQ_DATA: FAQItem[] = [
   {
     id: 1,
     question: 'Bagaimana cara pemesanan jasa Sedot WC Mitra Bersih di Bogor?',
+    category: 'Pemesanan',
+    keywords: ['cara pesan', 'order', 'whatsapp', 'telepon', 'kontak', 'prosedur', 'dp', 'tanpa dp', 'pembayaran', 'alur'],
+    answerText: 'Cara pemesanan sangat mudah dan cepat tanpa perlu uang muka (DP). Hubungi kami klik tombol WhatsApp atau telepon ke +62 857-1565-4183 yang aktif 24 jam. Konsultasikan kendala dan alamat/share loc di area Bogor. Konfirmasi harga transparan dan armada terdekat langsung meluncur. Pembayaran dilakukan setelah pekerjaan selesai tuntas dan lancar.',
+    waTopicText: 'Halo CS Mitra Bersih, saya membaca FAQ tentang cara pemesanan sedot WC. Saya ingin konsultasi kendala WC/septic tank dan pesan armada untuk area Bogor.',
     answer: (
       <>
         <p>Cara pemesanan sangat mudah dan cepat tanpa perlu uang muka (DP):</p>
@@ -122,6 +175,10 @@ const FAQ_DATA: FAQItem[] = [
   {
     id: 2,
     question: 'Berapa lama estimasi armada tiba di lokasi saya di Kota/Kabupaten Bogor?',
+    category: 'Armada & Waktu',
+    keywords: ['estimasi waktu', 'berapa lama', 'cepat', 'kedatangan', 'pos siaga', 'cibinong', 'tanah sareal', 'bogor barat', 'ciawi', 'sukaraja', 'bojonggede', 'parung'],
+    answerText: 'Rata-rata armada kami tiba dalam 15 hingga 30 menit untuk area Kota Bogor dan pusat pemukiman Kabupaten Bogor. Kami menempatkan armada siaga di berbagai pos strategis (seperti Cibinong, Tanah Sareal, Bogor Barat, Ciawi, Sukaraja, Bojonggede, dan Parung) sehingga penanganan darurat dapat dilakukan dengan sangat cepat.',
+    waTopicText: 'Halo CS Mitra Bersih, saya membaca FAQ tentang estimasi waktu kedatangan armada (15-30 menit). Boleh cek armada siaga terdekat ke lokasi saya di Bogor sekarang?',
     answer: (
       <p>
         Rata-rata armada kami tiba dalam <strong>15 hingga 30 menit</strong> untuk area Kota Bogor dan pusat pemukiman Kabupaten Bogor. Kami menempatkan armada siaga di berbagai pos strategis (seperti Cibinong, Tanah Sareal, Bogor Barat, Ciawi, Sukaraja, Bojonggede, dan Parung) sehingga penanganan darurat dapat dilakukan dengan sangat cepat.
@@ -131,6 +188,10 @@ const FAQ_DATA: FAQItem[] = [
   {
     id: 3,
     question: 'Apakah bisa melayani rumah di gang sempit atau perumahan padat?',
+    category: 'Armada & Waktu',
+    keywords: ['gang sempit', 'selang panjang', 'perumahan padat', 'truk kompak', '50 meter', '100 meter', 'parkir jauh', 'jangkauan'],
+    answerText: 'Tentu saja bisa! Kami memiliki armada truk ukuran kompak yang lincah bermanuver di jalan perumahan, serta dilengkapi selang sambung berdaya hisap tinggi hingga 50 – 100 meter. Meskipun truk tidak bisa parkir tepat di depan pintu pagar rumah Anda, penyedotan tetap berjalan maksimal, bersih, dan tuntas.',
+    waTopicText: 'Halo CS Mitra Bersih, saya membaca FAQ tentang layanan rumah di gang sempit & selang panjang 50-100 meter. Rumah saya di gang sempit area Bogor, mohon info teknis penyedotan.',
     answer: (
       <p>
         <strong>Tentu saja bisa!</strong> Kami memiliki armada truk ukuran kompak yang lincah bermanuver di jalan perumahan, serta dilengkapi <strong>selang sambung berdaya hisap tinggi hingga 50 – 100 meter</strong>. Meskipun truk tidak bisa parkir tepat di depan pintu pagar rumah Anda, penyedotan tetap berjalan maksimal, bersih, dan tuntas.
@@ -140,6 +201,10 @@ const FAQ_DATA: FAQItem[] = [
   {
     id: 4,
     question: 'Bagaimana prosedur dan syarat klaim garansi jika saluran mampet lagi?',
+    category: 'Garansi',
+    keywords: ['garansi', 'prosedur garansi', 'syarat klaim', 'mampet lagi', 'komplain', 'gratis', 'nota resmi', 'uji kelancaran'],
+    answerText: 'Setiap pengerjaan kami dilengkapi dengan garansi pengerjaan nyata: uji kelancaran bersama Anda sampai benar-benar tuntas, nota pengerjaan resmi dari teknisi Mitra Bersih, dan jika terjadi kendala mampet kembali pada titik yang sama teknisi datang melakukan pengerjaan ulang secara GRATIS.',
+    waTopicText: 'Halo CS Mitra Bersih, saya membaca FAQ tentang garansi pengerjaan dan nota resmi. Saya ingin tahu lebih lanjut seputar syarat garansi layanan sedot WC di Bogor.',
     answer: (
       <>
         <p>
@@ -156,6 +221,10 @@ const FAQ_DATA: FAQItem[] = [
   {
     id: 5,
     question: 'Apakah proses pelancaran WC mampet harus membongkar kloset atau lantai?',
+    category: 'Tanpa Bongkar',
+    keywords: ['tanpa bongkar', 'bongkar kloset', 'lantai', 'spiral', 'electric drain cleaner', 'keramik aman', 'pipa paralon', 'pvc'],
+    answerText: '99% pengerjaan kami TANPA BONGKAR! Kami menggunakan mesin electric drain cleaner spiral baja lentur modern yang berputar mengikuti lekukan pipa pembuangan untuk menghancurkan sumbatan (lemak beku, pembalut, sisa kain, dll.). Keramik lantai dan pipa paralon PVC Anda tetap aman, utuh, dan tidak rusak.',
+    waTopicText: 'Halo CS Mitra Bersih, saya membaca FAQ tentang pelancaran WC mampet tanpa bongkar dengan mesin spiral. Apakah bisa dicek kendala kloset mampet saya di Bogor?',
     answer: (
       <p>
         <strong>99% pengerjaan kami TANPA BONGKAR!</strong> Kami menggunakan mesin *electric drain cleaner* spiral baja lentur modern yang berputar mengikuti lekukan pipa pembuangan untuk menghancurkan sumbatan (lemak beku, pembalut, sisa kain, dll.). Keramik lantai dan pipa paralon PVC Anda tetap aman, utuh, dan tidak rusak.
@@ -165,6 +234,10 @@ const FAQ_DATA: FAQItem[] = [
   {
     id: 6,
     question: 'Apakah ada biaya tambahan atau biaya tersembunyi (biaya siluman)?',
+    category: 'Tarif & Biaya',
+    keywords: ['biaya tambahan', 'biaya tersembunyi', 'siluman', 'tarif', 'ongkos', 'transparansi', 'harga', 'kejujuran'],
+    answerText: 'Sama sekali tidak ada biaya siluman! Prinsip kami adalah keterbukaan. Tarif disepakati bersama di awal sebelum pengerjaan dimulai. Jika ada kondisi khusus di lapangan (misalnya penambahan selang ekstra di atas 50 meter atau pembuatan lubang kontrol baru karena septic tank tertutup cor semen mati), teknisi akan menjelaskan dan meminta persetujuan Anda terlebih dahulu.',
+    waTopicText: 'Halo CS Mitra Bersih, saya membaca FAQ tentang transparansi harga tanpa biaya siluman. Boleh saya minta estimasi tarif untuk kendala septic tank / kloset saya di Bogor?',
     answer: (
       <p>
         <strong>Sama sekali tidak ada biaya siluman!</strong> Prinsip kami adalah keterbukaan. Tarif disepakati bersama di awal sebelum pengerjaan dimulai. Jika ada kondisi khusus di lapangan (misalnya penambahan selang ekstra di atas 50 meter atau pembuatan lubang kontrol baru karena septic tank tertutup cor semen mati), teknisi akan menjelaskan dan meminta persetujuan Anda terlebih dahulu.
@@ -174,6 +247,10 @@ const FAQ_DATA: FAQItem[] = [
   {
     id: 7,
     question: 'Apakah layanan benar-benar siaga 24 jam termasuk tengah malam dan hari libur?',
+    category: '24 Jam Nonstop',
+    keywords: ['24 jam', 'tengah malam', 'hari libur', 'minggu', 'tanggal merah', 'darurat', 'nonstop', 'piket'],
+    answerText: 'Ya, kami siap siaga 24 Jam Nonstop setiap hari, termasuk hari Minggu, tengah malam, dan hari libur nasional. Masalah saluran meluap sering kali terjadi tiba-tiba di waktu tak terduga, sehingga tim piket darurat kami selalu siap kapan pun Anda butuhkan.',
+    waTopicText: 'Halo CS Mitra Bersih, saya membaca FAQ tentang layanan darurat 24 jam nonstop. Saya membutuhkan penanganan darurat segera untuk lokasi saya di Bogor.',
     answer: (
       <p>
         <strong>Ya, kami siap siaga 24 Jam Nonstop setiap hari</strong>, termasuk hari Minggu, tengah malam, dan hari libur nasional. Masalah saluran meluap sering kali terjadi tiba-tiba di waktu tak terduga, sehingga tim piket darurat kami selalu siap kapan pun Anda butuhkan.
@@ -455,6 +532,109 @@ const WA_QUICK_TOPICS = [
   }
 ];
 
+const TESTIMONI_WA_TOPICS = [
+  {
+    id: 'darurat',
+    label: 'Pesan Panggilan Darurat',
+    badge: 'Siaga 24 Jam Nonstop',
+    icon: 'fas fa-bolt',
+    desc: 'Armada siaga meluncur 15–30 menit ke lokasi Anda di Bogor',
+    text: 'Halo Admin Mitra Bersih, saya ingin Pesan Panggilan Darurat untuk penanganan segera (WC meluap / saluran mampet parah). Mohon kirimkan armada terdekat ke lokasi saya di Bogor.'
+  },
+  {
+    id: 'tanya-harga',
+    label: 'Tanya Harga',
+    badge: 'Transparan Tanpa Biaya Siluman',
+    icon: 'fas fa-calculator',
+    desc: 'Konsultasi gratis estimasi tarif pasti sebelum teknisi mulai bekerja',
+    text: 'Halo Admin Mitra Bersih, saya ingin Tanya Harga estimasi biaya sedot WC / pelancaran saluran mampet untuk rumah/tempat usaha saya di wilayah Bogor.'
+  },
+  {
+    id: 'konsultasi-garansi',
+    label: 'Konsultasi Garansi',
+    badge: 'Garansi Resmi & Pengerjaan Ulang Gratis',
+    icon: 'fas fa-shield-alt',
+    desc: 'Tanya syarat garansi, nota pengerjaan resmi, dan jaminan tuntas',
+    text: 'Halo Admin Mitra Bersih, saya ingin Konsultasi Garansi dan menanyakan prosedur jaminan pengerjaan tuntas untuk layanan sedot WC di Bogor.'
+  }
+];
+
+interface MapHub {
+  id: string;
+  name: string;
+  shortLabel: string;
+  badge: string;
+  address: string;
+  coverage: string;
+  estTime: string;
+  trucks: string;
+  mapQuery: string;
+  coordinates: { lat: number; lng: number };
+}
+
+const MAP_HUBS: MapHub[] = [
+  {
+    id: 'kota-bogor',
+    name: 'Pos Pusat Kota Bogor (Workshop Utama)',
+    shortLabel: 'Kota Bogor (Pusat)',
+    badge: 'HQ & Workshop',
+    address: 'Jl. Sholeh Iskandar & Jl. Raya Pajajaran, Kota Bogor, Jawa Barat',
+    coverage: 'Tanah Sareal, Bogor Tengah, Bogor Barat, Bogor Timur, Bogor Utara, Bogor Selatan',
+    estTime: '15 – 25 Menit',
+    trucks: '3 Truk Tangki Vakum (3.000L & 4.500L) + Mesin Spiral',
+    mapQuery: 'Kota Bogor, Jawa Barat',
+    coordinates: { lat: -6.5971, lng: 106.806 }
+  },
+  {
+    id: 'cibinong',
+    name: 'Pos Siaga Cibinong & Sentul (Bogor Timur)',
+    shortLabel: 'Cibinong & Sentul',
+    badge: 'Pos Siaga Timur',
+    address: 'Kawasan Pemda Tegar Beriman, Cibinong, Kabupaten Bogor',
+    coverage: 'Cibinong, Sentul, Sukaraja, Bojonggede, Citeureup, Babakan Madang',
+    estTime: '15 – 25 Menit',
+    trucks: '2 Truk Tangki Vakum + Selang Panjang 100m',
+    mapQuery: 'Cibinong, Bogor, Jawa Barat',
+    coordinates: { lat: -6.4817, lng: 106.8542 }
+  },
+  {
+    id: 'dramaga',
+    name: 'Pos Siaga Bogor Barat & Dramaga',
+    shortLabel: 'Dramaga & Ciomas',
+    badge: 'Pos Siaga Barat',
+    address: 'Jl. Raya Dramaga (Dekat Kampus IPB), Bogor Barat',
+    coverage: 'Dramaga, Ciomas, Ciampea, Cibungbulang, Laladon, Leuwiliang',
+    estTime: '15 – 30 Menit',
+    trucks: '2 Truk Kompak (Lincah Gang Sempit & Perumahan)',
+    mapQuery: 'Dramaga, Bogor, Jawa Barat',
+    coordinates: { lat: -6.5828, lng: 106.7322 }
+  },
+  {
+    id: 'ciawi',
+    name: 'Pos Siaga Ciawi & Kawasan Puncak',
+    shortLabel: 'Ciawi & Puncak',
+    badge: 'Pos Siaga Selatan',
+    address: 'Simpang Ciawi - Gadog, Kabupaten Bogor',
+    coverage: 'Ciawi, Gadog, Megamendung, Cisarua, Caringin, Cijeruk, Tajur',
+    estTime: '20 – 30 Menit',
+    trucks: '2 Truk Tangki Vakum Khusus Tanjakan',
+    mapQuery: 'Ciawi, Bogor, Jawa Barat',
+    coordinates: { lat: -6.6588, lng: 106.8544 }
+  },
+  {
+    id: 'parung',
+    name: 'Pos Siaga Parung & Bojonggede (Bogor Utara)',
+    shortLabel: 'Parung & Kemang',
+    badge: 'Pos Siaga Utara',
+    address: 'Jl. Raya Parung - Kemang, Kabupaten Bogor',
+    coverage: 'Parung, Gunung Sindur, Ciseeng, Kemang, Tajurhalang, Bojonggede',
+    estTime: '20 – 30 Menit',
+    trucks: '2 Truk Tangki Vakum Kapasitas 3.500L',
+    mapQuery: 'Parung, Bogor, Jawa Barat',
+    coordinates: { lat: -6.4258, lng: 106.7297 }
+  }
+];
+
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
@@ -463,6 +643,79 @@ export default function App() {
   const [openFaq, setOpenFaq] = useState<number | null>(1);
   const [selectedArticle, setSelectedArticle] = useState<ArticleItem | null>(null);
   const [selectedWaTopic, setSelectedWaTopic] = useState(0);
+  const [selectedTestimoniTopic, setSelectedTestimoniTopic] = useState(0);
+  const [selectedMapHub, setSelectedMapHub] = useState(0);
+
+  // Client-side validation state for Quick Chat (Under Testimonials)
+  const [quickWaName, setQuickWaName] = useState('');
+  const [quickWaLocation, setQuickWaLocation] = useState('');
+  const [quickWaError, setQuickWaError] = useState<string | null>(null);
+
+  // Client-side validation state for Hubungi WA (Between Gallery & Articles)
+  const [hubungiWaName, setHubungiWaName] = useState('');
+  const [hubungiWaLocation, setHubungiWaLocation] = useState('');
+  const [hubungiWaError, setHubungiWaError] = useState<string | null>(null);
+
+  // Client-side validation & modal state for FAQ Chat
+  const [faqModalItem, setFaqModalItem] = useState<FAQItem | null>(null);
+  const [faqModalName, setFaqModalName] = useState('');
+  const [faqModalLocation, setFaqModalLocation] = useState('');
+  const [faqModalNotes, setFaqModalNotes] = useState('');
+  const [faqModalError, setFaqModalError] = useState<string | null>(null);
+
+  // FAQ Search & Filter State
+  const [faqSearch, setFaqSearch] = useState('');
+  const [faqCategory, setFaqCategory] = useState('Semua');
+
+  // Real-time filtered FAQ list
+  const filteredFaqs = useMemo(() => {
+    const q = faqSearch.trim().toLowerCase();
+    return FAQ_DATA.filter((item) => {
+      const matchCat = faqCategory === 'Semua' || item.category === faqCategory;
+      if (!matchCat) return false;
+      if (!q) return true;
+
+      const inQuestion = item.question.toLowerCase().includes(q);
+      const inAnswer = item.answerText.toLowerCase().includes(q);
+      const inKeywords = item.keywords.some((k) => k.toLowerCase().includes(q));
+      const inCategory = item.category.toLowerCase().includes(q);
+
+      return inQuestion || inAnswer || inKeywords || inCategory;
+    });
+  }, [faqSearch, faqCategory]);
+
+  // Automatically keep first match expanded when searching
+  useEffect(() => {
+    if (faqSearch.trim()) {
+      if (filteredFaqs.length > 0 && (!openFaq || !filteredFaqs.some((f) => f.id === openFaq))) {
+        setOpenFaq(filteredFaqs[0].id);
+      }
+    }
+  }, [faqSearch, filteredFaqs, openFaq]);
+
+  // Tips & Artikel Search & Filter State
+  const [articleSearch, setArticleSearch] = useState('');
+  const [articleCategory, setArticleCategory] = useState('Semua');
+
+  // Real-time filtered Articles list
+  const filteredArticles = useMemo(() => {
+    const q = articleSearch.trim().toLowerCase();
+    return ARTICLES_DATA.filter((article) => {
+      const matchCat = articleCategory === 'Semua' || article.category === articleCategory;
+      if (!matchCat) return false;
+      if (!q) return true;
+
+      const inTitle = article.title.toLowerCase().includes(q);
+      const inExcerpt = article.excerpt.toLowerCase().includes(q);
+      const inCat = article.category.toLowerCase().includes(q);
+      const inIntro = article.content.intro.toLowerCase().includes(q);
+      const inPoints = article.content.points.some(
+        (p) => p.heading.toLowerCase().includes(q) || p.text.toLowerCase().includes(q)
+      );
+
+      return inTitle || inExcerpt || inCat || inIntro || inPoints;
+    });
+  }, [articleSearch, articleCategory]);
 
   // Ulasan Pelanggan & Carousel State
   const [reviews, setReviews] = useState<ReviewItem[]>(() => {
@@ -567,7 +820,7 @@ export default function App() {
         setIsScrolled(false);
       }
 
-      const sections = ['home', 'layanan', 'tentang', 'faq', 'galeri', 'artikel', 'ulasan', 'kontak'];
+      const sections = ['home', 'layanan', 'tentang', 'faq', 'galeri', 'artikel', 'ulasan', 'lokasi', 'kontak'];
       const scrollPos = window.scrollY + 120;
 
       for (const sectionId of sections) {
@@ -608,17 +861,18 @@ export default function App() {
     return () => observer.disconnect();
   }, []);
 
-  // Escape key handler for lightbox & article modal
+  // Escape key handler for lightbox, article modal & FAQ modal
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         if (lightboxImg) setLightboxImg(null);
         if (selectedArticle) setSelectedArticle(null);
+        if (faqModalItem) setFaqModalItem(null);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [lightboxImg, selectedArticle]);
+  }, [lightboxImg, selectedArticle, faqModalItem]);
 
   const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     e.preventDefault();
@@ -631,6 +885,77 @@ export default function App() {
         behavior: 'smooth'
       });
     }
+  };
+
+  // Client-side validation for Quick WA Contact (Under Testimonials)
+  const handleQuickWaSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (selectedTestimoniTopic < 0 || selectedTestimoniTopic >= TESTIMONI_WA_TOPICS.length) {
+      setQuickWaError('Silakan pilih salah satu topik kebutuhan Anda terlebih dahulu.');
+      return;
+    }
+    if (!quickWaName.trim() || quickWaName.trim().length < 2) {
+      setQuickWaError('Mohon masukkan Nama Anda (minimal 2 huruf) agar CS kami dapat menyapa dengan tepat.');
+      return;
+    }
+    if (!quickWaLocation.trim()) {
+      setQuickWaError('Mohon pilih Wilayah / Kecamatan Anda di Bogor agar admin langsung mengecek armada terdekat.');
+      return;
+    }
+
+    setQuickWaError(null);
+    const topic = TESTIMONI_WA_TOPICS[selectedTestimoniTopic];
+    const text = `Halo Admin Mitra Bersih 24 Jam,\nSaya ingin konsultasi / pesan layanan:\n- Nama: ${quickWaName.trim()}\n- Lokasi: ${quickWaLocation.trim()}, Bogor\n- Topik: ${topic.label}\n- Pesan: "${topic.text}"\nMohon info respon cepat dan estimasi kedatangan armada ke lokasi saya. Terima kasih.`;
+    window.open(`https://wa.me/6285715654183?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+  };
+
+  // Client-side validation for Hubungi WA Section (Between Gallery & Articles)
+  const handleHubungiWaSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (selectedWaTopic < 0 || selectedWaTopic >= WA_QUICK_TOPICS.length) {
+      setHubungiWaError('Silakan pilih salah satu kendala Anda terlebih dahulu.');
+      return;
+    }
+    if (!hubungiWaName.trim() || hubungiWaName.trim().length < 2) {
+      setHubungiWaError('Mohon masukkan Nama Anda (minimal 2 huruf) agar CS kami dapat melayani dengan ramah.');
+      return;
+    }
+    if (!hubungiWaLocation.trim()) {
+      setHubungiWaError('Mohon pilih Wilayah / Kecamatan Anda di Bogor agar kami segera cek posisi truk tangki terdekat.');
+      return;
+    }
+
+    setHubungiWaError(null);
+    const topic = WA_QUICK_TOPICS[selectedWaTopic];
+    const text = `Halo CS Mitra Bersih 24 Jam,\nSaya ingin pesan layanan / cek armada:\n- Nama: ${hubungiWaName.trim()}\n- Wilayah/Kecamatan: ${hubungiWaLocation.trim()}, Bogor\n- Kendala: ${topic.label}\n- Pesan: "${topic.text}"\nMohon konfirmasi ketersediaan armada terdekat ke lokasi saya. Terima kasih.`;
+    window.open(`https://wa.me/6285715654183?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+  };
+
+  // Open FAQ Preparation Modal
+  const openFaqChatModal = (item: FAQItem) => {
+    setFaqModalItem(item);
+    setFaqModalError(null);
+  };
+
+  // Client-side validation for FAQ Chat Modal
+  const handleFaqModalSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!faqModalItem) return;
+
+    if (!faqModalName.trim() || faqModalName.trim().length < 2) {
+      setFaqModalError('Mohon masukkan Nama Anda (minimal 2 huruf).');
+      return;
+    }
+    if (!faqModalLocation.trim()) {
+      setFaqModalError('Mohon pilih Wilayah / Kecamatan Anda di Bogor.');
+      return;
+    }
+
+    setFaqModalError(null);
+    const text = `Halo Admin Mitra Bersih,\nSaya ingin bertanya seputar FAQ:\n- Nama: ${faqModalName.trim()}\n- Lokasi: ${faqModalLocation.trim()}, Bogor\n- Topik Pertanyaan: "${faqModalItem.question}"\n${faqModalNotes.trim() ? `- Detail Kendala Tambahan: "${faqModalNotes.trim()}"\n` : ''}Mohon penjelasan teknis & solusi untuk penanganan di tempat saya. Terima kasih.`;
+    window.open(`https://wa.me/6285715654183?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
+    setFaqModalItem(null);
+    setFaqModalNotes('');
   };
 
   return (
@@ -710,6 +1035,15 @@ export default function App() {
                 className={activeSection === 'ulasan' ? 'active' : ''}
               >
                 Ulasan
+              </a>
+            </li>
+            <li>
+              <a
+                href="#lokasi"
+                onClick={(e) => scrollToSection(e, 'lokasi')}
+                className={activeSection === 'lokasi' ? 'active' : ''}
+              >
+                Lokasi
               </a>
             </li>
             <li>
@@ -831,7 +1165,7 @@ export default function App() {
                 </g>
 
                 {/* Truck Body Main Tank */}
-                <rect x="80" y="140" width="240" height="110" fill="#FFD60A" rx="20" stroke="#111111" stroke-width="3" />
+                <rect x="80" y="140" width="240" height="110" fill="#FFD60A" rx="20" stroke="#111111" strokeWidth="3" />
 
                 {/* Tank Details */}
                 <rect x="95" y="155" width="210" height="50" fill="rgba(17,17,17,0.1)" rx="8" />
@@ -1145,6 +1479,175 @@ export default function App() {
         </div>
       </section>
 
+      {/* SECTION CHAT ADMIN VIA WHATSAPP (KONVERSI CEPAT SETELAH TESTIMONI) */}
+      <section className="quick-wa-section" id="chat-admin">
+        <div className="container">
+          <div className="quick-wa-card fade-in">
+            <div className="quick-wa-badge">
+              <span className="quick-wa-dot"></span>
+              <span>CS TEKNIS SIAGA ONLINE 24 JAM BOGOR</span>
+            </div>
+
+            <h2 className="quick-wa-title">
+              Punya Masalah WC atau Butuh Respon Cepat?<br />
+              Chat Admin Kami Langsung via WhatsApp!
+            </h2>
+
+            <p className="quick-wa-subtitle">
+              Pilih salah satu topik kebutuhan Anda di bawah ini agar pesan WhatsApp otomatis terisi secara instan tanpa perlu mengetik panjang. Tim kami siap merespon dalam hitungan menit.
+            </p>
+
+            {/* 3 Interactive Auto-Topic Buttons */}
+            <div>
+              <span className="quick-wa-topics-label">
+                <i className="fas fa-hand-pointer" style={{ marginRight: '6px' }}></i>
+                Pilih Topik Kebutuhan Anda:
+              </span>
+              <div className="quick-wa-topics-grid">
+                {TESTIMONI_WA_TOPICS.map((topic, idx) => (
+                  <div
+                    key={topic.id}
+                    className={`quick-wa-topic-card ${selectedTestimoniTopic === idx ? 'active' : ''}`}
+                    onClick={() => setSelectedTestimoniTopic(idx)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        setSelectedTestimoniTopic(idx);
+                      }
+                    }}
+                  >
+                    <div className="quick-wa-topic-top">
+                      <div className="quick-wa-topic-icon">
+                        <i className={topic.icon}></i>
+                      </div>
+                      <span className="quick-wa-topic-badge">{topic.badge}</span>
+                    </div>
+                    <span className="quick-wa-topic-name">{topic.label}</span>
+                    <span className="quick-wa-topic-desc">{topic.desc}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Message Preview Box */}
+            <div className="quick-wa-preview-box">
+              <i className="fab fa-whatsapp"></i>
+              <div className="quick-wa-preview-text">
+                <strong>Pratinjau Pesan Otomatis ({TESTIMONI_WA_TOPICS[selectedTestimoniTopic].label}):</strong>
+                <p>&ldquo;{TESTIMONI_WA_TOPICS[selectedTestimoniTopic].text}&rdquo;</p>
+              </div>
+            </div>
+
+            {/* Client-Side Validation Contact Form */}
+            <form onSubmit={handleQuickWaSubmit} className="wa-prep-form">
+              <div className="wa-prep-box">
+                <div className="wa-prep-header">
+                  <div className="wa-prep-badge">
+                    <i className="fas fa-clipboard-check"></i>
+                    <span>VERIFIKASI DATA PEMESAN</span>
+                  </div>
+                  <span className="wa-prep-hint">Lengkapi nama &amp; lokasi agar admin langsung mengecek armada terdekat</span>
+                </div>
+
+                <div className="wa-prep-grid">
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label htmlFor="quick-wa-name-input" className="wa-prep-label">
+                      Nama Lengkap Anda <span className="req">*</span>
+                    </label>
+                    <input
+                      id="quick-wa-name-input"
+                      type="text"
+                      className={`wa-prep-input ${quickWaError && (!quickWaName.trim() || quickWaName.trim().length < 2) ? 'input-error' : ''}`}
+                      placeholder="Contoh: Pak Budi / Ibu Siti"
+                      value={quickWaName}
+                      onChange={(e) => {
+                        setQuickWaName(e.target.value);
+                        if (quickWaError) setQuickWaError(null);
+                      }}
+                    />
+                  </div>
+
+                  <div className="form-group" style={{ margin: 0 }}>
+                    <label htmlFor="quick-wa-loc-input" className="wa-prep-label">
+                      Wilayah / Kecamatan di Bogor <span className="req">*</span>
+                    </label>
+                    <select
+                      id="quick-wa-loc-input"
+                      className={`wa-prep-select ${quickWaError && !quickWaLocation.trim() ? 'input-error' : ''}`}
+                      value={quickWaLocation}
+                      onChange={(e) => {
+                        setQuickWaLocation(e.target.value);
+                        if (quickWaError) setQuickWaError(null);
+                      }}
+                    >
+                      <option value="">-- Pilih Kecamatan di Bogor --</option>
+                      {BOGOR_AREAS.map((area, aIdx) => (
+                        <option key={aIdx} value={area}>
+                          {area}
+                        </option>
+                      ))}
+                      <option value="Kota Bogor Lainnya">Kota Bogor Lainnya</option>
+                      <option value="Kabupaten Bogor Lainnya">Kabupaten Bogor Lainnya</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Validation Error Feedback */}
+                {quickWaError && (
+                  <div className="wa-validation-alert" role="alert">
+                    <i className="fas fa-exclamation-circle"></i>
+                    <span>{quickWaError}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Big Interactive WhatsApp CTA Button */}
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <button
+                  type="submit"
+                  className="quick-wa-cta-btn"
+                  aria-label="Chat Admin via WhatsApp"
+                >
+                  <i className="fab fa-whatsapp"></i>
+                  <div className="quick-wa-cta-text">
+                    <span className="quick-wa-cta-title">CHAT ADMIN VIA WHATSAPP SEKARANG</span>
+                    <span className="quick-wa-cta-sub">
+                      +62 857-1565-4183 · Respon Kilat (&lt; 2 Menit)
+                    </span>
+                  </div>
+                </button>
+              </div>
+            </form>
+
+            {/* Direct Call Alternative */}
+            <div className="quick-wa-phone-row">
+              <span>Lebih nyaman telepon langsung?</span>
+              <a href="tel:+6285715654183" className="quick-wa-phone-link">
+                <i className="fas fa-phone-alt"></i>
+                <span>Klik untuk Panggilan Suara: +62 857-1565-4183</span>
+              </a>
+            </div>
+
+            {/* Trust Points Strip */}
+            <div className="quick-wa-trust-strip">
+              <div className="quick-wa-trust-item">
+                <i className="fas fa-check-circle"></i>
+                <span>Konsultasi &amp; Cek Tarif 100% Gratis</span>
+              </div>
+              <div className="quick-wa-trust-item">
+                <i className="fas fa-check-circle"></i>
+                <span>Tanpa Perlu Bayar DP (Bayar Pas Beres)</span>
+              </div>
+              <div className="quick-wa-trust-item">
+                <i className="fas fa-check-circle"></i>
+                <span>Garansi Resmi &amp; Armada Siaga Seluruh Bogor</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ (PERTANYAAN SERING DIAJUKAN) */}
       <section className="faq-section" id="faq">
         <div className="container">
@@ -1152,43 +1655,148 @@ export default function App() {
             <span className="section-badge">TANYA JAWAB</span>
             <h2 className="section-title">Pertanyaan Sering Diajukan<br />(FAQ Pelanggan)</h2>
             <p className="section-subtitle">
-              Jawaban lengkap seputar cara pemesanan, jangkauan wilayah spesifik Bogor, estimasi waktu kedatangan, prosedur garansi, dan transparansi tarif Mitra Bersih.
+              Jawaban lengkap seputar cara pemesanan, jangkauan wilayah spesifik Bogor, estimasi waktu kedatangan, dan prosedur garansi Mitra Bersih.
             </p>
           </div>
 
-          <div className="faq-container fade-in">
-            <div className="faq-list">
-              {FAQ_DATA.map((item) => {
-                const isOpen = openFaq === item.id;
-                return (
-                  <div
-                    key={item.id}
-                    className={`faq-item ${isOpen ? 'active' : ''}`}
-                  >
-                    <button
-                      type="button"
-                      className="faq-question"
-                      onClick={() => setOpenFaq(isOpen ? null : item.id)}
-                      aria-expanded={isOpen}
-                    >
-                      <div className="faq-question-text">
-                        <span className="faq-q-badge">{item.id}</span>
-                        <span>{item.question}</span>
-                      </div>
-                      <div className="faq-toggle-icon">
-                        <i className={`fas ${isOpen ? 'fa-minus' : 'fa-plus'}`}></i>
-                      </div>
-                    </button>
-
-                    {isOpen && (
-                      <div className="faq-answer">
-                        {item.answer}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+          {/* Real-time FAQ Search Bar & Category Filters */}
+          <div className="faq-search-container fade-in">
+            <div className="faq-search-box">
+              <i className="fas fa-search faq-search-icon"></i>
+              <input
+                type="text"
+                className="faq-search-input"
+                placeholder="Cari pertanyaan... (contoh: tarif, garansi, gang sempit, 24 jam, cara pesan)"
+                value={faqSearch}
+                onChange={(e) => setFaqSearch(e.target.value)}
+                aria-label="Cari pertanyaan FAQ"
+              />
+              {faqSearch && (
+                <button
+                  type="button"
+                  className="faq-search-clear"
+                  onClick={() => setFaqSearch('')}
+                  title="Hapus pencarian"
+                  aria-label="Hapus kata kunci pencarian"
+                >
+                  <i className="fas fa-times"></i>
+                </button>
+              )}
             </div>
+
+            <div className="faq-filter-row">
+              <div className="faq-filter-pills">
+                {FAQ_CATEGORIES.map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    className={`faq-filter-pill ${faqCategory === cat ? 'active' : ''}`}
+                    onClick={() => setFaqCategory(cat)}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+
+              <div className="faq-count-badge">
+                {faqSearch || faqCategory !== 'Semua' ? (
+                  <span>
+                    Ditemukan <strong>{filteredFaqs.length}</strong> dari {FAQ_DATA.length} pertanyaan
+                  </span>
+                ) : (
+                  <span>Total {FAQ_DATA.length} pertanyaan terpopuler</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="faq-container fade-in">
+            {filteredFaqs.length === 0 ? (
+              <div className="faq-empty-state">
+                <i className="fas fa-search"></i>
+                <h4>Tidak Ada Pertanyaan Ditemukan</h4>
+                <p>
+                  Maaf, tidak ada tanya jawab yang cocok dengan kata kunci &ldquo;{faqSearch}&rdquo;{faqCategory !== 'Semua' ? ` pada kategori ${faqCategory}` : ''}. Silakan coba kata kunci lain atau konsultasikan langsung dengan customer support teknis kami.
+                </p>
+                <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    className="faq-empty-reset-btn"
+                    onClick={() => {
+                      setFaqSearch('');
+                      setFaqCategory('Semua');
+                    }}
+                  >
+                    <i className="fas fa-redo-alt" style={{ marginRight: '6px' }}></i>
+                    Tampilkan Semua Pertanyaan
+                  </button>
+                  <a
+                    href={`https://wa.me/6285715654183?text=${encodeURIComponent(`Halo Mitra Bersih, saya ingin tanya kendala spesifik: ${faqSearch}`)}`}
+                    className="faq-cta-btn"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ fontSize: '13.5px', padding: '10px 20px' }}
+                  >
+                    <i className="fab fa-whatsapp"></i> Tanya Langsung via WA
+                  </a>
+                </div>
+              </div>
+            ) : (
+              <div className="faq-list">
+                {filteredFaqs.map((item) => {
+                  const isOpen = openFaq === item.id;
+                  const waTopic =
+                    item.waTopicText ||
+                    `Halo Mitra Bersih, saya membaca FAQ: "${item.question}". Saya ingin bertanya lebih lanjut terkait hal ini untuk lokasi saya di Bogor.`;
+                  const waUrl = `https://wa.me/6285715654183?text=${encodeURIComponent(waTopic)}`;
+
+                  return (
+                    <div
+                      key={item.id}
+                      className={`faq-item ${isOpen ? 'active' : ''}`}
+                    >
+                      <button
+                        type="button"
+                        className="faq-question"
+                        onClick={() => setOpenFaq(isOpen ? null : item.id)}
+                        aria-expanded={isOpen}
+                      >
+                        <div className="faq-question-text">
+                          <span className="faq-q-badge">{item.id}</span>
+                          <span>{highlightMatch(item.question, faqSearch)}</span>
+                        </div>
+                        <div className="faq-toggle-icon">
+                          <i className={`fas ${isOpen ? 'fa-minus' : 'fa-plus'}`}></i>
+                        </div>
+                      </button>
+
+                      {isOpen && (
+                        <div className="faq-answer">
+                          {item.answer}
+
+                          {/* Tombol Pemicu Chat WhatsApp dengan Topik Spesifik FAQ Ini */}
+                          <div className="faq-item-action">
+                            <div className="faq-item-action-text">
+                              <i className="fas fa-comment-dots"></i>
+                              <span>Punya pertanyaan lebih lanjut atau kendala serupa?</span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => openFaqChatModal(item)}
+                              className="faq-item-wa-btn"
+                              aria-label={`Chat WhatsApp admin tentang ${item.question}`}
+                            >
+                              <i className="fab fa-whatsapp"></i>
+                              <span>Tanya Admin via WhatsApp</span>
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
 
             {/* Quick Contact Box inside FAQ */}
             <div className="faq-cta-card fade-in">
@@ -1286,7 +1894,10 @@ export default function App() {
                       key={topic.id}
                       type="button"
                       className={`wa-topic-chip ${selectedWaTopic === idx ? 'active' : ''}`}
-                      onClick={() => setSelectedWaTopic(idx)}
+                      onClick={() => {
+                        setSelectedWaTopic(idx);
+                        if (hubungiWaError) setHubungiWaError(null);
+                      }}
                     >
                       <div className="wa-topic-chip-top">
                         <i className={topic.icon}></i>
@@ -1298,24 +1909,88 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Big Interactive WhatsApp CTA Button */}
-              <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <a
-                  href={`https://wa.me/6285715654183?text=${encodeURIComponent(WA_QUICK_TOPICS[selectedWaTopic].text)}`}
-                  className="wa-giant-btn"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Chat WhatsApp CS Mitra Bersih"
-                >
-                  <i className="fab fa-whatsapp"></i>
-                  <div className="wa-giant-text">
-                    <span className="wa-giant-title">CHAT CS VIA WHATSAPP SEKARANG</span>
-                    <span className="wa-giant-sub">
-                      +62 857-1565-4183 · Respon Kilat (&lt; 2 Menit)
+              {/* Client-Side Validation Contact Form */}
+              <form onSubmit={handleHubungiWaSubmit} className="wa-section-prep-form">
+                <div className="wa-section-prep-box">
+                  <div className="wa-prep-header">
+                    <div className="wa-prep-badge" style={{ background: '#111', color: 'var(--yellow)' }}>
+                      <i className="fas fa-user-check"></i>
+                      <span>FORM CEPAT HUBUNGI KAMI</span>
+                    </div>
+                    <span className="wa-prep-hint" style={{ color: '#E2E8F0' }}>
+                      Isi nama &amp; kecamatan Anda di Bogor agar CS langsung meluncurkan armada
                     </span>
                   </div>
-                </a>
-              </div>
+
+                  <div className="wa-prep-grid">
+                    <div className="form-group" style={{ margin: 0 }}>
+                      <label htmlFor="hubungi-wa-name-input" className="wa-prep-label" style={{ color: '#F8FAFC' }}>
+                        Nama Lengkap Anda <span className="req" style={{ color: 'var(--yellow)' }}>*</span>
+                      </label>
+                      <input
+                        id="hubungi-wa-name-input"
+                        type="text"
+                        className={`wa-prep-input ${hubungiWaError && (!hubungiWaName.trim() || hubungiWaName.trim().length < 2) ? 'input-error' : ''}`}
+                        placeholder="Contoh: Ibu Lestari / Pak Wahyu"
+                        value={hubungiWaName}
+                        onChange={(e) => {
+                          setHubungiWaName(e.target.value);
+                          if (hubungiWaError) setHubungiWaError(null);
+                        }}
+                      />
+                    </div>
+
+                    <div className="form-group" style={{ margin: 0 }}>
+                      <label htmlFor="hubungi-wa-loc-input" className="wa-prep-label" style={{ color: '#F8FAFC' }}>
+                        Wilayah / Kecamatan di Bogor <span className="req" style={{ color: 'var(--yellow)' }}>*</span>
+                      </label>
+                      <select
+                        id="hubungi-wa-loc-input"
+                        className={`wa-prep-select ${hubungiWaError && !hubungiWaLocation.trim() ? 'input-error' : ''}`}
+                        value={hubungiWaLocation}
+                        onChange={(e) => {
+                          setHubungiWaLocation(e.target.value);
+                          if (hubungiWaError) setHubungiWaError(null);
+                        }}
+                      >
+                        <option value="">-- Pilih Kecamatan di Bogor --</option>
+                        {BOGOR_AREAS.map((area, aIdx) => (
+                          <option key={aIdx} value={area}>
+                            {area}
+                          </option>
+                        ))}
+                        <option value="Kota Bogor Lainnya">Kota Bogor Lainnya</option>
+                        <option value="Kabupaten Bogor Lainnya">Kabupaten Bogor Lainnya</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Validation Error Alert */}
+                  {hubungiWaError && (
+                    <div className="wa-validation-alert" style={{ background: '#FEF2F2', borderColor: '#FCA5A5', color: '#991B1B' }} role="alert">
+                      <i className="fas fa-exclamation-triangle"></i>
+                      <span>{hubungiWaError}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Big Interactive WhatsApp CTA Button */}
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <button
+                    type="submit"
+                    className="wa-giant-btn"
+                    aria-label="Chat WhatsApp CS Mitra Bersih"
+                  >
+                    <i className="fab fa-whatsapp"></i>
+                    <div className="wa-giant-text">
+                      <span className="wa-giant-title">CHAT CS VIA WHATSAPP SEKARANG</span>
+                      <span className="wa-giant-sub">
+                        +62 857-1565-4183 · Respon Kilat (&lt; 2 Menit)
+                      </span>
+                    </div>
+                  </button>
+                </div>
+              </form>
 
               {/* Secondary Direct Call / Alternative */}
               <div className="wa-alt-row">
@@ -1359,48 +2034,120 @@ export default function App() {
             </p>
           </div>
 
-          <div className="articles-grid fade-in">
-            {ARTICLES_DATA.map((article) => (
-              <div
-                key={article.id}
-                className="article-card"
-                onClick={() => setSelectedArticle(article)}
-              >
-                <div className="article-thumb">
-                  <img
-                    src={article.image}
-                    alt={article.title}
-                    loading="lazy"
-                    onError={(e) => {
-                      const target = e.currentTarget;
-                      if (target.src !== article.fallbackImage) {
-                        target.src = article.fallbackImage;
-                      }
-                    }}
-                  />
-                  <span className="article-category">{article.category}</span>
-                </div>
+          {/* Article Search Bar & Category Filters */}
+          <div className="article-search-container fade-in">
+            <div className="article-search-box">
+              <i className="fas fa-search article-search-icon"></i>
+              <input
+                type="text"
+                className="article-search-input"
+                placeholder="Cari artikel edukasi... (contoh: septic tank penuh, bau got, wastafel mampet, pipa pvc)"
+                value={articleSearch}
+                onChange={(e) => setArticleSearch(e.target.value)}
+                aria-label="Cari artikel edukasi"
+              />
+              {articleSearch && (
+                <button
+                  type="button"
+                  className="article-search-clear"
+                  onClick={() => setArticleSearch('')}
+                  title="Hapus pencarian"
+                  aria-label="Hapus kata kunci pencarian"
+                >
+                  <i className="fas fa-times"></i>
+                </button>
+              )}
+            </div>
 
-                <div className="article-body">
-                  <div className="article-meta">
-                    <span><i className="far fa-calendar-alt"></i> {article.date}</span>
-                    <span><i className="far fa-clock"></i> {article.readTime}</span>
-                  </div>
-
-                  <h3 className="article-title">{article.title}</h3>
-                  <p className="article-excerpt">{article.excerpt}</p>
-
-                  <div className="article-footer">
-                    <span className="article-read-btn">
-                      Baca Selengkapnya <i className="fas fa-arrow-right"></i>
-                    </span>
-                    <span className="article-share-hint">
-                      <i className="fas fa-bookmark"></i> Edukasi
-                    </span>
-                  </div>
-                </div>
+            <div className="article-filter-row">
+              <div className="article-filter-pills">
+                {ARTICLE_CATEGORIES.map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    className={`article-filter-pill ${articleCategory === cat ? 'active' : ''}`}
+                    onClick={() => setArticleCategory(cat)}
+                  >
+                    {cat}
+                  </button>
+                ))}
               </div>
-            ))}
+
+              <div className="article-count-badge">
+                {articleSearch || articleCategory !== 'Semua' ? (
+                  <span>
+                    Ditemukan <strong>{filteredArticles.length}</strong> dari {ARTICLES_DATA.length} artikel
+                  </span>
+                ) : (
+                  <span>Total {ARTICLES_DATA.length} artikel panduan</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="articles-grid fade-in">
+            {filteredArticles.length === 0 ? (
+              <div className="article-empty-state">
+                <i className="fas fa-newspaper"></i>
+                <h4>Artikel Tidak Ditemukan</h4>
+                <p>
+                  Tidak ada artikel yang cocok dengan kata kunci &ldquo;{articleSearch}&rdquo;{articleCategory !== 'Semua' ? ` pada kategori ${articleCategory}` : ''}. Silakan cari topik lain atau reset pencarian.
+                </p>
+                <button
+                  type="button"
+                  className="article-empty-reset-btn"
+                  onClick={() => {
+                    setArticleSearch('');
+                    setArticleCategory('Semua');
+                  }}
+                >
+                  <i className="fas fa-redo-alt" style={{ marginRight: '6px' }}></i>
+                  Tampilkan Semua Artikel
+                </button>
+              </div>
+            ) : (
+              filteredArticles.map((article) => (
+                <div
+                  key={article.id}
+                  className="article-card"
+                  onClick={() => setSelectedArticle(article)}
+                >
+                  <div className="article-thumb">
+                    <img
+                      src={article.image}
+                      alt={article.title}
+                      loading="lazy"
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        if (target.src !== article.fallbackImage) {
+                          target.src = article.fallbackImage;
+                        }
+                      }}
+                    />
+                    <span className="article-category">{article.category}</span>
+                  </div>
+
+                  <div className="article-body">
+                    <div className="article-meta">
+                      <span><i className="far fa-calendar-alt"></i> {article.date}</span>
+                      <span><i className="far fa-clock"></i> {article.readTime}</span>
+                    </div>
+
+                    <h3 className="article-title">{highlightMatch(article.title, articleSearch)}</h3>
+                    <p className="article-excerpt">{highlightMatch(article.excerpt, articleSearch)}</p>
+
+                    <div className="article-footer">
+                      <span className="article-read-btn">
+                        Baca Selengkapnya <i className="fas fa-arrow-right"></i>
+                      </span>
+                      <span className="article-share-hint">
+                        <i className="fas fa-bookmark"></i> Edukasi
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </section>
@@ -1708,6 +2455,193 @@ export default function App() {
         </div>
       </section>
 
+      {/* SECTION LOKASI KAMI & GOOGLE MAPS INTERAKTIF */}
+      <section className="lokasi-section" id="lokasi">
+        <div className="container">
+          <div className="section-header fade-in">
+            <span className="section-badge">LOKASI KAMI &amp; AREA JANGKAUAN</span>
+            <h2 className="section-title">
+              Pusat Operasional &amp; Pos Siaga<br />Armada Seluruh Wilayah Bogor
+            </h2>
+            <p className="section-subtitle">
+              Peta interaktif titik siaga armada Mitra Bersih 24 Jam. Kami menempatkan armada di berbagai simpul strategis Kota dan Kabupaten Bogor untuk memastikan kedatangan cepat dalam 15 hingga 30 menit ke lokasi Anda.
+            </p>
+          </div>
+
+          {/* Pos Selector Pills / Buttons */}
+          <div className="lokasi-tabs fade-in">
+            <span className="lokasi-tabs-label">
+              <i className="fas fa-map-marker-alt" style={{ marginRight: '6px' }}></i>
+              Pilih Pos Siaga Armada Terdekat Anda:
+            </span>
+            <div className="lokasi-tabs-grid">
+              {MAP_HUBS.map((hub, idx) => (
+                <button
+                  key={hub.id}
+                  type="button"
+                  className={`lokasi-tab-btn ${selectedMapHub === idx ? 'active' : ''}`}
+                  onClick={() => setSelectedMapHub(idx)}
+                >
+                  <i className="fas fa-truck-moving"></i>
+                  <span>{hub.shortLabel}</span>
+                  {selectedMapHub === idx && <span className="lokasi-tab-dot"></span>}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Main Map & Info Card Grid */}
+          <div className="lokasi-grid fade-in">
+            {/* Interactive Map Viewport */}
+            <div className="lokasi-map-wrapper">
+              <div className="lokasi-map-topbar">
+                <div className="lokasi-map-status">
+                  <span className="lokasi-pulse-dot"></span>
+                  <span>LIVE GPS POS SIAGA BOGOR</span>
+                </div>
+                <div className="lokasi-map-active-badge">
+                  <i className="fas fa-check-circle" style={{ marginRight: '6px' }}></i>
+                  {MAP_HUBS[selectedMapHub].badge}
+                </div>
+              </div>
+
+              <div className="lokasi-iframe-container">
+                <iframe
+                  title={`Peta Lokasi ${MAP_HUBS[selectedMapHub].name}`}
+                  src={`https://maps.google.com/maps?q=${encodeURIComponent(MAP_HUBS[selectedMapHub].mapQuery)}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                ></iframe>
+              </div>
+
+              {/* Floating Map Bottom Bar */}
+              <div className="lokasi-map-footer">
+                <div className="lokasi-map-coords">
+                  <i className="fas fa-compass"></i>
+                  <span>Koordinat: {MAP_HUBS[selectedMapHub].coordinates.lat}, {MAP_HUBS[selectedMapHub].coordinates.lng}</span>
+                </div>
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(MAP_HUBS[selectedMapHub].mapQuery)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="lokasi-open-gmaps-btn"
+                  title="Buka rute navigasi di Google Maps"
+                >
+                  <i className="fas fa-external-link-alt"></i> Buka di Google Maps
+                </a>
+              </div>
+            </div>
+
+            {/* Hub Details & Action Card */}
+            <div className="lokasi-detail-card">
+              <div className="lokasi-card-header">
+                <span className="lokasi-card-tag">POS OPERASIONAL AKTIF</span>
+                <h3 className="lokasi-card-title">{MAP_HUBS[selectedMapHub].name}</h3>
+                <div className="lokasi-card-eta">
+                  <i className="fas fa-bolt"></i>
+                  <span>Estimasi Tiba: <strong>{MAP_HUBS[selectedMapHub].estTime}</strong></span>
+                </div>
+              </div>
+
+              <div className="lokasi-card-body">
+                <div className="lokasi-info-item">
+                  <div className="lokasi-info-icon">
+                    <i className="fas fa-map-pin"></i>
+                  </div>
+                  <div className="lokasi-info-text">
+                    <label>Alamat / Pangkalan Siaga:</label>
+                    <p>{MAP_HUBS[selectedMapHub].address}</p>
+                  </div>
+                </div>
+
+                <div className="lokasi-info-item">
+                  <div className="lokasi-info-icon">
+                    <i className="fas fa-layer-group"></i>
+                  </div>
+                  <div className="lokasi-info-text">
+                    <label>Cakupan Kecamatan &amp; Kelurahan:</label>
+                    <p>{MAP_HUBS[selectedMapHub].coverage}</p>
+                  </div>
+                </div>
+
+                <div className="lokasi-info-item">
+                  <div className="lokasi-info-icon">
+                    <i className="fas fa-truck"></i>
+                  </div>
+                  <div className="lokasi-info-text">
+                    <label>Kesiapan Armada Standby:</label>
+                    <p>{MAP_HUBS[selectedMapHub].trucks}</p>
+                  </div>
+                </div>
+
+                <div className="lokasi-info-item">
+                  <div className="lokasi-info-icon">
+                    <i className="fas fa-clock"></i>
+                  </div>
+                  <div className="lokasi-info-text">
+                    <label>Jam Operasional:</label>
+                    <p><strong>Siaga 24 Jam Nonstop</strong> (Setiap Hari Termasuk Libur)</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="lokasi-card-actions">
+                <a
+                  href={`https://wa.me/6285715654183?text=${encodeURIComponent(
+                    `Halo Mitra Bersih, saya butuh penanganan sedot WC / saluran mampet di area ${MAP_HUBS[selectedMapHub].shortLabel} Bogor. Mohon kirimkan armada terdekat ke alamat saya.`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="lokasi-dispatch-btn"
+                >
+                  <i className="fab fa-whatsapp"></i>
+                  <span>Panggil Armada Pos Ini via WA</span>
+                </a>
+
+                <a
+                  href="tel:+6285715654183"
+                  className="lokasi-call-btn"
+                  title="Telepon Panggilan Cepat"
+                >
+                  <i className="fas fa-phone-alt"></i>
+                  <span>Telepon Cepat: +62 857-1565-4183</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Trust strip for Location */}
+          <div className="lokasi-trust-bar fade-in">
+            <div className="lokasi-trust-item">
+              <i className="fas fa-shield-alt"></i>
+              <div>
+                <strong>Tanpa Biaya Ekstra Transport</strong>
+                <span>Tarif resmi flat transparan untuk radius area layanan Bogor</span>
+              </div>
+            </div>
+            <div className="lokasi-trust-item">
+              <i className="fas fa-road"></i>
+              <div>
+                <strong>Selang Fleksibel 50 – 100 Meter</strong>
+                <span>Jangkau rumah di lorong sempit tanpa repot parkir dekat</span>
+              </div>
+            </div>
+            <div className="lokasi-trust-item">
+              <i className="fas fa-headset"></i>
+              <div>
+                <strong>Respon Kilat CS &amp; Sopir Armada</strong>
+                <span>Komunikasi langsung via WhatsApp dengan info estimasi waktu nyata</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* AREA LAYANAN */}
       <section className="area" id="kontak">
         <div className="container">
@@ -1851,6 +2785,11 @@ export default function App() {
                   </a>
                 </li>
                 <li>
+                  <a href="#lokasi" onClick={(e) => scrollToSection(e, 'lokasi')}>
+                    <i className="fas fa-chevron-right"></i> Lokasi &amp; Pos Siaga
+                  </a>
+                </li>
+                <li>
                   <a href="#kontak" onClick={(e) => scrollToSection(e, 'kontak')}>
                     <i className="fas fa-chevron-right"></i> Kontak
                   </a>
@@ -1989,6 +2928,122 @@ export default function App() {
                 </a>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* FAQ WHATSAPP PREPARATION & VALIDATION MODAL */}
+      {faqModalItem && (
+        <div
+          className="faq-modal-overlay"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setFaqModalItem(null);
+          }}
+        >
+          <div className="faq-modal-card fade-in">
+            <div className="faq-modal-header">
+              <div className="faq-modal-header-info">
+                <span className="faq-modal-tag">KONSULTASI WHATSAPP ADMIN</span>
+                <h3>Tanya Langsung Terkait FAQ</h3>
+              </div>
+              <button
+                type="button"
+                className="faq-modal-close"
+                onClick={() => setFaqModalItem(null)}
+                aria-label="Tutup Modal"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+
+            <div className="faq-modal-topic-banner">
+              <i className="fas fa-question-circle"></i>
+              <div>
+                <strong>Pertanyaan FAQ Terpilih:</strong>
+                <p>&ldquo;{faqModalItem.question}&rdquo;</p>
+              </div>
+            </div>
+
+            <form onSubmit={handleFaqModalSubmit} className="faq-modal-form">
+              <div className="faq-modal-grid">
+                <div className="form-group">
+                  <label htmlFor="faq-cust-name">
+                    Nama Lengkap Anda <span className="required">*</span>
+                  </label>
+                  <input
+                    id="faq-cust-name"
+                    type="text"
+                    className={`form-input ${faqModalError && (!faqModalName.trim() || faqModalName.trim().length < 2) ? 'input-error' : ''}`}
+                    placeholder="Contoh: Pak Anton / Ibu Lina"
+                    value={faqModalName}
+                    onChange={(e) => {
+                      setFaqModalName(e.target.value);
+                      if (faqModalError) setFaqModalError(null);
+                    }}
+                    autoFocus
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="faq-cust-loc">
+                    Wilayah / Kecamatan di Bogor <span className="required">*</span>
+                  </label>
+                  <select
+                    id="faq-cust-loc"
+                    className={`form-select ${faqModalError && !faqModalLocation.trim() ? 'input-error' : ''}`}
+                    value={faqModalLocation}
+                    onChange={(e) => {
+                      setFaqModalLocation(e.target.value);
+                      if (faqModalError) setFaqModalError(null);
+                    }}
+                  >
+                    <option value="">-- Pilih Kecamatan di Bogor --</option>
+                    {BOGOR_AREAS.map((area, idx) => (
+                      <option key={idx} value={area}>
+                        {area}
+                      </option>
+                    ))}
+                    <option value="Kota Bogor Lainnya">Kota Bogor Lainnya</option>
+                    <option value="Kabupaten Bogor Lainnya">Kabupaten Bogor Lainnya</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: '16px' }}>
+                <label htmlFor="faq-cust-notes">
+                  Catatan / Keluhan Tambahan (Opsional)
+                </label>
+                <textarea
+                  id="faq-cust-notes"
+                  className="form-textarea"
+                  style={{ minHeight: '80px' }}
+                  placeholder="Ceritakan kendala spesifik, posisi gang sempit, atau perkiraan waktu kunjungan..."
+                  value={faqModalNotes}
+                  onChange={(e) => setFaqModalNotes(e.target.value)}
+                ></textarea>
+              </div>
+
+              {faqModalError && (
+                <div className="wa-validation-alert" style={{ marginBottom: '16px' }} role="alert">
+                  <i className="fas fa-exclamation-triangle"></i>
+                  <span>{faqModalError}</span>
+                </div>
+              )}
+
+              <div className="faq-modal-actions">
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => setFaqModalItem(null)}
+                >
+                  Batal
+                </button>
+                <button type="submit" className="faq-modal-submit-btn">
+                  <i className="fab fa-whatsapp"></i>
+                  <span>Kirim Pesan ke Admin WhatsApp</span>
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
