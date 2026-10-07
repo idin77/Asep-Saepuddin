@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import articleImg1 from './assets/images/septic_tank_signs_1791232849125.jpg';
 import articleImg2 from './assets/images/septic_vacuum_truck_1791232864840.jpg';
 import articleImg3 from './assets/images/clogged_drain_cleaning_1791232881201.jpg';
@@ -144,13 +144,21 @@ const FAQ_CATEGORIES = [
   '24 Jam Nonstop'
 ];
 
-const ARTICLE_CATEGORIES = [
-  'Semua',
-  'Panduan Sanitasi',
-  'Tips Perawatan',
-  'Solusi Saluran',
-  'Kesehatan Rumah'
+export interface ArticleCategoryConfig {
+  name: string;
+  icon: string;
+  description: string;
+}
+
+export const ARTICLE_CATEGORY_CONFIGS: ArticleCategoryConfig[] = [
+  { name: 'Semua', icon: 'fa-layer-group', description: 'Semua panduan edukasi sanitasi' },
+  { name: 'Tips Perawatan', icon: 'fa-tools', description: 'Tips perawatan septic tank & kloset' },
+  { name: 'Panduan Sanitasi', icon: 'fa-shield-virus', description: 'Standar kesehatan dan pemeliharaan' },
+  { name: 'Solusi Saluran', icon: 'fa-wrench', description: 'Solusi pipa wastafel & saluran mampet' },
+  { name: 'Kesehatan Rumah', icon: 'fa-home', description: 'Bebas bau & sanitasi higienis' }
 ];
+
+export const ARTICLE_CATEGORIES = ARTICLE_CATEGORY_CONFIGS.map((c) => c.name);
 
 const FAQ_DATA: FAQItem[] = [
   {
@@ -259,6 +267,19 @@ const FAQ_DATA: FAQItem[] = [
   }
 ];
 
+export const FAQ_JSON_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  'mainEntity': FAQ_DATA.map((item) => ({
+    '@type': 'Question',
+    'name': item.question,
+    'acceptedAnswer': {
+      '@type': 'Answer',
+      'text': item.answerText
+    }
+  }))
+};
+
 interface ArticlePoint {
   heading: string;
   text: string;
@@ -273,6 +294,9 @@ interface ArticleItem {
   image: string;
   fallbackImage: string;
   excerpt: string;
+  month?: string;
+  monthKey?: string;
+  viewsEstimate?: string;
   content: {
     intro: string;
     points: ArticlePoint[];
@@ -415,6 +439,506 @@ const ARTICLES_DATA: ArticleItem[] = [
         }
       ],
       conclusion: 'Menjaga sirkulasi udara septic tank dan menambah bakteri pengurai secara teratur akan membuat hunian Anda senantiasa segar, sehat, dan bebas dari aroma tak sedap.'
+    }
+  },
+  {
+    id: 5,
+    title: 'Tips Perawatan Berkala Pipa PVC Rumah Tangga Agar Bebas Kerak Lemak & Awet Puluhan Tahun',
+    category: 'Tips Perawatan',
+    readTime: '4 Menit Baca',
+    date: '02 Okt 2026',
+    image: articleImg2,
+    fallbackImage: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=700&q=80',
+    excerpt: 'Pipa pembuangan PVC seringkali menyempit akibat tumpukan buih sabun dan lemak beku. Terapkan 4 langkah perawatan mandiri setiap bulan tanpa merusak sambungan lem pipa.',
+    content: {
+      intro: 'Banyak pemilik rumah tidak menyadari bahwa saluran pipa pembuangan air kotor di bawah lantai perlahan mengalami penyempitan diameter pipa akibat kerak sabun dan lemak dapur yang mengeras.',
+      points: [
+        {
+          heading: '1. Siram dengan Air Hangat Berkala Seminggu Sekali',
+          text: 'Mengalirkan air panas bersuhu 60–70°C secara rutin membantu melunakkan lapisan lemak tipis sebelum mengeras menjadi kerak kapur yang membatu.'
+        },
+        {
+          heading: '2. Gunakan Campuran Soda Kue dan Cuka Putih Alami',
+          text: 'Reaksi asam asetat cuka dan natrium bikarbonat menghasilkan gelembung CO2 yang mengikis kotoran organik di dinding pipa tanpa mengikis lapisan PVC.'
+        },
+        {
+          heading: '3. Pasang Saringan Kawat Stainless di Setiap Afur Pembuangan',
+          text: 'Saringan berpori halus menangkap 95% serat rambut dan sisa makanan sebelum masuk ke belokan elbow pipa.'
+        },
+        {
+          heading: '4. Hindari Bahan Kimia Korosif Terlalu Sering',
+          text: 'Zat kimia keras dapat melarutkan lem sambungan pipa PVC dan memicu rembesan air kotor di bawah pondasi lantai rumah.'
+        }
+      ],
+      conclusion: 'Perawatan mandiri yang teratur menghemat biaya pemanggilan teknisi darurat dan menjamin saluran pembuangan rumah Anda lancar sepanjang tahun.'
+    }
+  },
+  {
+    id: 6,
+    title: 'Panduan Sanitasi Septic Tank Sesuai Standar SNI untuk Wilayah Padat Penduduk di Bogor',
+    category: 'Panduan Sanitasi',
+    readTime: '5 Menit Baca',
+    date: '29 Sep 2026',
+    image: articleImg1,
+    fallbackImage: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=700&q=80',
+    excerpt: 'Standar baku Kementerian Kesehatan dan SNI 2398:2017 mengatur jarak aman resapan ke sumber air minum serta frekuensi kuras rutin. Simak poin pentingnya untuk hunian Anda.',
+    content: {
+      intro: 'Kepadatan pemukiman di Kota dan Kabupaten Bogor menuntut kepatuhan terhadap standar sanitasi lingkungan agar limbah tinja tidak mencemari lapisan air tanah dangkal yang digunakan warga.',
+      points: [
+        {
+          heading: '1. Aturan Jarak Minimal 10 Meter ke Sumur Bor',
+          text: 'Bakteri patogen seperti E. Coli dapat meresap melalui pori-pori tanah hingga radius 8 meter. Menjaga jarak 10 meter adalah syarat mutlak air sumur layak pakai.'
+        },
+        {
+          heading: '2. Konstruksi Dua Kompartemen Kedap Air',
+          text: 'Septic tank yang baik memiliki ruang pengendapan pertama yang kedap air dan ruang resapan kedua dengan filter kerikil serta ijuk aktif.'
+        },
+        {
+          heading: '3. Wajib Pipa Ventilasi Udara dengan Kassa Nyamuk',
+          text: 'Cerobong hawa vertikal mencegah ledakan gas metana dan diberi saringan kawat agar tidak menjadi sarang nyamuk demam berdarah.'
+        },
+        {
+          heading: '4. Jadwal Pengurasan Maksimal 3 Tahun Sekali',
+          text: 'Lumpur tinja mati yang mengendap wajib disedot secara profesional agar tidak meluap ke saluran drainase got pemukiman.'
+        }
+      ],
+      conclusion: 'Mematuhi standar sanitasi bukan hanya menjaga kenyamanan keluarga Anda, tetapi juga melindungi kesehatan lingkungan tetangga di sekitar tempat tinggal.'
+    }
+  },
+  {
+    id: 7,
+    title: 'Solusi Cepat Mengatasi Air Buangan Dapur & Mesin Cuci Meluap ke Lantai Saat Digunakan',
+    category: 'Solusi Saluran',
+    readTime: '3 Menit Baca',
+    date: '20 Sep 2026',
+    image: articleImg3,
+    fallbackImage: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=700&q=80',
+    excerpt: 'Air buangan busa deterjen mesin cuci yang meluap balik ke kamar mandi menandakan adanya sumbatan serat pakaian dan kerak busa di pipa cabang. Ini solusinya.',
+    content: {
+      intro: 'Pompa pembuangan mesin cuci membuang debit air besar dalam waktu singkat. Jika pipa cabang terhambat, air berbusa akan mencari jalur keluar terendah seperti floor drain kamar mandi.',
+      points: [
+        {
+          heading: '1. Bersihkan Filter Serat Kain pada Mesin Cuci',
+          text: 'Serat benang pakaian yang lolos akan menggumpal dengan busa deterjen di dalam pipa PVC dan membentuk sumbatan seperti wol basah.'
+        },
+        {
+          heading: '2. Gunakan Mesin Spiral Baja Tanpa Kimia',
+          text: 'Kawat spiral bermesin rotasi tinggi mampu menarik gumpalan serat kain dan kotoran keluar dari pipa tanpa risiko kebocoran sambungan.'
+        },
+        {
+          heading: '3. Pasang Pipa Pembuangan dengan Diameter Minimal 2 Inci',
+          text: 'Untuk pembuangan mesin cuci dan wastafel cuci piring, pipa berdiameter minimal 2–2.5 inci diperlukan untuk menampung debit debit air pompa.'
+        },
+        {
+          heading: '4. Periksa Bak Kontrol Akhir Komplek',
+          text: 'Pastikan bak kontrol tidak tertutup sedimentasi pasir agar aliran air buangan lancar terbuang ke drainase umum komplek.'
+        }
+      ],
+      conclusion: 'Jika genangan air buangan sudah meluap ke lantai, segera lakukan pelancaran mekanis bersama tim profesional Mitra Bersih untuk penanganan cepat tanpa bongkar.'
+    }
+  }
+];
+
+export interface ArchiveMonthTab {
+  key: string;
+  label: string;
+  period: string;
+  count: number;
+  icon: string;
+}
+
+export const ARCHIVE_MONTH_TABS: ArchiveMonthTab[] = [
+  { key: 'all', label: 'Semua Periode', period: 'Mei – Agu 2026', count: 11, icon: 'fa-layer-group' },
+  { key: 'agustus-2026', label: 'Agustus 2026', period: 'Bulan Lalu', count: 3, icon: 'fa-calendar-alt' },
+  { key: 'juli-2026', label: 'Juli 2026', period: '2 Bulan Lalu', count: 3, icon: 'fa-calendar-alt' },
+  { key: 'juni-2026', label: 'Juni 2026', period: '3 Bulan Lalu', count: 3, icon: 'fa-calendar-alt' },
+  { key: 'mei-2026', label: 'Mei 2026', period: '4 Bulan Lalu', count: 2, icon: 'fa-calendar-alt' }
+];
+
+export const ARCHIVED_ARTICLES_DATA: ArticleItem[] = [
+  {
+    id: 101,
+    title: 'Persiapan Menghadapi Puncak Musim Hujan di Bogor: Cegah Septic Tank Meluap & Banjir Saluran',
+    category: 'Panduan Musim Hujan',
+    readTime: '4 Menit Baca',
+    date: '24 Agu 2026',
+    month: 'Agustus 2026',
+    monthKey: 'agustus-2026',
+    viewsEstimate: '1.8k dibaca',
+    image: '/src/assets/images/musim_hujan_septic_tank_1791377684411.jpg',
+    fallbackImage: '/src/assets/images/musim_hujan_septic_tank_1791377684411.jpg',
+    excerpt: 'Tingginya curah hujan di Kota Hujan Bogor seringkali membuat tanah resapan jenuh air. Simak 4 langkah pencegahan luapan air kotor ke dalam hunian keluarga.',
+    content: {
+      intro: 'Sebagai wilayah dengan julukan Kota Hujan, intensitas curah hujan di Bogor dapat mencapai rekor ekstrem dalam waktu singkat. Hal ini berdampak langsung pada penurunan daya serap lapisan tanah di sekitar bak septic tank rumah tangga.',
+      points: [
+        {
+          heading: '1. Periksa Tutup Bak Kontrol & Pipa Hawa (Vent Pipe)',
+          text: 'Pastikan tutup manhole tidak berada di bawah genangan halaman dan cerobong udara memiliki penutup payung agar air hujan tidak mengalir masuk ke dalam tangki limbah.'
+        },
+        {
+          heading: '2. Hindari Menyiram Air Berlebih Saat Hujan Deras',
+          text: 'Saat tanah luar sedang jenuh air, batasi beban buangan air kamar mandi agar volume air di dalam tangki resapan tidak meluap balik ke pipa kloset.'
+        },
+        {
+          heading: '3. Pasang Katup Backflow Valve di Saluran Utama',
+          text: 'Backflow valve mencegah air got perkotaan yang meluap masuk kembali ke saluran pembuangan dapur atau kamar mandi rumah Anda.'
+        },
+        {
+          heading: '4. Jadwalkan Pengurasan Sebelum Puncak Hujan Tiba',
+          text: 'Menguras endapan lumpur padat sebelum musim hujan memastikan kapasitas ruang tangki maksimal dan siap menampung debit limbah harian.'
+        }
+      ],
+      conclusion: 'Tindakan pencegahan sebelum musim hujan jauh lebih hemat dan menenangkan daripada harus menangani banjir air limbah yang meluap di lantai rumah.'
+    }
+  },
+  {
+    id: 102,
+    title: 'Perbedaan Septic Tank Konvensional Bata vs Biofilter Biotech Ramah Lingkungan',
+    category: 'Teknologi Sanitasi',
+    readTime: '5 Menit Baca',
+    date: '16 Agu 2026',
+    month: 'Agustus 2026',
+    monthKey: 'agustus-2026',
+    viewsEstimate: '2.1k dibaca',
+    image: '/src/assets/images/biofilter_septic_tank_1791377699972.jpg',
+    fallbackImage: '/src/assets/images/biofilter_septic_tank_1791377699972.jpg',
+    excerpt: 'Bingung memilih bak penampungan untuk renovasi rumah? Pahami kelebihan dan kekurangan septic tank rembesan bata konvensional dibanding biofilter modern.',
+    content: {
+      intro: 'Perkembangan konstruksi modern kini menghadirkan septic tank biofilter berbahan fiberglass yang dilengkapi media sel pengurai dan disinfektan klorin sebagai alternatif resapan bata konvensional.',
+      points: [
+        {
+          heading: '1. Sistem Kerja Resapan vs Penyaringan Multi-Tahap',
+          text: 'Septic tank bata mengandalkan daya serap tanah sekitar, sedangkan biofilter menyaring limbah melalui media biokontaktor bakteri dan menghasilkan air buangan yang layak dialirkan ke selokan.'
+        },
+        {
+          heading: '2. Risiko Pencemaran Air Tanah di Pemukiman Padat',
+          text: 'Di perumahan Bogor yang padat dengan jarak sumur bor kurang dari 10 meter, biofilter jauh lebih aman karena tidak merembeskan bakteri tinja ke dalam air tanah.'
+        },
+        {
+          heading: '3. Daya Tahan Material dan Kekedapan Air',
+          text: 'Biofilter fiberglass tahan bocor dan korosi hingga puluhan tahun, sementara bak bata dapat mengalami keretakan akibat gempa mikro atau pergeseran tanah liat Bogor.'
+        },
+        {
+          heading: '4. Kebutuhan Perawatan dan Frekuensi Sedot',
+          text: 'Keduanya tetap memerlukan pengurasan berkala saat lumpur mati menumpuk, namun biofilter umumnya memiliki interval sedot yang lebih terprediksi.'
+        }
+      ],
+      conclusion: 'Untuk kawasan perumahan padat di Bogor, penggunaan septic tank biofilter sangat disarankan demi menjaga kelestarian sumber air tanah keluarga.'
+    }
+  },
+  {
+    id: 103,
+    title: 'Daftar 6 Benda Terlarang yang Tidak Boleh Dibuang ke Kloset Agar Pipa Aman',
+    category: 'Tips Pencegahan',
+    readTime: '3 Menit Baca',
+    date: '05 Agu 2026',
+    month: 'Agustus 2026',
+    monthKey: 'agustus-2026',
+    viewsEstimate: '1.5k dibaca',
+    image: '/src/assets/images/benda_terlarang_kloset_1791376781169.jpg',
+    fallbackImage: '/src/assets/images/benda_terlarang_kloset_1791376781169.jpg',
+    excerpt: 'Tisu basah, pembalut, cotton bud, hingga minyak jelantah sering dianggap sepele namun memicu 90% kasus kloset tersumbat darurat di pemukiman.',
+    content: {
+      intro: 'Kloset dirancang secara mekanis hanya untuk menampung kotoran manusia dan air bilasan. Membuang benda sintetis ke dalam lubang toilet menjadi penyebab utama pipa mampet total.',
+      points: [
+        {
+          heading: '1. Tisu Basah (Wet Wipes)',
+          text: 'Meskipun bertuliskan flushable, tisu basah mengandung serat sintetis yang tidak terurai oleh air dan akan membentuk gumpalan keras di leher pipa.'
+        },
+        {
+          heading: '2. Pembalut & Popok Bayi',
+          text: 'Material penyerap gel di dalam pembalut akan mengembang berlipat ganda saat terkena air dan menyumbat total leher angsa kloset.'
+        },
+        {
+          heading: '3. Minyak Goreng & Lemak Kuah Makanan',
+          text: 'Minyak yang dituang ke WC akan mendingin dan menempel pada pipa PVC, mengeras seperti semen dan mempersempit jalur aliran kotoran.'
+        },
+        {
+          heading: '4. Rambut Rontok & Dental Floss',
+          text: 'Benang gigi dan jalinan rambut bertindak sebagai jaring penangkap kotoran lain di dalam pipa, memicu sumbatan yang liat dan sulit diurai.'
+        }
+      ],
+      conclusion: 'Sediakan tempat sampah kecil tertutup di dalam kamar mandi dan edukasi seluruh anggota keluarga untuk tidak membuang sampah ke kloset.'
+    }
+  },
+  {
+    id: 104,
+    title: 'Panduan Perawatan Grease Trap (Perangkap Lemak) Dapur Rumah & Restoran Kuliner Bogor',
+    category: 'Sanitasi Usaha',
+    readTime: '4 Menit Baca',
+    date: '28 Jul 2026',
+    month: 'Juli 2026',
+    monthKey: 'juli-2026',
+    viewsEstimate: '1.9k dibaca',
+    image: '/src/assets/images/perawatan_grease_trap_1791377714394.jpg',
+    fallbackImage: '/src/assets/images/perawatan_grease_trap_1791377714394.jpg',
+    excerpt: 'Bagi pemilik usaha kuliner di Bogor, grease trap wajib dibersihkan teratur agar limbah lemak tidak membatu dan menimbulkan aroma tak sedap.',
+    content: {
+      intro: 'Kota Bogor yang kaya dengan destinasi wisata kuliner menuntut standar kebersihan saluran dapur yang ketat. Lemak makanan dari pencucian piring adalah musuh utama pipa pembuangan umum.',
+      points: [
+        {
+          heading: '1. Cara Kerja Pemisahan Lemak & Air',
+          text: 'Grease trap memanfaatkan perbedaan massa jenis: lemak dan minyak mengapung di permukaan kompartemen pertama, sementara air bersih mengalir ke saluran kota.'
+        },
+        {
+          heading: '2. Jadwal Pembersihan Rutin Mingguan',
+          text: 'Untuk restoran aktif, penyendokan kerak minyak mengapung wajib dilakukan setiap 2–3 hari sekali sebelum lapisan lemak menebal dan membusuk.'
+        },
+        {
+          heading: '3. Pencegahan Bau Menyengat di Ruang Makan',
+          text: 'Grease trap yang tidak terawat menghasilkan asam lemak volatil berbau asam busuk yang dapat mengganggu kenyamanan pelanggan restoran Anda.'
+        },
+        {
+          heading: '4. Kapan Harus Menggunakan Jasa Sedot Lemak Vakum?',
+          text: 'Jika pipa pembuangan setelah grease trap sudah terlanjur tersumbat kerak kapur lemak, pembersihan bertekanan tinggi (hydro-jetting) diperlukan.'
+        }
+      ],
+      conclusion: 'Disiplin merawat grease trap menghindarkan tempat usaha Anda dari sanksi kebersihan dan menjamin operasional dapur berjalan lancar.'
+    }
+  },
+  {
+    id: 105,
+    title: 'Berapa Kapasitas Ideal Septic Tank untuk Rumah 2 Lantai dan Keluarga 6–8 Orang?',
+    category: 'Konstruksi Rumah',
+    readTime: '4 Menit Baca',
+    date: '14 Jul 2026',
+    month: 'Juli 2026',
+    monthKey: 'juli-2026',
+    viewsEstimate: '2.4k dibaca',
+    image: '/src/assets/images/kapasitas_septic_tank_1791377730119.jpg',
+    fallbackImage: '/src/assets/images/kapasitas_septic_tank_1791377730119.jpg',
+    excerpt: 'Rumus perhitungan volume bak septik standar SNI agar tidak cepat penuh dan tidak membebani resapan tanah di kontur perbukitan Bogor.',
+    content: {
+      intro: 'Menentukan ukuran septic tank yang tepat saat membangun atau merenovasi rumah dua lantai adalah kunci kenyamanan jangka panjang bagi keluarga besar.',
+      points: [
+        {
+          heading: '1. Rumus Estimasi SNI: Debit Limbah Harian',
+          text: 'Rata-rata manusia menghasilkan 20–30 liter lumpur tinja per tahun dan sekitar 100 liter limbah cair per hari. Untuk 8 orang, volume minimal yang disarankan adalah 2.500–3.000 liter.'
+        },
+        {
+          heading: '2. Pemisahan Kompartemen Pengendapan dan Resapan',
+          text: 'Bak pertama (ruang lumpur) idealnya berukuran 2/3 dari total volume, sedangkan bak kedua (ruang resapan) berukuran 1/3 dengan lapisan ijuk, kerikil, dan pasir aktif.'
+        },
+        {
+          heading: '3. Penyesuaian dengan Kontur Tanah Liat Bogor',
+          text: 'Sebagian besar tanah di kawasan Bogor memiliki kadar lempung tinggi dengan daya serap sedang, sehingga bak resapan membutuhkan luas bidang kontak lebih lebar.'
+        },
+        {
+          heading: '4. Manhole Akses Sedot yang Ergonomis',
+          text: 'Pastikan selalu menyediakan lubang kontrol (manhole) berdiameter minimal 40 cm di atas tangki agar selang armada sedot dapat masuk tanpa merusak keramik.'
+        }
+      ],
+      conclusion: 'Perencanaan kapasitas septic tank yang proporsional menghemat biaya perawatan dan menjamin tangki dapat bertahan bertahun-tahun tanpa kendala.'
+    }
+  },
+  {
+    id: 106,
+    title: 'Kenapa Kloset Sering Berbau Saat Cuaca Panas Terik? Ini Penjelasan Ilmiah & Solusinya',
+    category: 'Kesehatan Rumah',
+    readTime: '3 Menit Baca',
+    date: '02 Jul 2026',
+    month: 'Juli 2026',
+    monthKey: 'juli-2026',
+    viewsEstimate: '1.6k dibaca',
+    image: '/src/assets/images/kloset_bau_panas_1791377749144.jpg',
+    fallbackImage: '/src/assets/images/kloset_bau_panas_1791377749144.jpg',
+    excerpt: 'Suhu udara tinggi mempercepat fermentasi bakteri anaerob di dalam septic tank. Pelajari cara memperbaiki perangkap air leher angsa dan ventilasi T.',
+    content: {
+      intro: 'Pada saat terik matahari memuncak di kawasan Bogor, banyak pemilik rumah mengeluhkan aroma tak sedap yang tiba-tiba menyeruak dari kamar mandi meskipun kloset sudah dibersihkan higienis.',
+      points: [
+        {
+          heading: '1. Peningkatan Laju Reaksi Fermentasi Gas Metana',
+          text: 'Peningkatan suhu lingkungan mempercepat metabolisme bakteri anaerob di dalam tangki, menghasilkan lonjakan volume gas hidrogen sulfida berbau belerang.'
+        },
+        {
+          heading: '2. Penguapan Air Water-Seal pada Kloset',
+          text: 'Panas udara memicu penguapan air di leher angsa kloset atau floor drain yang jarang disiram, membuka celah bagi gas septic tank untuk naik ke ruangan.'
+        },
+        {
+          heading: '3. Tekanan Udara Termal di Saluran Pipa',
+          text: 'Udara panas di dalam pipa ventilasi septic tank bergerak ke atas dan menciptakan perbedaan tekanan yang mendorong gas keluar melalui sambungan pipa yang longgar.'
+        },
+        {
+          heading: '4. Solusi Efektif Mengatasi Bau Panas',
+          text: 'Siram kloset secara berkala, pastikan cerobong ventilasi T bersih dari sarang serangga, dan berikan kultur bakteri aerob pengurai bau.'
+        }
+      ],
+      conclusion: 'Jangan abaikan bau menyengat di kamar mandi Anda; periksa leher angsa dan saluran pernapasan septic tank secara teratur.'
+    }
+  },
+  {
+    id: 107,
+    title: 'Langkah Tepat Memilih Jasa Sedot WC di Bogor: Waspada Oknum Tukang Tembak Harga!',
+    category: 'Tips Konsumen',
+    readTime: '5 Menit Baca',
+    date: '26 Jun 2026',
+    month: 'Juni 2026',
+    monthKey: 'juni-2026',
+    viewsEstimate: '3.2k dibaca',
+    image: '/src/assets/images/memilih_jasa_sedot_wc_1791377760821.jpg',
+    fallbackImage: '/src/assets/images/memilih_jasa_sedot_wc_1791377760821.jpg',
+    excerpt: 'Banyak warga mengeluhkan tarif yang melambung berkali-kali lipat saat pengerjaan. Ini 5 tips memastikan Anda mendapatkan jasa bergaransi dan harga transparan.',
+    content: {
+      intro: 'Modus oknum tidak bertanggung jawab yang memasang tarif murah di iklan namun menagih jutaan rupiah dengan dalih hitungan per meter selang atau per kubik fiktif masih sering terjadi.',
+      points: [
+        {
+          heading: '1. Selalu Sepakati Harga Final Per Rit di Awal',
+          text: 'Jasa profesional resmi seperti Mitra Bersih selalu menawarkan skema harga paket per rit/tangki tuntas, tanpa biaya tersembunyi untuk panjang selang atau waktu kerja.'
+        },
+        {
+          heading: '2. Pastikan Armada Truk Memiliki Tangki Transparan/Kaca Intip',
+          text: 'Sebelum penyedotan dimulai, periksa bahwa tangki truk vakum dalam kondisi kosong melalui indikator kaca intip belakang tangki.'
+        },
+        {
+          heading: '3. Verifikasi Surat Jalan & Surat Garansi Tertulis',
+          text: 'Layanan terpercaya selalu memberikan bukti pengerjaan resmi dan garansi pekerjaan gratis jika kloset kembali mampet dalam masa garansi.'
+        },
+        {
+          heading: '4. Pembayaran Setelah Hasil Kerja Terbukti Lancar',
+          text: 'Jangan pernah memberikan uang muka (DP) di awal. Lakukan pembayaran hanya setelah Anda menguji flush kloset dan saluran terbukti lancar sempurna.'
+        }
+      ],
+      conclusion: 'Menjadi konsumen yang teliti akan melindungi dompet Anda dan menjamin septic tank rumah ditangani oleh teknisi profesional bersertifikat.'
+    }
+  },
+  {
+    id: 108,
+    title: 'Solusi Penanganan Saluran Got Komplek Mampet Akibat Sedimen Pasir & Sampah Liar',
+    category: 'Saluran Publik',
+    readTime: '4 Menit Baca',
+    date: '15 Jun 2026',
+    month: 'Juni 2026',
+    monthKey: 'juni-2026',
+    viewsEstimate: '1.7k dibaca',
+    image: '/src/assets/images/saluran_got_komplek_1791377780714.jpg',
+    fallbackImage: '/src/assets/images/saluran_got_komplek_1791377780714.jpg',
+    excerpt: 'Got depan rumah meluap saat hujan deras? Simak metode hydro-jetting tekanan tinggi dan penggunaan kawat spiral fleksibel tanpa merusak semen trotoar.',
+    content: {
+      intro: 'Saluran drainase air hujan dan buangan rumah tangga di perumahan seringkali tersumbat akibat endapan tanah liat, pasir sisa pembangunan, dan sampah kantong plastik.',
+      points: [
+        {
+          heading: '1. Masalah Endapan Sedimen yang Membatu',
+          text: 'Lumpur dan pasir yang terbawa arus hujan lama-kelamaan memadat di dasar buis beton got, mempersempit kapasitas debit air hingga 70%.'
+        },
+        {
+          heading: '2. Bahaya Membongkar Trotoar Tanpa Alat Modern',
+          text: 'Membongkar lantai semen got membutuhkan biaya renovasi yang mahal. Solusi modern menggunakan mesin spiral lentur dapat melancarkan sumbatan dari bak kontrol tanpa bongkar.'
+        },
+        {
+          heading: '3. Teknologi Hydro-Jetting Bertekanan Tinggi',
+          text: 'Semprotan air bertekanan hingga 200 bar mampu menyapu bersih endapan lumpur keras dan mendorong sampah keluar menuju saluran induk komplek.'
+        },
+        {
+          heading: '4. Gotong Royong Warga & Penutup Grill Besi',
+          text: 'Pemasangan saringan grill besi di setiap bibir saluran depan rumah sangat efektif mencegah dedaunan dan botol plastik masuk ke gorong-gorong tertutup.'
+        }
+      ],
+      conclusion: 'Pemeliharaan got secara rutin menjaga perumahan tetap asri, bebas nyamuk demam berdarah, dan aman dari bahaya banjir luapan air hujan.'
+    }
+  },
+  {
+    id: 109,
+    title: 'Pentingnya Desain Pipa Hawa (Ventilation Pipe) Septic Tank untuk Keamanan Rumah Anda',
+    category: 'Keamanan Sanitasi',
+    readTime: '3 Menit Baca',
+    date: '03 Jun 2026',
+    month: 'Juni 2026',
+    monthKey: 'juni-2026',
+    viewsEstimate: '1.4k dibaca',
+    image: '/src/assets/images/pipa_hawa_septic_tank_1791377792952.jpg',
+    fallbackImage: '/src/assets/images/pipa_hawa_septic_tank_1791377792952.jpg',
+    excerpt: 'Gas metana yang terperangkap tanpa ventilasi dapat menimbulkan risiko tekanan balik dan bau busuk yang masuk ke ventilasi kamar tidur.',
+    content: {
+      intro: 'Pipa hawa seringkali dianggap sebagai detail kecil yang diabaikan saat tukang memasang septic tank, padahal fungsinya sangat krusial bagi keselamatan dan kelancaran sirkulasi udara tangki.',
+      points: [
+        {
+          heading: '1. Fungsi Pembuangan Gas Metana yang Mudah Terbakar',
+          text: 'Penguraian tinja menghasilkan gas metana (CH4). Tanpa pipa pembuangan, gas akan terakumulasi dan menciptakan tekanan tinggi yang dapat meretakkan dinding bak septic tank.'
+        },
+        {
+          heading: '2. Mencegah Fenomena Air Kloset Macet (Air Lock)',
+          text: 'Ketika kotoran baru masuk dari kloset, udara di dalam tangki harus memiliki jalur keluar. Jika pipa ventilasi tersumbat, udara terperangkap dan menahan air kloset agar tidak turun.'
+        },
+        {
+          heading: '3. Standar Ketinggian Pipa Hawa SNI',
+          text: 'Pipa ventilasi sebaiknya dipasang vertikal dengan tinggi minimal 2 meter di atas permukaan tanah dan dilengkapi penutup berbentuk huruf T atau pipa saringan kawat kassa.'
+        },
+        {
+          heading: '4. Posisi Penempatan yang Jauh dari Jendela Kamar',
+          text: 'Hindari mengarahkan ujung pipa ventilasi tepat di dekat jendela kamar tidur atau ruang keluarga agar aroma gas buangan tidak terbawa angin ke dalam ruangan.'
+        }
+      ],
+      conclusion: 'Periksa kondisi pipa hawa septic tank rumah Anda hari ini; pastikan tidak ada sarang burung atau sarang lebah yang menyumbat jalur pembuangan gas.'
+    }
+  },
+  {
+    id: 110,
+    title: 'Tips Sanitasi Toilet Bersih Menjelang Mudik & Meninggalkan Rumah Kosong Berhari-hari',
+    category: 'Tips Rumah Tangga',
+    readTime: '3 Menit Baca',
+    date: '25 Mei 2026',
+    month: 'Mei 2026',
+    monthKey: 'mei-2026',
+    viewsEstimate: '2.0k dibaca',
+    image: '/src/assets/images/sanitasi_toilet_mudik_1791377807924.jpg',
+    fallbackImage: '/src/assets/images/sanitasi_toilet_mudik_1791377807924.jpg',
+    excerpt: 'Sebelum bepergian libur panjang, pastikan leher angsa terisi dan tutup lubang floor drain agar kecoa dan bau got tidak naik ke dalam hunian.',
+    content: {
+      intro: 'Meninggalkan rumah dalam keadaan kosong selama berminggu-minggu saat mudik atau liburan panjang seringkali menyisakan kejutan aroma tak sedap di kamar mandi saat Anda pulang.',
+      points: [
+        {
+          heading: '1. Bersihkan Mangkuk Kloset Sebelum Berangkat',
+          text: 'Sikat mangkuk kloset dan siram bersih. Endapan kotoran yang tertinggal berhari-hari dalam kondisi lembap akan menjadi sarang jamur hitam yang membandel.'
+        },
+        {
+          heading: '2. Tambahkan Sedikit Air & Minyak Goreng ke Floor Drain',
+          text: 'Tetesan sedikit minyak di atas air perangkap leher angsa floor drain membentuk lapisan tipis yang mencegah penguapan air selama rumah ditinggal.'
+        },
+        {
+          heading: '3. Pasang Penutup Karet pada Seluruh Lubang Pembuangan',
+          text: 'Tutup lubang wastafel dan saringan lantai dengan penutup silikon kedap udara untuk mencegah kecoa got atau tikus naik ke kamar mandi.'
+        },
+        {
+          heading: '4. Matikan Stop Kran Utama Pipa Air Bersih',
+          text: 'Mematikan keran utama meteran air PDAM mencegah kebocoran mendadak pada pelampung kloset yang dapat menyebabkan banjir tersembunyi.'
+        }
+      ],
+      conclusion: 'Dengan menerapkan langkah sederhana ini, Anda dapat menikmati liburan dengan tenang dan kembali ke rumah yang tetap wangi dan bersih.'
+    }
+  },
+  {
+    id: 111,
+    title: 'Cara Mengatasi Kloset Duduk Rusak Tombol Flush & Air Mengalir Terus ke Mangkok WC',
+    category: 'Panduan Mandiri',
+    readTime: '4 Menit Baca',
+    date: '09 Mei 2026',
+    month: 'Mei 2026',
+    monthKey: 'mei-2026',
+    viewsEstimate: '1.9k dibaca',
+    image: '/src/assets/images/tombol_flush_kloset_1791377819244.jpg',
+    fallbackImage: '/src/assets/images/tombol_flush_kloset_1791377819244.jpg',
+    excerpt: 'Air tangki kloset merembes terus-menerus bisa membuat tagihan PDAM membengkak. Kenali kerusakan pelampung, flapper seal, dan cara perbaikannya.',
+    content: {
+      intro: 'Suara air gemericik pelan yang tidak pernah berhenti di dalam kloset duduk adalah tanda bahwa katup pengisian atau katup pembilasan tangki mengalami kebocoran mekanis.',
+      points: [
+        {
+          heading: '1. Kenali Bagian Flapper Valve (Karet Katup Bawah)',
+          text: 'Flapper valve yang aus, berkerak kapur, atau kotor oleh lumut tidak dapat menutup lubang pembilas dengan rapat, menyebabkan air mengalir terus ke mangkuk kloset.'
+        },
+        {
+          heading: '2. Periksa Ketinggian Pelampung (Fill Valve)',
+          text: 'Jika pelampung disetel terlalu tinggi, air akan terus mengalir hingga meluap ke pipa overflow darurat. Putar sekrup penyetel pelampung searah jarum jam untuk menurunkan batas air.'
+        },
+        {
+          heading: '3. Rantai Tombol Flush Terlilit atau Terlalu Pendek',
+          text: 'Rantai penghubung antara tombol flush dan flapper karet yang terlalu tegang akan menahan katup tetap terbuka sedikit. Sesuaikan panjang mata rantai agar pas.'
+        },
+        {
+          heading: '4. Mengganti Seal Karet yang Mengeras',
+          text: 'Di toko bangunan terdekat di Bogor, set seal flapper universal dijual dengan harga terjangkau dan dapat diganti sendiri tanpa perlu membongkar kloset.'
+        }
+      ],
+      conclusion: 'Memperbaiki kebocoran kloset duduk dengan cepat menyelamatkan ratusan liter air bersih setiap hari dan menghemat biaya tagihan air keluarga Anda.'
     }
   }
 ];
@@ -635,6 +1159,138 @@ const MAP_HUBS: MapHub[] = [
   }
 ];
 
+export interface LayananAreaOption {
+  value: string;
+  label: string;
+  hubId: string;
+  districtBadge: string;
+}
+
+export const LAYANAN_AREA_OPTIONS: LayananAreaOption[] = [
+  { value: 'all', label: '📍 Semua Wilayah (Lihat Kesiapan Semua 5 Pos Armada Bogor)', hubId: 'all', districtBadge: 'Seluruh Bogor' },
+
+  // Pos Kota Bogor
+  { value: 'kota-bogor', label: '🏙️ Seluruh Kota Bogor (Pusat & Wilayah Umum)', hubId: 'kota-bogor', districtBadge: 'Kota Bogor' },
+  { value: 'tanah-sareal', label: '🏢 Tanah Sareal & Jl. Sholeh Iskandar', hubId: 'kota-bogor', districtBadge: 'Tanah Sareal' },
+  { value: 'bogor-tengah-timur', label: '🏬 Bogor Tengah, Pajajaran & Baranangsiang', hubId: 'kota-bogor', districtBadge: 'Bogor Tengah/Timur' },
+  { value: 'bogor-barat-selatan', label: '🏡 Bogor Barat (Bubulak/Semplak) & Bogor Selatan', hubId: 'kota-bogor', districtBadge: 'Bogor Barat/Selatan' },
+
+  // Pos Cibinong & Sentul
+  { value: 'cibinong', label: '🏢 Cibinong (Pusat Pemda Tegar Beriman & Sukahati)', hubId: 'cibinong', districtBadge: 'Cibinong' },
+  { value: 'sentul-city', label: '⛳ Sentul & Sentul City (Babakan Madang & Sukaraja)', hubId: 'cibinong', districtBadge: 'Sentul & Sukaraja' },
+  { value: 'bojonggede-citeureup', label: '🚆 Bojonggede & Citeureup', hubId: 'cibinong', districtBadge: 'Bojonggede & Citeureup' },
+
+  // Pos Dramaga & Barat
+  { value: 'dramaga', label: '🎓 Dramaga & Kampus IPB Dramaga', hubId: 'dramaga', districtBadge: 'Dramaga & IPB' },
+  { value: 'ciomas-laladon', label: '🏡 Ciomas, Pagelaran & Terminal Laladon', hubId: 'dramaga', districtBadge: 'Ciomas & Laladon' },
+  { value: 'ciampea-leuwiliang', label: '🌾 Ciampea, Cibungbulang & Leuwiliang', hubId: 'dramaga', districtBadge: 'Ciampea & Leuwiliang' },
+
+  // Pos Ciawi & Puncak
+  { value: 'ciawi', label: '⛰️ Ciawi & Simpang Gadog (Pintu Tol Jagorawi)', hubId: 'ciawi', districtBadge: 'Ciawi & Gadog' },
+  { value: 'puncak-megamendung', label: '🌲 Jalur Puncak (Megamendung & Cisarua)', hubId: 'ciawi', districtBadge: 'Puncak & Cisarua' },
+  { value: 'tajur-caringin', label: '🚗 Tajur, Caringin & Cijeruk', hubId: 'ciawi', districtBadge: 'Tajur & Caringin' },
+
+  // Pos Parung & Utara
+  { value: 'parung', label: '🛣️ Parung & Kawasan Pasar Parung', hubId: 'parung', districtBadge: 'Parung' },
+  { value: 'kemang-salabenda', label: '✈️ Kemang & Salabenda', hubId: 'parung', districtBadge: 'Kemang & Salabenda' },
+  { value: 'gunung-sindur-ciseeng', label: '🏭 Gunung Sindur & Ciseeng', hubId: 'parung', districtBadge: 'Gunung Sindur & Ciseeng' },
+  { value: 'tajurhalang-kalisuren', label: '🏘️ Tajurhalang & Kalisuren', hubId: 'parung', districtBadge: 'Tajurhalang' }
+];
+
+export const HUB_PILLS = [
+  { id: 'all', label: 'Semua Pos', icon: 'fa-globe-asia' },
+  { id: 'kota-bogor', label: 'Kota Bogor', icon: 'fa-city' },
+  { id: 'cibinong', label: 'Cibinong & Sentul', icon: 'fa-building' },
+  { id: 'dramaga', label: 'Dramaga & Ciomas', icon: 'fa-graduation-cap' },
+  { id: 'ciawi', label: 'Ciawi & Puncak', icon: 'fa-mountain' },
+  { id: 'parung', label: 'Parung & Kemang', icon: 'fa-road' }
+];
+
+export interface ServiceProblemOption {
+  id: string;
+  label: string;
+  problemDesc: string;
+}
+
+export interface ServiceCardItem {
+  id: string;
+  icon: string;
+  title: string;
+  shortType: string;
+  badge: string;
+  description: string;
+  delayClass: string;
+  problems: ServiceProblemOption[];
+  defaultProblem: string;
+  buildWaText: (problem: string, areaName: string, hubLabel?: string) => string;
+}
+
+export const SERVICE_CONSULTATION_CARDS: ServiceCardItem[] = [
+  {
+    id: 'sedot-wc',
+    title: 'Sedot WC & Septic Tank',
+    shortType: 'Sedot WC',
+    badge: 'Layanan 24 Jam Nonstop',
+    icon: 'fas fa-truck-loading',
+    delayClass: '',
+    description: 'Layanan kuras septic tank & sedot tinja Bogor untuk rumah, ruko, dan kantor. Mengatasi septic tank penuh atau meluap. Tarif sedot wc Bogor murah, harga per tangki transparan tanpa biaya tambahan.',
+    defaultProblem: 'Septic tank sudah penuh / meluap dan kloset tidak bisa disiram',
+    problems: [
+      { id: 'wc-penuh', label: 'Septic Tank Penuh / Meluap', problemDesc: 'Septic tank sudah penuh / meluap dan kloset tidak bisa disiram' },
+      { id: 'wc-mampet', label: 'Kloset Mampet Total', problemDesc: 'Kloset duduk/jongkok mampet & air tergenang tidak kunjung surut' },
+      { id: 'wc-kuras-rutin', label: 'Kuras Septic Tank Rutin', problemDesc: 'Perawatan rutin pengurasan septic tank 1-2 tahunan rumah tangga' },
+      { id: 'wc-bau', label: 'WC Berbau & Rembes Pipa', problemDesc: 'Kloset berbau menyengat & ada indikasi rembesan pipa pembuangan' }
+    ],
+    buildWaText: (problem, areaName, hubLabel) =>
+      `Halo CS Mitra Bersih, saya ingin berkonsultasi mengenai layanan *Sedot WC & Septic Tank Bogor*.\n\n` +
+      `*Kendala Spesifik:* ${problem}\n` +
+      `*Lokasi Saya:* ${areaName}${hubLabel ? ` (${hubLabel})` : ''}\n\n` +
+      `Mohon info estimasi tarif sedot per tangki dan kesiapan armada terdekat untuk meluncur ke lokasi saya. Terima kasih!`
+  },
+  {
+    id: 'pelancaran',
+    title: 'Pelancaran Saluran Mampet',
+    shortType: 'Pelancaran',
+    badge: 'Tanpa Bongkar Keramik',
+    icon: 'fas fa-faucet',
+    delayClass: 'fade-in-delay-1',
+    description: 'Jasa wc mampet Bogor dan saluran mampet bogor (wastafel, kamar mandi, got). Mengatasi wc bau dan sedot kamar mandi tanpa bongkar, hemat biaya. Tukang sedot wc terdekat Bogor datang cepat.',
+    defaultProblem: 'Wastafel / bak cuci piring mampet total akibat kerak lemak sisa makanan',
+    problems: [
+      { id: 'saluran-benda', label: 'Tersumbat Benda Asing', problemDesc: 'Kloset tersumbat benda padat / tisu / pembalut / mainan' },
+      { id: 'saluran-wastafel', label: 'Wastafel / Bak Cuci Piring', problemDesc: 'Wastafel / bak cuci piring mampet total akibat kerak lemak sisa makanan' },
+      { id: 'saluran-kamar-mandi', label: 'Floor Drain Kamar Mandi', problemDesc: 'Saluran pembuangan air kamar mandi meluap dan tergenang tidak kunjung surut' },
+      { id: 'saluran-got', label: 'Pipa Got / Talang Buntu', problemDesc: 'Pipa got pembuangan air kotor buntu & butuh mesin drain cleaner tanpa bongkar' }
+    ],
+    buildWaText: (problem, areaName, hubLabel) =>
+      `Halo CS Mitra Bersih, saya ingin berkonsultasi mengenai layanan *Pelancaran Saluran Mampet Tanpa Bongkar Bogor*.\n\n` +
+      `*Kendala Spesifik:* ${problem}\n` +
+      `*Lokasi Saya:* ${areaName}${hubLabel ? ` (${hubLabel})` : ''}\n\n` +
+      `Mohon info metode pengerjaan (spiral baja drain cleaner), estimasi biaya, dan garansi layanannya. Terima kasih!`
+  },
+  {
+    id: 'limbah',
+    title: 'Sedot Limbah & Ipal',
+    shortType: 'Limbah',
+    badge: 'Armada Tangki Besar Berizin',
+    icon: 'fas fa-industry',
+    delayClass: 'fade-in-delay-2',
+    description: 'Sedot grease trap Bogor, sedot ipal Bogor, dan sedot limbah Bogor untuk pabrik/industri. Penanganan profesional dengan standar lingkungan tinggi. Booking sedot wc Bogor hari ini via WA.',
+    defaultProblem: 'Pengurasan bak grease trap penyaring lemak dapur resto / cafe / rumah makan',
+    problems: [
+      { id: 'limbah-grease', label: 'Grease Trap Lemak Resto', problemDesc: 'Pengurasan bak grease trap penyaring lemak dapur resto / cafe / rumah makan' },
+      { id: 'limbah-stp', label: 'Limbah STP Gedung / Ruko', problemDesc: 'Penyedotan rutin tangki STP gedung perkantoran, ruko, hotel, atau klinik' },
+      { id: 'limbah-ipal', label: 'Limbah Lumpur IPAL Pabrik', problemDesc: 'Pembersihan endapan limbah cair & lumpur IPAL industri pabrik' },
+      { id: 'limbah-kontrol', label: 'Bak Kontrol & Lemak Beku', problemDesc: 'Penyedotan kerak lemak beku pada bak kontrol & pembuangan resmi berizin' }
+    ],
+    buildWaText: (problem, areaName, hubLabel) =>
+      `Halo CS Mitra Bersih, saya ingin berkonsultasi mengenai layanan *Sedot Limbah STP & IPAL / Grease Trap Bogor*.\n\n` +
+      `*Kendala Spesifik:* ${problem}\n` +
+      `*Lokasi Saya:* ${areaName}${hubLabel ? ` (${hubLabel})` : ''}\n\n` +
+      `Mohon info ketersediaan armada truk tangki, jadwal penanganan, dan penawaran biayanya. Terima kasih!`
+  }
+];
+
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
@@ -645,6 +1301,14 @@ export default function App() {
   const [selectedWaTopic, setSelectedWaTopic] = useState(0);
   const [selectedTestimoniTopic, setSelectedTestimoniTopic] = useState(0);
   const [selectedMapHub, setSelectedMapHub] = useState(0);
+  const [layananArea, setLayananArea] = useState<string>('all');
+
+  // Service Card consultation problem state
+  const [serviceProblems, setServiceProblems] = useState<Record<string, string>>({
+    'sedot-wc': 'Septic tank sudah penuh / meluap dan kloset tidak bisa disiram',
+    'pelancaran': 'Wastafel / bak cuci piring mampet total akibat kerak lemak sisa makanan',
+    'limbah': 'Pengurasan bak grease trap penyaring lemak dapur resto / cafe / rumah makan'
+  });
 
   // Client-side validation state for Quick Chat (Under Testimonials)
   const [quickWaName, setQuickWaName] = useState('');
@@ -666,6 +1330,35 @@ export default function App() {
   // FAQ Search & Filter State
   const [faqSearch, setFaqSearch] = useState('');
   const [faqCategory, setFaqCategory] = useState('Semua');
+  const [isFaqTyping, setIsFaqTyping] = useState(false);
+  const faqTypingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleFaqSearchChange = (val: string) => {
+    setFaqSearch(val);
+    setIsFaqTyping(true);
+    if (faqTypingTimeoutRef.current) {
+      clearTimeout(faqTypingTimeoutRef.current);
+    }
+    faqTypingTimeoutRef.current = setTimeout(() => {
+      setIsFaqTyping(false);
+    }, 750);
+  };
+
+  const handleFaqSearchClear = () => {
+    setFaqSearch('');
+    setIsFaqTyping(false);
+    if (faqTypingTimeoutRef.current) {
+      clearTimeout(faqTypingTimeoutRef.current);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (faqTypingTimeoutRef.current) {
+        clearTimeout(faqTypingTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Real-time filtered FAQ list
   const filteredFaqs = useMemo(() => {
@@ -716,6 +1409,66 @@ export default function App() {
       return inTitle || inExcerpt || inCat || inIntro || inPoints;
     });
   }, [articleSearch, articleCategory]);
+
+  // Berita Lingkungan Newsletter Subscription State
+  const [subscribers, setSubscribers] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('subscribers');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch {
+      // fallback
+    }
+    return [];
+  });
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterSuccess, setNewsletterSuccess] = useState<string | null>(null);
+  const [newsletterError, setNewsletterError] = useState<string | null>(null);
+
+  // Arsip Artikel State & Handlers (Previous Months' Articles)
+  const [selectedArchiveMonth, setSelectedArchiveMonth] = useState('all');
+  const [archiveSearch, setArchiveSearch] = useState('');
+
+  const filteredArchivedArticles = useMemo(() => {
+    const q = archiveSearch.trim().toLowerCase();
+    return ARCHIVED_ARTICLES_DATA.filter((article) => {
+      const matchMonth = selectedArchiveMonth === 'all' || article.monthKey === selectedArchiveMonth;
+      if (!matchMonth) return false;
+      if (!q) return true;
+
+      const inTitle = article.title.toLowerCase().includes(q);
+      const inExcerpt = article.excerpt.toLowerCase().includes(q);
+      const inCat = article.category.toLowerCase().includes(q);
+      const inMonth = (article.month || '').toLowerCase().includes(q);
+      const inIntro = article.content.intro.toLowerCase().includes(q);
+
+      return inTitle || inExcerpt || inCat || inMonth || inIntro;
+    });
+  }, [selectedArchiveMonth, archiveSearch]);
+
+  const handlePrevArchiveMonth = () => {
+    const currentIdx = ARCHIVE_MONTH_TABS.findIndex((m) => m.key === selectedArchiveMonth);
+    if (currentIdx > 1) {
+      setSelectedArchiveMonth(ARCHIVE_MONTH_TABS[currentIdx - 1].key);
+    } else if (currentIdx === 1) {
+      setSelectedArchiveMonth(ARCHIVE_MONTH_TABS[ARCHIVE_MONTH_TABS.length - 1].key);
+    } else {
+      setSelectedArchiveMonth(ARCHIVE_MONTH_TABS[1].key);
+    }
+  };
+
+  const handleNextArchiveMonth = () => {
+    const currentIdx = ARCHIVE_MONTH_TABS.findIndex((m) => m.key === selectedArchiveMonth);
+    if (currentIdx >= 1 && currentIdx < ARCHIVE_MONTH_TABS.length - 1) {
+      setSelectedArchiveMonth(ARCHIVE_MONTH_TABS[currentIdx + 1].key);
+    } else if (currentIdx === ARCHIVE_MONTH_TABS.length - 1) {
+      setSelectedArchiveMonth(ARCHIVE_MONTH_TABS[1].key);
+    } else {
+      setSelectedArchiveMonth(ARCHIVE_MONTH_TABS[1].key);
+    }
+  };
 
   // Ulasan Pelanggan & Carousel State
   const [reviews, setReviews] = useState<ReviewItem[]>(() => {
@@ -887,6 +1640,21 @@ export default function App() {
     }
   };
 
+  const handleViewHubOnMap = (hubId: string) => {
+    const hubIndex = MAP_HUBS.findIndex(h => h.id === hubId);
+    if (hubIndex !== -1) {
+      setSelectedMapHub(hubIndex);
+    }
+    const target = document.getElementById('lokasi');
+    if (target) {
+      const offsetTop = target.offsetTop - 80;
+      window.scrollTo({
+        top: offsetTop,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   // Client-side validation for Quick WA Contact (Under Testimonials)
   const handleQuickWaSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -957,6 +1725,50 @@ export default function App() {
     setFaqModalItem(null);
     setFaqModalNotes('');
   };
+
+  // Newsletter Subscription for Berita Lingkungan
+  const handleSubscribeNewsletter = (e: React.FormEvent) => {
+    e.preventDefault();
+    const email = newsletterEmail.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!email) {
+      setNewsletterError('Mohon masukkan alamat email Anda.');
+      setNewsletterSuccess(null);
+      return;
+    }
+
+    if (!emailRegex.test(email)) {
+      setNewsletterError('Format email tidak valid. Pastikan penulisan sesuai (contoh: nama@domain.com).');
+      setNewsletterSuccess(null);
+      return;
+    }
+
+    const normalized = email.toLowerCase();
+    if (subscribers.includes(normalized)) {
+      setNewsletterSuccess('Email Anda sudah terdaftar dalam buletin Berita Lingkungan kami!');
+      setNewsletterError(null);
+      setNewsletterEmail('');
+      return;
+    }
+
+    const updated = [normalized, ...subscribers];
+    setSubscribers(updated);
+    try {
+      localStorage.setItem('subscribers', JSON.stringify(updated));
+    } catch {
+      // storage error fallback
+    }
+
+    setNewsletterSuccess(`Terima kasih! Email ${email} berhasil bergabung dengan buletin Berita Lingkungan Mitra Bersih.`);
+    setNewsletterError(null);
+    setNewsletterEmail('');
+  };
+
+  const selectedLayananOption = LAYANAN_AREA_OPTIONS.find((o) => o.value === layananArea) || LAYANAN_AREA_OPTIONS[0];
+  const matchedLayananHub = selectedLayananOption.hubId === 'all'
+    ? null
+    : (MAP_HUBS.find((h) => h.id === selectedLayananOption.hubId) || null);
 
   return (
     <>
@@ -1277,60 +2089,362 @@ export default function App() {
             </p>
           </div>
 
+          {/* LOCATION FILTER & FLEET AVAILABILITY */}
+          <div className="layanan-fleet-control fade-in">
+            <div className="layanan-filter-card">
+              <div className="layanan-filter-header">
+                <div className="layanan-filter-title">
+                  <div className="filter-title-icon">
+                    <i className="fas fa-map-marker-alt"></i>
+                  </div>
+                  <div>
+                    <h4>Cek Ketersediaan Armada di Lokasi Anda</h4>
+                    <p>Pilih kecamatan atau wilayah Anda di Bogor untuk melihat pos siaga terdekat &amp; unit truk standby.</p>
+                  </div>
+                </div>
+
+                <div className="layanan-select-box">
+                  <label htmlFor="layanan-filter-dropdown" className="sr-only">Pilih Wilayah atau Kecamatan Bogor</label>
+                  <div className="select-wrapper">
+                    <i className="fas fa-search-location select-icon"></i>
+                    <select
+                      id="layanan-filter-dropdown"
+                      className="layanan-dropdown-input"
+                      value={layananArea}
+                      onChange={(e) => setLayananArea(e.target.value)}
+                    >
+                      <option value="all">📍 Semua Wilayah (Lihat Kesiapan Semua 5 Pos Armada Bogor)</option>
+
+                      <optgroup label="Pos Siaga Kota Bogor (Pusat &amp; Sekitarnya)">
+                        <option value="kota-bogor">🏙️ Seluruh Kota Bogor (Pusat &amp; Wilayah Umum)</option>
+                        <option value="tanah-sareal">🏢 Tanah Sareal &amp; Jl. Sholeh Iskandar</option>
+                        <option value="bogor-tengah-timur">🏬 Bogor Tengah, Pajajaran &amp; Baranangsiang</option>
+                        <option value="bogor-barat-selatan">🏡 Bogor Barat (Bubulak/Semplak) &amp; Bogor Selatan</option>
+                      </optgroup>
+
+                      <optgroup label="Pos Siaga Cibinong &amp; Sentul (Bogor Timur)">
+                        <option value="cibinong">🏢 Cibinong (Pusat Pemda Tegar Beriman &amp; Sukahati)</option>
+                        <option value="sentul-city">⛳ Sentul &amp; Sentul City (Babakan Madang &amp; Sukaraja)</option>
+                        <option value="bojonggede-citeureup">🚆 Bojonggede &amp; Citeureup</option>
+                      </optgroup>
+
+                      <optgroup label="Pos Siaga Dramaga &amp; Ciomas (Bogor Barat)">
+                        <option value="dramaga">🎓 Dramaga &amp; Kampus IPB Dramaga</option>
+                        <option value="ciomas-laladon">🏡 Ciomas, Pagelaran &amp; Terminal Laladon</option>
+                        <option value="ciampea-leuwiliang">🌾 Ciampea, Cibungbulang &amp; Leuwiliang</option>
+                      </optgroup>
+
+                      <optgroup label="Pos Siaga Ciawi &amp; Jalur Puncak (Bogor Selatan)">
+                        <option value="ciawi">⛰️ Ciawi &amp; Simpang Gadog (Pintu Tol Jagorawi)</option>
+                        <option value="puncak-megamendung">🌲 Jalur Puncak (Megamendung &amp; Cisarua)</option>
+                        <option value="tajur-caringin">🚗 Tajur, Caringin &amp; Cijeruk</option>
+                      </optgroup>
+
+                      <optgroup label="Pos Siaga Parung &amp; Kemang (Bogor Utara)">
+                        <option value="parung">🛣️ Parung &amp; Kawasan Pasar Parung</option>
+                        <option value="kemang-salabenda">✈️ Kemang &amp; Salabenda</option>
+                        <option value="gunung-sindur-ciseeng">🏭 Gunung Sindur &amp; Ciseeng</option>
+                        <option value="tajurhalang-kalisuren">🏘️ Tajurhalang &amp; Kalisuren</option>
+                      </optgroup>
+                    </select>
+                    <i className="fas fa-chevron-down select-caret"></i>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Hub Pills */}
+              <div className="layanan-pills-bar">
+                <span className="pills-label">Pintasan Pos:</span>
+                <div className="pills-scroll">
+                  {HUB_PILLS.map((pill) => {
+                    const isActive = pill.id === 'all'
+                      ? layananArea === 'all'
+                      : (matchedLayananHub?.id === pill.id);
+                    return (
+                      <button
+                        key={pill.id}
+                        type="button"
+                        className={`layanan-pill-btn ${isActive ? 'active' : ''}`}
+                        onClick={() => setLayananArea(pill.id)}
+                      >
+                        <i className={`fas ${pill.icon}`}></i>
+                        <span>{pill.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Dynamic Fleet Status Display */}
+              {matchedLayananHub ? (
+                /* Specific Hub Highlight */
+                <div className="layanan-hub-card active-hub fade-in">
+                  <div className="hub-card-header">
+                    <div className="hub-badges">
+                      <span className="hub-status-live">
+                        <span className="pulse-indicator"></span>
+                        ARMADA STANDBY SIAGA
+                      </span>
+                      <span className="hub-badge-pill">{matchedLayananHub.badge}</span>
+                      <span className="hub-area-pill">
+                        <i className="fas fa-check-circle"></i> Melayani {selectedLayananOption.districtBadge}
+                      </span>
+                    </div>
+                    <h3 className="hub-card-title">{matchedLayananHub.name}</h3>
+                  </div>
+
+                  <div className="hub-info-grid">
+                    <div className="hub-info-box eta-highlight">
+                      <div className="info-icon"><i className="fas fa-bolt"></i></div>
+                      <div className="info-content">
+                        <label>Estimasi Waktu Tiba:</label>
+                        <div className="eta-val">{matchedLayananHub.estTime}</div>
+                        <span className="eta-sub">Langsung berangkat • Respon kilat</span>
+                      </div>
+                    </div>
+
+                    <div className="hub-info-box">
+                      <div className="info-icon"><i className="fas fa-truck-moving"></i></div>
+                      <div className="info-content">
+                        <label>Kesiapan Unit Armada:</label>
+                        <p>{matchedLayananHub.trucks}</p>
+                      </div>
+                    </div>
+
+                    <div className="hub-info-box">
+                      <div className="info-icon"><i className="fas fa-map-pin"></i></div>
+                      <div className="info-content">
+                        <label>Pangkalan Pos Terdekat:</label>
+                        <p>{matchedLayananHub.address}</p>
+                      </div>
+                    </div>
+
+                    <div className="hub-info-box">
+                      <div className="info-icon"><i className="fas fa-route"></i></div>
+                      <div className="info-content">
+                        <label>Cakupan Kecamatan:</label>
+                        <p>{matchedLayananHub.coverage}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="hub-action-row">
+                    <a
+                      href={`https://wa.me/6285715654183?text=${encodeURIComponent(
+                        `Halo Mitra Bersih, saya butuh layanan sedot WC / saluran mampet di area ${selectedLayananOption.districtBadge} (${matchedLayananHub.shortLabel}). Apakah armada bisa segera meluncur ke lokasi saya?`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hub-btn-wa"
+                    >
+                      <i className="fab fa-whatsapp"></i>
+                      <span>Panggil Armada Pos {matchedLayananHub.shortLabel} Sekarang</span>
+                    </a>
+
+                    <button
+                      type="button"
+                      className="hub-btn-map"
+                      onClick={() => handleViewHubOnMap(matchedLayananHub.id)}
+                    >
+                      <i className="fas fa-map-marked-alt"></i>
+                      <span>Lihat Pos di Peta Interaktif</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className="hub-btn-reset"
+                      onClick={() => setLayananArea('all')}
+                      title="Lihat semua pos armada"
+                    >
+                      <i className="fas fa-undo"></i>
+                      <span>Tampilkan Semua Pos</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                /* All Hubs Overview Grid */
+                <div className="layanan-all-hubs-overview fade-in">
+                  <div className="all-hubs-banner">
+                    <div className="banner-left">
+                      <span className="banner-dot"></span>
+                      <div>
+                        <strong>11+ Armada Truk Siaga di 5 Pos Strategis Seluruh Bogor</strong>
+                        <p>Pilih wilayah Anda pada menu dropdown di atas atau klik pos siaga di bawah untuk melihat armada terdekat:</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className="all-hubs-map-btn"
+                      onClick={() => handleViewHubOnMap(MAP_HUBS[0].id)}
+                    >
+                      <i className="fas fa-map-marked-alt"></i> Buka Peta Interaktif
+                    </button>
+                  </div>
+
+                  <div className="all-hubs-cards-grid">
+                    {MAP_HUBS.map((hub) => (
+                      <div
+                        key={hub.id}
+                        className="hub-mini-card"
+                        onClick={() => setLayananArea(hub.id)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            setLayananArea(hub.id);
+                          }
+                        }}
+                      >
+                        <div className="mini-card-top">
+                          <span className="mini-card-badge">{hub.badge}</span>
+                          <span className="mini-card-eta">
+                            <i className="fas fa-bolt"></i> {hub.estTime}
+                          </span>
+                        </div>
+                        <h4 className="mini-card-title">{hub.shortLabel}</h4>
+                        <p className="mini-card-trucks">
+                          <i className="fas fa-truck"></i> {hub.trucks}
+                        </p>
+                        <p className="mini-card-area">
+                          <i className="fas fa-map-marker-alt"></i> {hub.coverage.split(',').slice(0, 3).join(', ')}...
+                        </p>
+                        <div className="mini-card-footer">
+                          <span className="mini-card-link">
+                            Cek Kesiapan Armada <i className="fas fa-arrow-right"></i>
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
           <div className="services-grid">
-            <div className="service-card fade-in">
-              <div className="service-icon">
-                <i className="fas fa-truck-loading"></i>
-              </div>
-              <h3>Sedot WC &amp; Septic Tank</h3>
-              <p>
-                Layanan kuras septic tank &amp; sedot tinja Bogor untuk rumah, ruko, dan kantor. Mengatasi septic tank penuh atau meluap. Tarif sedot wc Bogor murah, harga per tangki transparan tanpa biaya tambahan.
-              </p>
-              <a
-                href="https://wa.me/6285715654183?text=Halo,%20saya%20ingin%20pesan%20layanan%20Sedot%20WC%20Bogor"
-                className="service-link"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Pelajari <i className="fas fa-arrow-right"></i>
-              </a>
-            </div>
+            {SERVICE_CONSULTATION_CARDS.map((service) => {
+              const activeProblem = serviceProblems[service.id] || service.defaultProblem;
+              const areaName = selectedLayananOption.districtBadge || 'Seluruh Bogor';
+              const hubLabel = matchedLayananHub ? `Pos ${matchedLayananHub.shortLabel}` : undefined;
+              const waUrl = `https://wa.me/6285715654183?text=${encodeURIComponent(
+                service.buildWaText(activeProblem, areaName, hubLabel)
+              )}`;
+              const directOrderMsg = matchedLayananHub
+                ? `Halo Mitra Bersih, saya ingin pesan layanan ${service.title} untuk wilayah ${selectedLayananOption.districtBadge} (Pos ${matchedLayananHub.shortLabel}). Apakah armada bisa meluncur sekarang?`
+                : `Halo Mitra Bersih, saya ingin pesan layanan ${service.title} Bogor.`;
 
-            <div className="service-card fade-in fade-in-delay-1">
-              <div className="service-icon">
-                <i className="fas fa-faucet"></i>
-              </div>
-              <h3>Pelancaran Saluran Mampet</h3>
-              <p>
-                Jasa wc mampet Bogor dan saluran mampet bogor (wastafel, kamar mandi, got). Mengatasi wc bau dan sedot kamar mandi tanpa bongkar, hemat biaya. Tukang sedot wc terdekat Bogor datang cepat.
-              </p>
-              <a
-                href="https://wa.me/6285715654183?text=Halo,%20saya%20ingin%20pesan%20layanan%20Pelancaran%20Saluran%20Mampet%20Bogor"
-                className="service-link"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Pelajari <i className="fas fa-arrow-right"></i>
-              </a>
-            </div>
+              return (
+                <div key={service.id} className={`service-card fade-in ${service.delayClass}`.trim()}>
+                  <div className="service-icon">
+                    <i className={service.icon}></i>
+                  </div>
+                  <h3>{service.title}</h3>
+                  <p>{service.description}</p>
 
-            <div className="service-card fade-in fade-in-delay-2">
-              <div className="service-icon">
-                <i className="fas fa-industry"></i>
-              </div>
-              <h3>Sedot Limbah &amp; Ipal</h3>
-              <p>
-                Sedot grease trap Bogor, sedot ipal Bogor, dan sedot limbah Bogor untuk pabrik/industri. Penanganan profesional dengan standar lingkungan tinggi. Booking sedot wc Bogor hari ini via WA.
-              </p>
-              <a
-                href="https://wa.me/6285715654183?text=Halo,%20saya%20ingin%20pesan%20layanan%20Sedot%20Limbah%20STP%20Bogor"
-                className="service-link"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Pelajari <i className="fas fa-arrow-right"></i>
-              </a>
-            </div>
+                  {/* Dynamic Fleet Status Tag */}
+                  <div className="service-fleet-status-tag">
+                    {matchedLayananHub ? (
+                      <span className="tag-ready">
+                        <i className="fas fa-check-circle"></i> Armada Siap: <strong>Pos {matchedLayananHub.shortLabel}</strong> (Tiba ~{matchedLayananHub.estTime})
+                      </span>
+                    ) : (
+                      <span className="tag-available">
+                        <i className="fas fa-shield-alt"></i> Standby 24 Jam di 5 Pos Seluruh Bogor
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Interactive Problem Selector */}
+                  <div className="service-problem-selector">
+                    <div className="service-problem-label">
+                      <i className="fas fa-hand-pointer"></i>
+                      <span>Pilih Kendala Spesifik Anda:</span>
+                    </div>
+                    <div
+                      className="service-problem-chips"
+                      role="radiogroup"
+                      aria-label={`Pilih masalah spesifik ${service.title}`}
+                    >
+                      {service.problems.map((p) => {
+                        const isSelected = activeProblem === p.problemDesc;
+                        return (
+                          <button
+                            key={p.id}
+                            type="button"
+                            className={`service-problem-chip ${isSelected ? 'active' : ''}`}
+                            onClick={() =>
+                              setServiceProblems((prev) => ({
+                                ...prev,
+                                [service.id]: p.problemDesc
+                              }))
+                            }
+                            role="radio"
+                            aria-checked={isSelected}
+                            title={`Pilih kendala: ${p.label}`}
+                          >
+                            <i className={`fas ${isSelected ? 'fa-check-circle' : 'fa-circle'}`}></i>
+                            <span>{p.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Pre-filled Message Live Preview */}
+                  <div className="service-wa-preview-snippet">
+                    <div className="preview-top">
+                      <i className="fab fa-whatsapp"></i>
+                      <span>Pesan WA Terisi Otomatis ({service.shortType}):</span>
+                    </div>
+                    <p>
+                      &ldquo;Halo CS Mitra Bersih, saya ingin berkonsultasi mengenai layanan {service.title} untuk wilayah {areaName}. Kendala: {activeProblem}...&rdquo;
+                    </p>
+                  </div>
+
+                  {/* Card Actions */}
+                  <div className="service-card-actions">
+                    <a
+                      href={waUrl}
+                      className="service-wa-cta-btn"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Hubungi CS via WhatsApp untuk konsultasi ${service.title}`}
+                    >
+                      <i className="fab fa-whatsapp"></i>
+                      <span>Hubungi CS via WhatsApp</span>
+                    </a>
+
+                    <div className="service-wa-secondary-row">
+                      <a
+                        href="#biaya"
+                        onClick={(e) => scrollToSection(e, 'biaya')}
+                        className="service-card-calc-link"
+                      >
+                        <i className="fas fa-calculator"></i>
+                        <span>Cek Estimasi Biaya</span>
+                      </a>
+                      <a
+                        href={`https://wa.me/6285715654183?text=${encodeURIComponent(directOrderMsg)}`}
+                        className="service-card-order-link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={`Pesan langsung armada untuk ${service.title}`}
+                      >
+                        <span>{matchedLayananHub ? `Pesan di ${selectedLayananOption.districtBadge}` : 'Pesan Armada Cepat'}</span>
+                        <i className="fas fa-arrow-right"></i>
+                      </a>
+                    </div>
+
+                    <div className="service-wa-trust-row">
+                      <span><i className="fas fa-bolt"></i> Respon &plusmn;3 Menit</span>
+                      <span><i className="fas fa-shield-alt"></i> Bebas Biaya Konsultasi</span>
+                      <span><i className="fas fa-clock"></i> 24 Jam Siaga</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -1650,6 +2764,12 @@ export default function App() {
 
       {/* FAQ (PERTANYAAN SERING DIAJUKAN) */}
       <section className="faq-section" id="faq">
+        {/* Schema.org FAQPage Structured Data (JSON-LD) for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }}
+        />
+
         <div className="container">
           <div className="section-header fade-in">
             <span className="section-badge">TANYA JAWAB</span>
@@ -1660,22 +2780,27 @@ export default function App() {
           </div>
 
           {/* Real-time FAQ Search Bar & Category Filters */}
-          <div className="faq-search-container fade-in">
-            <div className="faq-search-box">
+          <div className={`faq-search-container fade-in ${isFaqTyping ? 'is-typing' : ''} ${faqSearch.trim() ? 'has-query' : ''}`}>
+            <div className={`faq-search-box ${isFaqTyping ? 'is-typing' : ''} ${faqSearch.trim() ? 'has-query' : ''}`}>
               <i className="fas fa-search faq-search-icon"></i>
               <input
                 type="text"
                 className="faq-search-input"
                 placeholder="Cari pertanyaan... (contoh: tarif, garansi, gang sempit, 24 jam, cara pesan)"
                 value={faqSearch}
-                onChange={(e) => setFaqSearch(e.target.value)}
+                onChange={(e) => handleFaqSearchChange(e.target.value)}
+                onKeyDown={() => {
+                  setIsFaqTyping(true);
+                  if (faqTypingTimeoutRef.current) clearTimeout(faqTypingTimeoutRef.current);
+                  faqTypingTimeoutRef.current = setTimeout(() => setIsFaqTyping(false), 750);
+                }}
                 aria-label="Cari pertanyaan FAQ"
               />
               {faqSearch && (
                 <button
                   type="button"
                   className="faq-search-clear"
-                  onClick={() => setFaqSearch('')}
+                  onClick={handleFaqSearchClear}
                   title="Hapus pencarian"
                   aria-label="Hapus kata kunci pencarian"
                 >
@@ -1712,7 +2837,7 @@ export default function App() {
 
           <div className="faq-container fade-in">
             {filteredFaqs.length === 0 ? (
-              <div className="faq-empty-state">
+              <div key={`faq-empty-${faqSearch}-${faqCategory}`} className="faq-empty-state faq-results-refresh faq-scale-in">
                 <i className="fas fa-search"></i>
                 <h4>Tidak Ada Pertanyaan Ditemukan</h4>
                 <p>
@@ -1723,7 +2848,7 @@ export default function App() {
                     type="button"
                     className="faq-empty-reset-btn"
                     onClick={() => {
-                      setFaqSearch('');
+                      handleFaqSearchClear();
                       setFaqCategory('Semua');
                     }}
                   >
@@ -1742,8 +2867,8 @@ export default function App() {
                 </div>
               </div>
             ) : (
-              <div className="faq-list">
-                {filteredFaqs.map((item) => {
+              <div key={`faq-list-${faqSearch}-${faqCategory}`} className="faq-list faq-results-refresh faq-scale-in">
+                {filteredFaqs.map((item, index) => {
                   const isOpen = openFaq === item.id;
                   const waTopic =
                     item.waTopicText ||
@@ -1754,12 +2879,14 @@ export default function App() {
                     <div
                       key={item.id}
                       className={`faq-item ${isOpen ? 'active' : ''}`}
+                      style={{ animationDelay: `${Math.min(index * 0.035, 0.28)}s` }}
                     >
                       <button
                         type="button"
                         className="faq-question"
                         onClick={() => setOpenFaq(isOpen ? null : item.id)}
                         aria-expanded={isOpen}
+                        aria-controls={`faq-answer-${item.id}`}
                       >
                         <div className="faq-question-text">
                           <span className="faq-q-badge">{item.id}</span>
@@ -1770,7 +2897,11 @@ export default function App() {
                         </div>
                       </button>
 
-                      {isOpen && (
+                      <div
+                        id={`faq-answer-${item.id}`}
+                        className={`faq-answer-collapse ${isOpen ? 'open' : ''}`}
+                        aria-hidden={!isOpen}
+                      >
                         <div className="faq-answer">
                           {item.answer}
 
@@ -1791,7 +2922,7 @@ export default function App() {
                             </button>
                           </div>
                         </div>
-                      )}
+                      </div>
                     </div>
                   );
                 })}
@@ -2034,14 +3165,53 @@ export default function App() {
             </p>
           </div>
 
-          {/* Article Search Bar & Category Filters */}
+          {/* Article Category Filter & Search Bar */}
           <div className="article-search-container fade-in">
+            {/* Pill-Based Category Navigation */}
+            <div className="article-category-nav-wrapper">
+              <div className="article-category-nav-header">
+                <div className="article-category-nav-title">
+                  <i className="fas fa-filter"></i>
+                  <span>Filter Kategori Artikel:</span>
+                </div>
+                <div className="article-category-nav-hint">
+                  Pilih kategori untuk memfilter panduan spesifik
+                </div>
+              </div>
+
+              <div className="article-category-pills" role="tablist" aria-label="Navigasi Filter Kategori Artikel">
+                {ARTICLE_CATEGORY_CONFIGS.map((cat) => {
+                  const isActive = articleCategory === cat.name;
+                  const count = cat.name === 'Semua'
+                    ? ARTICLES_DATA.length
+                    : ARTICLES_DATA.filter((a) => a.category === cat.name).length;
+
+                  return (
+                    <button
+                      key={cat.name}
+                      type="button"
+                      role="tab"
+                      aria-selected={isActive}
+                      className={`article-category-pill-btn ${isActive ? 'active' : ''}`}
+                      onClick={() => setArticleCategory(cat.name)}
+                      title={cat.description}
+                    >
+                      <i className={`fas ${cat.icon}`}></i>
+                      <span className="category-pill-title">{cat.name}</span>
+                      <span className="category-pill-badge">{count}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Search Input Box & Filter Result Indicator */}
             <div className="article-search-box">
               <i className="fas fa-search article-search-icon"></i>
               <input
                 type="text"
                 className="article-search-input"
-                placeholder="Cari artikel edukasi... (contoh: septic tank penuh, bau got, wastafel mampet, pipa pvc)"
+                placeholder="Cari topik artikel... (contoh: septic tank penuh, bau got, wastafel mampet, pipa pvc)"
                 value={articleSearch}
                 onChange={(e) => setArticleSearch(e.target.value)}
                 aria-label="Cari artikel edukasi"
@@ -2059,28 +3229,19 @@ export default function App() {
               )}
             </div>
 
-            <div className="article-filter-row">
-              <div className="article-filter-pills">
-                {ARTICLE_CATEGORIES.map((cat) => (
-                  <button
-                    key={cat}
-                    type="button"
-                    className={`article-filter-pill ${articleCategory === cat ? 'active' : ''}`}
-                    onClick={() => setArticleCategory(cat)}
-                  >
-                    {cat}
-                  </button>
-                ))}
+            <div className="article-filter-summary-row">
+              <div className="article-active-filter-indicator">
+                <i className="fas fa-tag"></i>
+                <span>
+                  Kategori aktif: <strong>{articleCategory}</strong>
+                  {articleSearch && <> • Kata kunci: &ldquo;<em>{articleSearch}</em>&rdquo;</>}
+                </span>
               </div>
 
               <div className="article-count-badge">
-                {articleSearch || articleCategory !== 'Semua' ? (
-                  <span>
-                    Ditemukan <strong>{filteredArticles.length}</strong> dari {ARTICLES_DATA.length} artikel
-                  </span>
-                ) : (
-                  <span>Total {ARTICLES_DATA.length} artikel panduan</span>
-                )}
+                <span>
+                  Ditemukan <strong>{filteredArticles.length}</strong> dari {ARTICLES_DATA.length} artikel
+                </span>
               </div>
             </div>
           </div>
@@ -2117,6 +3278,7 @@ export default function App() {
                       src={article.image}
                       alt={article.title}
                       loading="lazy"
+                      referrerPolicy="no-referrer"
                       onError={(e) => {
                         const target = e.currentTarget;
                         if (target.src !== article.fallbackImage) {
@@ -2148,6 +3310,312 @@ export default function App() {
                 </div>
               ))
             )}
+          </div>
+
+          {/* Quick jump to Arsip Artikel */}
+          <div className="article-archive-prompt fade-in">
+            <div className="article-archive-prompt-inner">
+              <div className="article-archive-prompt-text">
+                <i className="fas fa-history"></i>
+                <div>
+                  <strong>Mencari panduan dari bulan-bulan sebelumnya?</strong>
+                  <span>Tersedia 11 panduan terarsip lengkap dari Mei hingga Agustus 2026.</span>
+                </div>
+              </div>
+              <a
+                href="#arsip-artikel"
+                onClick={(e) => scrollToSection(e, 'arsip-artikel')}
+                className="article-archive-prompt-link"
+              >
+                <span>Buka Arsip Artikel</span>
+                <i className="fas fa-arrow-down"></i>
+              </a>
+            </div>
+          </div>
+
+          {/* SECTION NEWSLETTER: BERITA LINGKUNGAN */}
+          <div className="newsletter-box fade-in">
+            <div className="newsletter-inner">
+              <div className="newsletter-header">
+                <div className="newsletter-badge">
+                  <i className="fas fa-leaf"></i>
+                  <span>BULETIN &amp; BERITA LINGKUNGAN BOGOR</span>
+                </div>
+                <h3 className="newsletter-title">
+                  Dapatkan Tips Sanitasi &amp; Berita Lingkungan Terbaru
+                </h3>
+                <p className="newsletter-subtitle">
+                  Bergabunglah dengan buletin informatif Mitra Bersih 24 Jam. Kami membagikan panduan pencegahan WC mampet, sanitasi rumah tangga ramah lingkungan, dan berita lingkungan terkini di Kota &amp; Kabupaten Bogor langsung ke email Anda.
+                </p>
+              </div>
+
+              <div className="newsletter-perks">
+                <div className="newsletter-perk-item">
+                  <i className="fas fa-check-circle"></i>
+                  <span>Tips Hemat Perawatan Septic Tank</span>
+                </div>
+                <div className="newsletter-perk-item">
+                  <i className="fas fa-check-circle"></i>
+                  <span>Waspada Saluran Mampet Musim Hujan</span>
+                </div>
+                <div className="newsletter-perk-item">
+                  <i className="fas fa-check-circle"></i>
+                  <span>100% Gratis &amp; Bebas Spam</span>
+                </div>
+              </div>
+
+              <form onSubmit={handleSubscribeNewsletter} className="newsletter-form">
+                <div className="newsletter-input-group">
+                  <i className="fas fa-envelope newsletter-field-icon"></i>
+                  <input
+                    type="email"
+                    className={`newsletter-input ${newsletterError ? 'input-error' : ''}`}
+                    placeholder="Masukkan alamat email Anda (contoh: warga.bogor@gmail.com)..."
+                    value={newsletterEmail}
+                    onChange={(e) => {
+                      setNewsletterEmail(e.target.value);
+                      if (newsletterError) setNewsletterError(null);
+                    }}
+                    aria-label="Alamat email untuk berlangganan berita lingkungan"
+                  />
+                  <button type="submit" className="newsletter-submit-btn">
+                    <i className="fas fa-paper-plane"></i>
+                    <span>Join Sekarang</span>
+                  </button>
+                </div>
+
+                {newsletterError && (
+                  <div className="newsletter-alert error" role="alert">
+                    <i className="fas fa-exclamation-triangle"></i>
+                    <span>{newsletterError}</span>
+                  </div>
+                )}
+
+                {newsletterSuccess && (
+                  <div className="newsletter-alert success" role="status">
+                    <i className="fas fa-check-circle"></i>
+                    <span>{newsletterSuccess}</span>
+                  </div>
+                )}
+
+                {subscribers.length > 0 && (
+                  <div className="newsletter-counter-badge">
+                    <i className="fas fa-users"></i>
+                    <span>
+                      Telah diikuti oleh <strong>{subscribers.length}</strong> pembaca peduli sanitasi &amp; lingkungan di Bogor
+                    </span>
+                  </div>
+                )}
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ARSIP ARTIKEL (PREVIOUS MONTHS) */}
+      <section className="arsip-section" id="arsip-artikel">
+        <div className="container">
+          <div className="section-header fade-in">
+            <span className="section-badge">ARSIP ARTIKEL</span>
+            <h2 className="section-title">Arsip Panduan &amp; Edukasi Terdahulu</h2>
+            <p className="section-subtitle">
+              Jelajahi kembali kumpulan artikel sanitasi, tips perawatan septic tank, dan pemeliharaan saluran dari bulan-bulan sebelumnya (Mei – Agustus 2026).
+            </p>
+          </div>
+
+          {/* Month Navigation & Controls Bar */}
+          <div className="arsip-controls-card fade-in">
+            <div className="arsip-controls-top">
+              <div className="arsip-month-nav">
+                <span className="arsip-nav-label">
+                  <i className="fas fa-filter"></i> Pilih Periode:
+                </span>
+                <div className="arsip-month-pills">
+                  {ARCHIVE_MONTH_TABS.map((tab) => (
+                    <button
+                      key={tab.key}
+                      type="button"
+                      className={`arsip-month-pill ${selectedArchiveMonth === tab.key ? 'active' : ''}`}
+                      onClick={() => setSelectedArchiveMonth(tab.key)}
+                    >
+                      <i className={`fas ${tab.icon}`}></i>
+                      <span>{tab.label}</span>
+                      <span className="arsip-pill-count">{tab.count}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Prev / Next Month Navigation Arrows */}
+              <div className="arsip-nav-arrows">
+                <button
+                  type="button"
+                  className="arsip-nav-arrow-btn"
+                  onClick={handlePrevArchiveMonth}
+                  title="Ke Bulan Sebelumnya"
+                  aria-label="Pindah ke arsip bulan sebelumnya"
+                >
+                  <i className="fas fa-chevron-left"></i>
+                  <span>Bulan Sebelumnya</span>
+                </button>
+                <button
+                  type="button"
+                  className="arsip-nav-arrow-btn"
+                  onClick={handleNextArchiveMonth}
+                  title="Ke Bulan Berikutnya"
+                  aria-label="Pindah ke arsip bulan berikutnya"
+                >
+                  <span>Bulan Berikutnya</span>
+                  <i className="fas fa-chevron-right"></i>
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Filter / Search in Archive */}
+            <div className="arsip-controls-bottom">
+              <div className="arsip-search-wrap">
+                <i className="fas fa-search arsip-search-icon"></i>
+                <input
+                  type="text"
+                  className="arsip-search-input"
+                  placeholder="Cari topik di arsip... (contoh: got, grease trap, biofilter, ventilasi, mudik)"
+                  value={archiveSearch}
+                  onChange={(e) => setArchiveSearch(e.target.value)}
+                  aria-label="Cari artikel di arsip"
+                />
+                {archiveSearch && (
+                  <button
+                    type="button"
+                    className="arsip-search-clear"
+                    onClick={() => setArchiveSearch('')}
+                    title="Hapus pencarian arsip"
+                  >
+                    <i className="fas fa-times"></i>
+                  </button>
+                )}
+              </div>
+
+              <div className="arsip-summary-badge">
+                <span>
+                  Menampilkan <strong>{filteredArchivedArticles.length}</strong> artikel terarsip
+                  {selectedArchiveMonth !== 'all' && (
+                    <> pada periode <em>{ARCHIVE_MONTH_TABS.find((t) => t.key === selectedArchiveMonth)?.label}</em></>
+                  )}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Archived Articles Grid */}
+          <div className="arsip-grid fade-in">
+            {filteredArchivedArticles.length === 0 ? (
+              <div className="arsip-empty-state">
+                <i className="fas fa-folder-open"></i>
+                <h4>Tidak Ada Artikel di Arsip Ini</h4>
+                <p>
+                  Tidak ditemukan artikel arsip yang cocok dengan kata kunci &ldquo;{archiveSearch}&rdquo;. Silakan ganti kata kunci atau pilih periode bulan lain.
+                </p>
+                <button
+                  type="button"
+                  className="arsip-empty-reset-btn"
+                  onClick={() => {
+                    setArchiveSearch('');
+                    setSelectedArchiveMonth('all');
+                  }}
+                >
+                  <i className="fas fa-redo-alt"></i> Tampilkan Semua Arsip
+                </button>
+              </div>
+            ) : (
+              filteredArchivedArticles.map((article) => (
+                <div
+                  key={article.id}
+                  className="arsip-card"
+                  onClick={() => setSelectedArticle(article)}
+                >
+                  <div className="arsip-card-thumb">
+                    <img
+                      src={article.image}
+                      alt={article.title}
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                      onError={(e) => {
+                        const target = e.currentTarget;
+                        if (target.src !== article.fallbackImage) {
+                          target.src = article.fallbackImage;
+                        }
+                      }}
+                    />
+                    <div className="arsip-badge-group">
+                      <span className="arsip-month-tag">
+                        <i className="far fa-calendar-alt"></i> {article.month}
+                      </span>
+                      <span className="arsip-category-tag">{article.category}</span>
+                    </div>
+                  </div>
+
+                  <div className="arsip-card-body">
+                    <div className="arsip-card-meta">
+                      <span className="arsip-date-text">
+                        <i className="far fa-clock"></i> {article.date}
+                      </span>
+                      <span className="arsip-readtime-text">
+                        <i className="fas fa-book-reader"></i> {article.readTime}
+                      </span>
+                      {article.viewsEstimate && (
+                        <span className="arsip-views-text">
+                          <i className="fas fa-eye"></i> {article.viewsEstimate}
+                        </span>
+                      )}
+                    </div>
+
+                    <h3 className="arsip-card-title">
+                      {highlightMatch(article.title, archiveSearch)}
+                    </h3>
+
+                    <p className="arsip-card-excerpt">
+                      {highlightMatch(article.excerpt, archiveSearch)}
+                    </p>
+
+                    <div className="arsip-card-footer">
+                      <span className="arsip-card-read-link">
+                        Baca Panduan Lengkap <i className="fas fa-arrow-right"></i>
+                      </span>
+                      <span className="arsip-card-label">
+                        <i className="fas fa-history"></i> Panduan Terverifikasi
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Return to Latest Articles & Consultation Footer Bar */}
+          <div className="arsip-footer-bar fade-in">
+            <div className="arsip-footer-left">
+              <a
+                href="#artikel"
+                onClick={(e) => scrollToSection(e, 'artikel')}
+                className="arsip-back-to-latest-btn"
+              >
+                <i className="fas fa-arrow-up"></i>
+                <span>Kembali ke Artikel Terbaru (Oktober 2026)</span>
+              </a>
+              <span className="arsip-footer-hint">
+                <i className="fas fa-info-circle"></i> Seluruh artikel arsip tetap relevan dengan standar sanitasi &amp; SNI Indonesia.
+              </span>
+            </div>
+
+            <a
+              href="https://wa.me/6285715654183?text=Halo%20Mitra%20Bersih,%20saya%20membaca%20arsip%20artikel%20sanitasi%20dan%20ingin%20konsultasi%20kendala%20saluran%20di%20Bogor"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="arsip-consult-btn"
+            >
+              <i className="fab fa-whatsapp"></i>
+              <span>Konsultasi Kendala via WA</span>
+            </a>
           </div>
         </div>
       </section>
@@ -2780,6 +4248,11 @@ export default function App() {
                   </a>
                 </li>
                 <li>
+                  <a href="#arsip-artikel" onClick={(e) => scrollToSection(e, 'arsip-artikel')}>
+                    <i className="fas fa-chevron-right"></i> Arsip Artikel
+                  </a>
+                </li>
+                <li>
                   <a href="#ulasan" onClick={(e) => scrollToSection(e, 'ulasan')}>
                     <i className="fas fa-chevron-right"></i> Ulasan Pelanggan
                   </a>
@@ -2871,6 +4344,7 @@ export default function App() {
               <img
                 src={selectedArticle.image}
                 alt={selectedArticle.title}
+                referrerPolicy="no-referrer"
                 onError={(e) => {
                   const target = e.currentTarget;
                   if (target.src !== selectedArticle.fallbackImage) {
