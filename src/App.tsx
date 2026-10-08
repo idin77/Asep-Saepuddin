@@ -1829,6 +1829,69 @@ export default function App() {
   const countArmadaTersedia = useCountUp(18, 1700, statsVisible);
   const countPosSiaga = useCountUp(5, 1400, statsVisible);
 
+  // Armada Card Pos Siaga Selection States & Helper
+  const [armadaCard1Pos, setArmadaCard1Pos] = useState('kota-bogor');
+  const [armadaCard2Pos, setArmadaCard2Pos] = useState('cibinong');
+  const [armadaCard3Pos, setArmadaCard3Pos] = useState('cibinong');
+
+  const getArmadaCardWaUrl = (
+    cardType: 'total' | 'available' | 'hubs',
+    selectedHubId: string
+  ) => {
+    const hub = MAP_HUBS.find((h) => h.id === selectedHubId) || MAP_HUBS[0];
+    let cardTitle = '';
+    let cardTopic = '';
+
+    if (cardType === 'total') {
+      cardTitle = 'Total Armada Aktif (24 Unit Truk Tangki)';
+      cardTopic =
+        `Saya ingin menanyakan kesiapan dan jadwal operasional armada di *${hub.name}*.\n` +
+        `• *Cakupan Area:* ${hub.coverage}\n` +
+        `• *Unit di Pos:* ${hub.trucks}\n` +
+        `• *Pertanyaan:* Apakah ada unit truk yang bisa dijadwalkan ke alamat saya di area Bogor?`;
+    } else if (cardType === 'available') {
+      cardTitle = 'Armada Tersedia Saat Ini (18 Unit Standby Siap Jalan)';
+      cardTopic =
+        `Saya butuh penanganan darurat/segera dan ingin cek ketersediaan unit siaga di *${hub.name}*.\n` +
+        `• *Estimasi Kedatangan:* ${hub.estTime}\n` +
+        `• *Alamat Pos:* ${hub.address}\n` +
+        `• *Pertanyaan:* Apakah armada di pos ini bisa langsung meluncur ke lokasi saya sekarang tanpa antre lama?`;
+    } else {
+      cardTitle = 'Pos Siaga Terbanyak & Strategis (5 Pos Utama Bogor)';
+      cardTopic =
+        `Saya ingin konsultasi penanganan di simpul pos siaga *${hub.name}*.\n` +
+        `• *Spesifikasi Unit:* ${hub.trucks}\n` +
+        `• *Jangkauan Layanan:* ${hub.coverage}\n` +
+        `• *Pertanyaan:* Mohon info ketersediaan armada terdekat dan estimasi biaya pengerjaan di wilayah saya.`;
+    }
+
+    const message =
+      `Halo Admin CS Mitra Bersih 24 Jam,\n\n` +
+      `Saya memantau *Monitoring Real-Time Armada* di website (${cardTitle}) dan ingin menanyakan ketersediaan armada spesifik untuk pos siaga:\n\n` +
+      `📍 *Pos Siaga Terpilih:* ${hub.name}\n` +
+      `🏷️ *Label Pos:* ${hub.shortLabel} (${hub.badge})\n\n` +
+      `${cardTopic}\n\n` +
+      `Mohon konfirmasi ketersediaan unit armada dan respon tercepatnya. Terima kasih!`;
+
+    return `https://wa.me/6285715654183?text=${encodeURIComponent(message)}`;
+  };
+
+  const handleViewHubOnMapFromArmada = (e: React.MouseEvent, hubId: string) => {
+    e.preventDefault();
+    const hubIdx = MAP_HUBS.findIndex((h) => h.id === hubId);
+    if (hubIdx !== -1) {
+      triggerMapZoom(hubIdx);
+    }
+    const target = document.getElementById('lokasi');
+    if (target) {
+      const offsetTop = target.offsetTop - 80;
+      window.scrollTo({
+        top: offsetTop,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   const triggerMapZoom = (newHubIndex: number) => {
     setSelectedMapHub(newHubIndex);
     setMapZoomKey((prev) => prev + 1);
@@ -3606,21 +3669,32 @@ export default function App() {
 
           {/* Real-time FAQ Search Bar & Category Filters */}
           <div className={`faq-search-container fade-in ${isFaqTyping ? 'is-typing' : ''} ${faqSearch.trim() ? 'has-query' : ''}`}>
-            <div className={`faq-search-box ${isFaqTyping ? 'is-typing' : ''} ${faqSearch.trim() ? 'has-query' : ''}`}>
-              <i className="fas fa-search faq-search-icon"></i>
+            <div className={`faq-search-box ${isFaqTyping ? 'is-typing faq-search-pulse' : ''} ${faqSearch.trim() ? 'has-query' : ''}`}>
+              <i className={`fas fa-search faq-search-icon ${isFaqTyping ? 'icon-searching' : ''}`}></i>
               <input
                 type="text"
                 className="faq-search-input"
                 placeholder="Cari pertanyaan... (contoh: tarif, garansi, gang sempit, 24 jam, cara pesan)"
                 value={faqSearch}
                 onChange={(e) => handleFaqSearchChange(e.target.value)}
+                onInput={() => {
+                  setIsFaqTyping(true);
+                  if (faqTypingTimeoutRef.current) clearTimeout(faqTypingTimeoutRef.current);
+                  faqTypingTimeoutRef.current = setTimeout(() => setIsFaqTyping(false), 800);
+                }}
                 onKeyDown={() => {
                   setIsFaqTyping(true);
                   if (faqTypingTimeoutRef.current) clearTimeout(faqTypingTimeoutRef.current);
-                  faqTypingTimeoutRef.current = setTimeout(() => setIsFaqTyping(false), 750);
+                  faqTypingTimeoutRef.current = setTimeout(() => setIsFaqTyping(false), 800);
                 }}
                 aria-label="Cari pertanyaan FAQ"
               />
+              {isFaqTyping && (
+                <span className="faq-search-typing-indicator" title="Sedang menyaring pertanyaan...">
+                  <span className="typing-pulse-dot"></span>
+                  <span className="typing-pulse-text">Menyaring</span>
+                </span>
+              )}
               {faqSearch && (
                 <button
                   type="button"
@@ -4903,6 +4977,59 @@ export default function App() {
                 <p className="armada-stat-desc">
                   Unit mobil tangki vakum kapasitas 3.000L – 5.000L berstandar modern siap melayani kawasan perumahan dan perkantoran.
                 </p>
+
+                {/* Fitur Pilih Pos Siaga & Tanya Admin via WhatsApp */}
+                <div className="armada-card-action-box">
+                  <div className="armada-pos-select-group">
+                    <label htmlFor="armada-pos-select-1" className="armada-pos-select-label">
+                      <i className="fas fa-map-marker-alt"></i>
+                      <span>Pilih Pos Siaga:</span>
+                    </label>
+                    <div className="armada-pos-dropdown-wrap">
+                      <select
+                        id="armada-pos-select-1"
+                        value={armadaCard1Pos}
+                        onChange={(e) => setArmadaCard1Pos(e.target.value)}
+                        className="armada-pos-dropdown"
+                        aria-label="Pilih Pos Siaga untuk Cek Total Armada"
+                      >
+                        {MAP_HUBS.map((hub) => (
+                          <option key={hub.id} value={hub.id}>
+                            {hub.shortLabel} ({hub.estTime})
+                          </option>
+                        ))}
+                      </select>
+                      <i className="fas fa-chevron-down armada-pos-dropdown-icon"></i>
+                    </div>
+                  </div>
+
+                  <div className="armada-card-btn-row">
+                    <a
+                      href={getArmadaCardWaUrl('total', armadaCard1Pos)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="armada-stat-admin-btn"
+                      title={`Tanya Ketersediaan Armada ke Admin WhatsApp untuk ${MAP_HUBS.find((h) => h.id === armadaCard1Pos)?.name || ''}`}
+                      aria-label={`Tanya Admin WhatsApp ketersediaan armada pos ${MAP_HUBS.find((h) => h.id === armadaCard1Pos)?.shortLabel || ''}`}
+                    >
+                      <i className="fab fa-whatsapp"></i>
+                      <span>Tanya Admin</span>
+                      <span className="armada-admin-btn-hub">
+                        ({MAP_HUBS.find((h) => h.id === armadaCard1Pos)?.shortLabel || 'Pos'})
+                      </span>
+                    </a>
+                    <button
+                      type="button"
+                      onClick={(e) => handleViewHubOnMapFromArmada(e, armadaCard1Pos)}
+                      className="armada-pos-map-link-btn"
+                      title="Lihat koordinat pos ini di Google Maps"
+                      aria-label="Lihat pos ini di Google Maps"
+                    >
+                      <i className="fas fa-map-marked-alt"></i>
+                      <span>Peta</span>
+                    </button>
+                  </div>
+                </div>
               </div>
               <div className="armada-stat-footer">
                 <div className="armada-stat-metric">
@@ -4935,6 +5062,59 @@ export default function App() {
                 <p className="armada-stat-desc">
                   Unit siaga di pos terdekat yang siap langsung dipanggil tanpa antre lama dengan estimasi tiba 15 – 25 menit.
                 </p>
+
+                {/* Fitur Pilih Pos Siaga & Tanya Admin via WhatsApp */}
+                <div className="armada-card-action-box">
+                  <div className="armada-pos-select-group">
+                    <label htmlFor="armada-pos-select-2" className="armada-pos-select-label">
+                      <i className="fas fa-map-marker-alt"></i>
+                      <span>Pilih Pos Siaga:</span>
+                    </label>
+                    <div className="armada-pos-dropdown-wrap">
+                      <select
+                        id="armada-pos-select-2"
+                        value={armadaCard2Pos}
+                        onChange={(e) => setArmadaCard2Pos(e.target.value)}
+                        className="armada-pos-dropdown"
+                        aria-label="Pilih Pos Siaga untuk Cek Armada Tersedia"
+                      >
+                        {MAP_HUBS.map((hub) => (
+                          <option key={hub.id} value={hub.id}>
+                            {hub.shortLabel} ({hub.estTime})
+                          </option>
+                        ))}
+                      </select>
+                      <i className="fas fa-chevron-down armada-pos-dropdown-icon"></i>
+                    </div>
+                  </div>
+
+                  <div className="armada-card-btn-row">
+                    <a
+                      href={getArmadaCardWaUrl('available', armadaCard2Pos)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="armada-stat-admin-btn"
+                      title={`Tanya Ketersediaan Armada ke Admin WhatsApp untuk ${MAP_HUBS.find((h) => h.id === armadaCard2Pos)?.name || ''}`}
+                      aria-label={`Tanya Admin WhatsApp ketersediaan armada pos ${MAP_HUBS.find((h) => h.id === armadaCard2Pos)?.shortLabel || ''}`}
+                    >
+                      <i className="fab fa-whatsapp"></i>
+                      <span>Tanya Admin</span>
+                      <span className="armada-admin-btn-hub">
+                        ({MAP_HUBS.find((h) => h.id === armadaCard2Pos)?.shortLabel || 'Pos'})
+                      </span>
+                    </a>
+                    <button
+                      type="button"
+                      onClick={(e) => handleViewHubOnMapFromArmada(e, armadaCard2Pos)}
+                      className="armada-pos-map-link-btn"
+                      title="Lihat koordinat pos ini di Google Maps"
+                      aria-label="Lihat pos ini di Google Maps"
+                    >
+                      <i className="fas fa-map-marked-alt"></i>
+                      <span>Peta</span>
+                    </button>
+                  </div>
+                </div>
               </div>
               <div className="armada-stat-footer">
                 <div className="armada-stat-metric">
@@ -4967,6 +5147,59 @@ export default function App() {
                 <p className="armada-stat-desc">
                   Simpul armada terbesar di Cibinong &amp; Sentul (6 truk), didukung Pos Kota, Dramaga, Ciawi, dan Parung.
                 </p>
+
+                {/* Fitur Pilih Pos Siaga & Tanya Admin via WhatsApp */}
+                <div className="armada-card-action-box">
+                  <div className="armada-pos-select-group">
+                    <label htmlFor="armada-pos-select-3" className="armada-pos-select-label">
+                      <i className="fas fa-map-marker-alt"></i>
+                      <span>Pilih Pos Siaga:</span>
+                    </label>
+                    <div className="armada-pos-dropdown-wrap">
+                      <select
+                        id="armada-pos-select-3"
+                        value={armadaCard3Pos}
+                        onChange={(e) => setArmadaCard3Pos(e.target.value)}
+                        className="armada-pos-dropdown"
+                        aria-label="Pilih Pos Siaga untuk Cek Hub Terbanyak"
+                      >
+                        {MAP_HUBS.map((hub) => (
+                          <option key={hub.id} value={hub.id}>
+                            {hub.shortLabel} ({hub.estTime})
+                          </option>
+                        ))}
+                      </select>
+                      <i className="fas fa-chevron-down armada-pos-dropdown-icon"></i>
+                    </div>
+                  </div>
+
+                  <div className="armada-card-btn-row">
+                    <a
+                      href={getArmadaCardWaUrl('hubs', armadaCard3Pos)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="armada-stat-admin-btn"
+                      title={`Tanya Ketersediaan Armada ke Admin WhatsApp untuk ${MAP_HUBS.find((h) => h.id === armadaCard3Pos)?.name || ''}`}
+                      aria-label={`Tanya Admin WhatsApp ketersediaan armada pos ${MAP_HUBS.find((h) => h.id === armadaCard3Pos)?.shortLabel || ''}`}
+                    >
+                      <i className="fab fa-whatsapp"></i>
+                      <span>Tanya Admin</span>
+                      <span className="armada-admin-btn-hub">
+                        ({MAP_HUBS.find((h) => h.id === armadaCard3Pos)?.shortLabel || 'Pos'})
+                      </span>
+                    </a>
+                    <button
+                      type="button"
+                      onClick={(e) => handleViewHubOnMapFromArmada(e, armadaCard3Pos)}
+                      className="armada-pos-map-link-btn"
+                      title="Lihat koordinat pos ini di Google Maps"
+                      aria-label="Lihat pos ini di Google Maps"
+                    >
+                      <i className="fas fa-map-marked-alt"></i>
+                      <span>Peta</span>
+                    </button>
+                  </div>
+                </div>
               </div>
               <div className="armada-stat-footer">
                 <div className="armada-stat-metric">

@@ -2777,32 +2777,68 @@ section {
     box-shadow: 0 0 0 4px rgba(255, 214, 10, 0.35);
 }
 
-/* Subtle CSS animation highlighting the border when the user types */
-@keyframes faqSearchBorderHighlight {
+/* Subtle CSS animation that pulses the border when the user types to provide immediate feedback */
+@keyframes faqBorderPulse {
     0% {
         border-color: #ffd60a;
-        box-shadow: 0 0 0 3px rgba(255, 214, 10, 0.45), 0 2px 10px rgba(255, 214, 10, 0.2);
+        box-shadow: 0 0 0 0 rgba(255, 214, 10, 0.75), 0 2px 10px rgba(255, 214, 10, 0.2);
     }
     50% {
         border-color: #f59e0b;
-        box-shadow: 0 0 0 6px rgba(255, 214, 10, 0.7), 0 4px 18px rgba(245, 158, 11, 0.35);
+        box-shadow: 0 0 0 6px rgba(255, 214, 10, 0.45), 0 4px 20px rgba(245, 158, 11, 0.35);
     }
     100% {
         border-color: #ffd60a;
-        box-shadow: 0 0 0 3px rgba(255, 214, 10, 0.45), 0 2px 10px rgba(255, 214, 10, 0.2);
+        box-shadow: 0 0 0 0 rgba(255, 214, 10, 0), 0 2px 10px rgba(255, 214, 10, 0.2);
     }
 }
 
 .faq-search-box.is-typing,
+.faq-search-box.faq-search-pulse,
 .faq-search-container.is-typing .faq-search-box {
-    border-color: #ffd60a;
-    animation: faqSearchBorderHighlight 1.2s ease-in-out infinite;
+    border-color: #f59e0b;
+    animation: faqBorderPulse 0.85s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 .faq-search-icon {
     color: var(--gray);
     font-size: 16px;
     margin-right: 12px;
+    transition: all 0.25s ease;
+}
+
+.faq-search-icon.icon-searching {
+    color: #d97706;
+    transform: scale(1.1);
+}
+
+.faq-search-typing-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fef3c7;
+    border: 1px solid #fde68a;
+    color: #92400e;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
+    margin-right: 8px;
+    animation: fadeIn 0.2s ease;
+    white-space: nowrap;
+}
+
+.typing-pulse-dot {
+    width: 6px;
+    height: 6px;
+    background: #d97706;
+    border-radius: 50%;
+    animation: dotPulse 0.85s infinite ease-in-out;
+}
+
+@keyframes dotPulse {
+    0%, 100% { opacity: 0.4; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.3); }
 }
 
 .faq-search-input {
@@ -5414,7 +5450,169 @@ section {
     font-size: 13.5px;
     color: #64748B;
     line-height: 1.55;
-    margin-bottom: 20px;
+    margin-bottom: 14px;
+}
+
+/* Action Box: Pilih Pos Siaga & Tanya Admin */
+.armada-card-action-box {
+    margin-top: 10px;
+    margin-bottom: 16px;
+    padding: 14px 16px;
+    background: #F8FAFC;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: all 0.25s ease;
+}
+
+.armada-stat-card:hover .armada-card-action-box {
+    border-color: #CBD5E1;
+    background: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.armada-pos-select-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.armada-pos-select-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: #64748B;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.armada-pos-select-label i {
+    color: #E11D48;
+    font-size: 11px;
+}
+
+.armada-pos-dropdown-wrap {
+    position: relative;
+    width: 100%;
+}
+
+.armada-pos-dropdown {
+    width: 100%;
+    padding: 8px 30px 8px 12px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #0F172A;
+    background: #FFFFFF;
+    border: 1.5px solid #CBD5E1;
+    border-radius: 10px;
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    transition: all 0.2s ease;
+}
+
+.armada-pos-dropdown:focus {
+    border-color: #0284C7;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+.armada-pos-dropdown-icon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 10px;
+    color: #64748B;
+    pointer-events: none;
+}
+
+.armada-card-btn-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.armada-stat-admin-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    background: #25D366;
+    color: #064E3B;
+    font-size: 12.5px;
+    font-weight: 800;
+    padding: 9px 14px;
+    border-radius: 50px;
+    text-decoration: none;
+    border: 1px solid #86EFAC;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.armada-stat-admin-btn:hover {
+    background: #20BD5A;
+    color: #022C22;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(37, 211, 102, 0.45);
+}
+
+.armada-stat-admin-btn i.fab.fa-whatsapp {
+    font-size: 15px;
+    color: #064E3B;
+    flex-shrink: 0;
+}
+
+.armada-admin-btn-hub {
+    font-size: 11px;
+    font-weight: 700;
+    opacity: 0.85;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 110px;
+}
+
+.armada-pos-map-link-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    background: #FFFFFF;
+    color: #334155;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 8px 12px;
+    border-radius: 50px;
+    border: 1px solid #CBD5E1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.armada-pos-map-link-btn:hover {
+    background: #0F172A;
+    color: var(--yellow);
+    border-color: #0F172A;
+    transform: translateY(-1px);
+}
+
+.armada-pos-map-link-btn i {
+    font-size: 12px;
+    color: #0284C7;
+    transition: color 0.2s ease;
+}
+
+.armada-pos-map-link-btn:hover i {
+    color: var(--yellow);
 }
 
 .armada-stat-footer {
@@ -7914,6 +8112,10 @@ footer::before {
     .armada-stat-card:nth-child(3) { grid-column: span 1; }
     .armada-stat-card { padding: 24px 20px; border-radius: 20px; }
     .armada-stat-number { font-size: 42px; }
+    .armada-card-action-box { padding: 12px 14px; }
+    .armada-card-btn-row { flex-direction: column; align-items: stretch; gap: 8px; }
+    .armada-stat-admin-btn { width: 100%; justify-content: center; }
+    .armada-pos-map-link-btn { width: 100%; justify-content: center; }
     .armada-ticker-bar { flex-direction: column; align-items: stretch; text-align: center; }
     .armada-ticker-info { flex-direction: column; text-align: center; }
     .armada-ticker-action-btn { justify-content: center; }
