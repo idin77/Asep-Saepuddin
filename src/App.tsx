@@ -518,14 +518,173 @@ interface FAQItem {
 }
 
 const FAQ_CATEGORIES = [
-  'Semua',
-  'Pencegahan',
-  'Pemesanan',
+  'Topik Populer',
   'Tarif & Biaya',
-  'Garansi',
+  'Pemesanan',
   'Armada & Waktu',
+  'Garansi',
   'Tanpa Bongkar',
-  '24 Jam Nonstop'
+  '24 Jam Nonstop',
+  'Pencegahan'
+];
+
+export interface PricingPackage {
+  id: string;
+  name: string;
+  category: 'septic-tank' | 'drain-clearing' | 'combo';
+  categoryLabel: string;
+  tag: string;
+  badge?: string;
+  isPopular?: boolean;
+  icon: string;
+  startingPrice: number;
+  priceDisplay: string;
+  unit: string;
+  description: string;
+  targetProperty: string;
+  estTime: string;
+  warranty: string;
+  features: string[];
+  specs: {
+    capacity: string;
+    machine: string;
+    hose: string;
+    warranty: string;
+    disinfectant: string;
+    ipltLegal: string;
+  };
+}
+
+export const PRICING_PACKAGES: PricingPackage[] = [
+  {
+    id: 'drain-clearing',
+    name: 'Pelancaran Saluran Mampet',
+    category: 'drain-clearing',
+    categoryLabel: 'Pelancaran Saluran Pipa',
+    tag: 'SPESIALIS SALURAN',
+    badge: 'Tanpa Bongkar Lantai',
+    icon: 'fa-faucet-drip',
+    startingPrice: 300000,
+    priceDisplay: 'Rp 300.000',
+    unit: 'Mulai dari / titik pengerjaan',
+    description: 'Solusi cepat untuk pipa wastafel, floor drain kamar mandi, atau bak kontrol mampet tersumbat lemak & kotoran.',
+    targetProperty: 'Rumah, Ruko, Kontrakan, Resto',
+    estTime: '30 - 60 Menit',
+    warranty: '30 Hari Resmi',
+    features: [
+      'Mesin Spiral Roto-Rooter Elektrik fleksibel',
+      'Tanpa bongkar keramik & lantai tetap utuh',
+      'Mengikis tuntas kerak lemak, rambut & sabun',
+      'Jangkauan spiral baja hingga 30 meter',
+      'Garansi kelancaran 30 hari penuh',
+      'Gratis uji debit aliran air setelah pengerjaan'
+    ],
+    specs: {
+      capacity: 'Menyesuaikan titik pipa',
+      machine: 'Spiral Elektrik Roto-Rooter',
+      hose: 'Spiral Baja s/d 30 Meter',
+      warranty: '30 Hari Resmi',
+      disinfectant: 'Pembersihan Aliran',
+      ipltLegal: 'N/A (Limbah Cair Ringan)'
+    }
+  },
+  {
+    id: 'septic-standard',
+    name: 'Sedot Septic Tank Standar',
+    category: 'septic-tank',
+    categoryLabel: 'Sedot Septic Tank',
+    tag: 'RUMAH TINGGAL & PERUMAHAN',
+    badge: 'Paling Populer & Hemat',
+    isPopular: true,
+    icon: 'fa-truck-droplet',
+    startingPrice: 450000,
+    priceDisplay: 'Rp 450.000',
+    unit: 'Mulai dari / tangki standar (3 m³)',
+    description: 'Pengurasan menyeluruh septic tank rumah tinggal dan perumahan Bogor sampai ke dasar lumpur tinja.',
+    targetProperty: 'Rumah Pribadi, Perumahan, Kost',
+    estTime: '45 - 90 Menit',
+    warranty: '30 Hari Resmi',
+    features: [
+      'Pengurasan tuntas tinja & lumpur dasar septic tank',
+      'Truk vakum hidrolik bertekanan hisap tinggi (tanpa bau)',
+      'Gratis fasilitas selang standar s/d 50 meter (aman masuk gang)',
+      'Semprot cairan disinfektan & anti bau gratis',
+      'Garansi servis tuntas 30 hari resmi',
+      'Pembuangan legal ramah lingkungan ke IPLT Pemda Bogor'
+    ],
+    specs: {
+      capacity: 'Tangki Standar 3.000 Liter (3 m³)',
+      machine: 'Vakum Hidrolik High-Power',
+      hose: 'Selang Standar 50 Meter Gratis',
+      warranty: '30 Hari Resmi',
+      disinfectant: 'Ya (Disinfektan & Anti Bau)',
+      ipltLegal: 'Ya (Resmi IPLT Pemda Bogor)'
+    }
+  },
+  {
+    id: 'septic-commercial',
+    name: 'Sedot Septic Tank Komersial & Jumbo',
+    category: 'septic-tank',
+    categoryLabel: 'Sedot Septic Tank',
+    tag: 'BISNIS & FASILITAS UMUM',
+    badge: 'Kapasitas 4.000 – 6.000 Liter',
+    icon: 'fa-building',
+    startingPrice: 650000,
+    priceDisplay: 'Rp 650.000',
+    unit: 'Mulai dari / rit truk jumbo (5 m³)',
+    description: 'Pengurasan septic tank volume besar dan grease trap untuk ruko, restoran, kafe, kantor, sekolah, dan tempat ibadah.',
+    targetProperty: 'Restoran, Kafe, Ruko, Kantor, Hotel',
+    estTime: '1 - 2 Jam',
+    warranty: '30 Hari Resmi',
+    features: [
+      'Kapasitas tangki armada jumbo 4.000 – 6.000 liter',
+      'Pengurasan lumpur pekat & perawatan grease trap lemak',
+      'Jadwal fleksibel (pengerjaan malam / subuh tersedia)',
+      'Faktur / Kwitansi resmi & Berita Acara Pekerjaan',
+      'Garansi servis pengerjaan 30 hari resmi',
+      'Penugasan kru teknisi ahli bersertifikat sanitasi'
+    ],
+    specs: {
+      capacity: 'Tangki Jumbo 4.000 - 6.000 Liter',
+      machine: 'Vakum Heavy-Duty High-Capacity',
+      hose: 'Selang Standar 50 Meter Gratis',
+      warranty: '30 Hari Resmi',
+      disinfectant: 'Ya (Pembersihan Ekstra)',
+      ipltLegal: 'Ya (Resmi IPLT Pemda Bogor)'
+    }
+  },
+  {
+    id: 'combo-package',
+    name: 'Paket Kombo Tuntas Hemat',
+    category: 'combo',
+    categoryLabel: 'Paket Kombo All-in-One',
+    tag: 'SOLUSI MENYELURUH',
+    badge: 'Hemat Rp 100.000',
+    icon: 'fa-shield-virus',
+    startingPrice: 700000,
+    priceDisplay: 'Rp 700.000',
+    unit: 'Paket lengkap kombo tuntas',
+    description: 'Septic tank penuh sekaligus kloset atau wastafel mampet? Ditangani bersamaan dalam satu kedatangan teknisi.',
+    targetProperty: 'Semua Jenis Properti (Rumah, Ruko, Usaha)',
+    estTime: '1 - 2 Jam',
+    warranty: '45 Hari Resmi',
+    features: [
+      'Sedot habis 1 tangki septic tank standar 3.000 liter',
+      'Pelancaran 1 titik saluran pipa mampet dengan mesin spiral',
+      'Pemberian probiotik pengurai mikroba ramah lingkungan',
+      'Disinfeksi menyeluruh & sterilisasi aroma toilet',
+      'Garansi perlindungan ekstra 45 hari',
+      'Prioritas panggilan darurat siaga 24 jam'
+    ],
+    specs: {
+      capacity: '3.000 Liter + 1 Titik Saluran Pipa',
+      machine: 'Vakum Hidrolik + Mesin Spiral Elektrik',
+      hose: 'Selang 50m + Spiral 30m',
+      warranty: '45 Hari Resmi (Ekstra)',
+      disinfectant: 'Ya (Disinfektan & Bakteri Pengurai)',
+      ipltLegal: 'Ya (Resmi IPLT Pemda Bogor)'
+    }
+  }
 ];
 
 export interface ArticleCategoryConfig {
@@ -547,6 +706,19 @@ export const ARTICLE_CATEGORIES = ARTICLE_CATEGORY_CONFIGS.map((c) => c.name);
 const FAQ_DATA: FAQItem[] = [
   {
     id: 1,
+    question: 'Apakah ada biaya tambahan atau biaya tersembunyi (biaya siluman)?',
+    category: 'Tarif & Biaya',
+    keywords: ['biaya tambahan', 'biaya tersembunyi', 'siluman', 'tarif', 'ongkos', 'transparansi', 'harga', 'kejujuran'],
+    answerText: 'Sama sekali tidak ada biaya siluman! Prinsip kami adalah keterbukaan. Tarif disepakati bersama di awal sebelum pengerjaan dimulai. Jika ada kondisi khusus di lapangan (misalnya penambahan selang ekstra di atas 50 meter atau pembuatan lubang kontrol baru karena septic tank tertutup cor semen mati), teknisi akan menjelaskan dan meminta persetujuan Anda terlebih dahulu.',
+    waTopicText: 'Halo CS Mitra Bersih, saya membaca FAQ tentang transparansi harga tanpa biaya siluman. Boleh saya minta estimasi tarif untuk kendala septic tank / kloset saya di Bogor?',
+    answer: (
+      <p>
+        <strong>Sama sekali tidak ada biaya siluman!</strong> Prinsip kami adalah keterbukaan. Tarif disepakati bersama di awal sebelum pengerjaan dimulai. Jika ada kondisi khusus di lapangan (misalnya penambahan selang ekstra di atas 50 meter atau pembuatan lubang kontrol baru karena septic tank tertutup cor semen mati), teknisi akan menjelaskan dan meminta persetujuan Anda terlebih dahulu.
+      </p>
+    )
+  },
+  {
+    id: 2,
     question: 'Bagaimana cara pemesanan jasa Sedot WC Mitra Bersih di Bogor?',
     category: 'Pemesanan',
     keywords: ['cara pesan', 'order', 'whatsapp', 'telepon', 'kontak', 'prosedur', 'dp', 'tanpa dp', 'pembayaran', 'alur'],
@@ -565,7 +737,7 @@ const FAQ_DATA: FAQItem[] = [
     )
   },
   {
-    id: 2,
+    id: 3,
     question: 'Berapa lama estimasi armada tiba di lokasi saya di Kota/Kabupaten Bogor?',
     category: 'Armada & Waktu',
     keywords: ['estimasi waktu', 'berapa lama', 'cepat', 'kedatangan', 'pos siaga', 'cibinong', 'tanah sareal', 'bogor barat', 'ciawi', 'sukaraja', 'bojonggede', 'parung'],
@@ -578,7 +750,7 @@ const FAQ_DATA: FAQItem[] = [
     )
   },
   {
-    id: 3,
+    id: 4,
     question: 'Apakah bisa melayani rumah di gang sempit atau perumahan padat?',
     category: 'Armada & Waktu',
     keywords: ['gang sempit', 'selang panjang', 'perumahan padat', 'truk kompak', '50 meter', '100 meter', 'parkir jauh', 'jangkauan'],
@@ -588,26 +760,6 @@ const FAQ_DATA: FAQItem[] = [
       <p>
         <strong>Tentu saja bisa!</strong> Kami memiliki armada truk ukuran kompak yang lincah bermanuver di jalan perumahan, serta dilengkapi <strong>selang sambung berdaya hisap tinggi hingga 50 – 100 meter</strong>. Meskipun truk tidak bisa parkir tepat di depan pintu pagar rumah Anda, penyedotan tetap berjalan maksimal, bersih, dan tuntas.
       </p>
-    )
-  },
-  {
-    id: 4,
-    question: 'Bagaimana prosedur dan syarat klaim garansi jika saluran mampet lagi?',
-    category: 'Garansi',
-    keywords: ['garansi', 'prosedur garansi', 'syarat klaim', 'mampet lagi', 'komplain', 'gratis', 'nota resmi', 'uji kelancaran'],
-    answerText: 'Setiap pengerjaan kami dilengkapi dengan garansi pengerjaan nyata: uji kelancaran bersama Anda sampai benar-benar tuntas, nota pengerjaan resmi dari teknisi Mitra Bersih, dan jika terjadi kendala mampet kembali pada titik yang sama teknisi datang melakukan pengerjaan ulang secara GRATIS.',
-    waTopicText: 'Halo CS Mitra Bersih, saya membaca FAQ tentang garansi pengerjaan dan nota resmi. Saya ingin tahu lebih lanjut seputar syarat garansi layanan sedot WC di Bogor.',
-    answer: (
-      <>
-        <p>
-          Setiap pengerjaan kami dilengkapi dengan <strong>garansi pengerjaan nyata</strong>:
-        </p>
-        <ul style={{ paddingLeft: '20px', marginTop: '6px' }}>
-          <li>Setelah pengerjaan, teknisi akan melakukan uji kelancaran saluran bersama Anda sampai benar-benar tuntas.</li>
-          <li>Anda menerima nota pengerjaan resmi dari teknisi Mitra Bersih.</li>
-          <li>Jika dalam masa garansi terjadi kendala mampet kembali pada titik yang sama, Anda cukup hubungi nomor WA kami, dan teknisi akan datang melakukan <strong>pengerjaan ulang secara GRATIS</strong>.</li>
-        </ul>
-      </>
     )
   },
   {
@@ -625,19 +777,6 @@ const FAQ_DATA: FAQItem[] = [
   },
   {
     id: 6,
-    question: 'Apakah ada biaya tambahan atau biaya tersembunyi (biaya siluman)?',
-    category: 'Tarif & Biaya',
-    keywords: ['biaya tambahan', 'biaya tersembunyi', 'siluman', 'tarif', 'ongkos', 'transparansi', 'harga', 'kejujuran'],
-    answerText: 'Sama sekali tidak ada biaya siluman! Prinsip kami adalah keterbukaan. Tarif disepakati bersama di awal sebelum pengerjaan dimulai. Jika ada kondisi khusus di lapangan (misalnya penambahan selang ekstra di atas 50 meter atau pembuatan lubang kontrol baru karena septic tank tertutup cor semen mati), teknisi akan menjelaskan dan meminta persetujuan Anda terlebih dahulu.',
-    waTopicText: 'Halo CS Mitra Bersih, saya membaca FAQ tentang transparansi harga tanpa biaya siluman. Boleh saya minta estimasi tarif untuk kendala septic tank / kloset saya di Bogor?',
-    answer: (
-      <p>
-        <strong>Sama sekali tidak ada biaya siluman!</strong> Prinsip kami adalah keterbukaan. Tarif disepakati bersama di awal sebelum pengerjaan dimulai. Jika ada kondisi khusus di lapangan (misalnya penambahan selang ekstra di atas 50 meter atau pembuatan lubang kontrol baru karena septic tank tertutup cor semen mati), teknisi akan menjelaskan dan meminta persetujuan Anda terlebih dahulu.
-      </p>
-    )
-  },
-  {
-    id: 7,
     question: 'Apakah layanan benar-benar siaga 24 jam termasuk tengah malam dan hari libur?',
     category: '24 Jam Nonstop',
     keywords: ['24 jam', 'tengah malam', 'hari libur', 'minggu', 'tanggal merah', 'darurat', 'nonstop', 'piket'],
@@ -647,6 +786,26 @@ const FAQ_DATA: FAQItem[] = [
       <p>
         <strong>Ya, kami siap siaga 24 Jam Nonstop setiap hari</strong>, termasuk hari Minggu, tengah malam, dan hari libur nasional. Masalah saluran meluap sering kali terjadi tiba-tiba di waktu tak terduga, sehingga tim piket darurat kami selalu siap kapan pun Anda butuhkan.
       </p>
+    )
+  },
+  {
+    id: 7,
+    question: 'Bagaimana prosedur dan syarat klaim garansi jika saluran mampet lagi?',
+    category: 'Garansi',
+    keywords: ['garansi', 'prosedur garansi', 'syarat klaim', 'mampet lagi', 'komplain', 'gratis', 'nota resmi', 'uji kelancaran'],
+    answerText: 'Setiap pengerjaan kami dilengkapi dengan garansi pengerjaan nyata: uji kelancaran bersama Anda sampai benar-benar tuntas, nota pengerjaan resmi dari teknisi Mitra Bersih, dan jika terjadi kendala mampet kembali pada titik yang sama teknisi datang melakukan pengerjaan ulang secara GRATIS.',
+    waTopicText: 'Halo CS Mitra Bersih, saya membaca FAQ tentang garansi pengerjaan dan nota resmi. Saya ingin tahu lebih lanjut seputar syarat garansi layanan sedot WC di Bogor.',
+    answer: (
+      <>
+        <p>
+          Setiap pengerjaan kami dilengkapi dengan <strong>garansi pengerjaan nyata</strong>:
+        </p>
+        <ul style={{ paddingLeft: '20px', marginTop: '6px' }}>
+          <li>Setelah pengerjaan, teknisi akan melakukan uji kelancaran saluran bersama Anda sampai benar-benar tuntas.</li>
+          <li>Anda menerima nota pengerjaan resmi dari teknisi Mitra Bersih.</li>
+          <li>Jika dalam masa garansi terjadi kendala mampet kembali pada titik yang sama, Anda cukup hubungi nomor WA kami, dan teknisi akan datang melakukan <strong>pengerjaan ulang secara GRATIS</strong>.</li>
+        </ul>
+      </>
     )
   },
   {
@@ -2001,26 +2160,45 @@ export default function App() {
 
   // FAQ Search & Filter State
   const [faqSearch, setFaqSearch] = useState('');
-  const [faqCategory, setFaqCategory] = useState('Semua');
+  const [faqCategory, setFaqCategory] = useState('Topik Populer');
   const [isFaqTyping, setIsFaqTyping] = useState(false);
+  const [isFilterRunning, setIsFilterRunning] = useState(false);
   const faqTypingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const filterTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleFaqSearchChange = (val: string) => {
-    setFaqSearch(val);
+  const isSearchActive = isFaqTyping || isFilterRunning;
+
+  const markSearchFilterRunning = () => {
     setIsFaqTyping(true);
+    setIsFilterRunning(true);
     if (faqTypingTimeoutRef.current) {
       clearTimeout(faqTypingTimeoutRef.current);
+    }
+    if (filterTimeoutRef.current) {
+      clearTimeout(filterTimeoutRef.current);
     }
     faqTypingTimeoutRef.current = setTimeout(() => {
       setIsFaqTyping(false);
     }, 750);
+    filterTimeoutRef.current = setTimeout(() => {
+      setIsFilterRunning(false);
+    }, 800);
+  };
+
+  const handleFaqSearchChange = (val: string) => {
+    setFaqSearch(val);
+    markSearchFilterRunning();
   };
 
   const handleFaqSearchClear = () => {
     setFaqSearch('');
     setIsFaqTyping(false);
+    setIsFilterRunning(false);
     if (faqTypingTimeoutRef.current) {
       clearTimeout(faqTypingTimeoutRef.current);
+    }
+    if (filterTimeoutRef.current) {
+      clearTimeout(filterTimeoutRef.current);
     }
   };
 
@@ -2029,6 +2207,9 @@ export default function App() {
       if (faqTypingTimeoutRef.current) {
         clearTimeout(faqTypingTimeoutRef.current);
       }
+      if (filterTimeoutRef.current) {
+        clearTimeout(filterTimeoutRef.current);
+      }
     };
   }, []);
 
@@ -2036,7 +2217,7 @@ export default function App() {
   const filteredFaqs = useMemo(() => {
     const q = faqSearch.trim().toLowerCase();
     return FAQ_DATA.filter((item) => {
-      const matchCat = faqCategory === 'Semua' || item.category === faqCategory;
+      const matchCat = faqCategory === 'Topik Populer' || item.category === faqCategory;
       if (!matchCat) return false;
       if (!q) return true;
 
@@ -2203,6 +2384,118 @@ export default function App() {
     setShareCopiedLink(false);
   };
 
+  // Floating Action Button & FAQ Modal Overlay State
+  const [isFaqModalOpen, setIsFaqModalOpen] = useState(false);
+  const [isFaqModalClosing, setIsFaqModalClosing] = useState(false);
+  const faqModalCloseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [modalFaqSearch, setModalFaqSearch] = useState('');
+  const [modalFaqCategory, setModalFaqCategory] = useState('Topik Populer');
+  const [openModalFaq, setOpenModalFaq] = useState<number | null>(1);
+  const [isModalFaqTyping, setIsModalFaqTyping] = useState(false);
+  const modalFaqTypingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleModalFaqSearchChange = (val: string) => {
+    setModalFaqSearch(val);
+    setIsModalFaqTyping(true);
+    if (modalFaqTypingTimeoutRef.current) {
+      clearTimeout(modalFaqTypingTimeoutRef.current);
+    }
+    modalFaqTypingTimeoutRef.current = setTimeout(() => {
+      setIsModalFaqTyping(false);
+    }, 750);
+  };
+
+  const handleOpenFaqModal = () => {
+    if (faqModalCloseTimeoutRef.current) {
+      clearTimeout(faqModalCloseTimeoutRef.current);
+    }
+    setIsFaqModalClosing(false);
+    setIsFaqModalOpen(true);
+    if (faqSearch) {
+      setModalFaqSearch(faqSearch);
+      setIsModalFaqTyping(true);
+      if (modalFaqTypingTimeoutRef.current) clearTimeout(modalFaqTypingTimeoutRef.current);
+      modalFaqTypingTimeoutRef.current = setTimeout(() => setIsModalFaqTyping(false), 750);
+    }
+    if (faqCategory) setModalFaqCategory(faqCategory);
+  };
+
+  const handleCloseFaqModal = () => {
+    if (isFaqModalClosing || !isFaqModalOpen) return;
+    setIsFaqModalClosing(true);
+    if (faqModalCloseTimeoutRef.current) {
+      clearTimeout(faqModalCloseTimeoutRef.current);
+    }
+    faqModalCloseTimeoutRef.current = setTimeout(() => {
+      setIsFaqModalOpen(false);
+      setIsFaqModalClosing(false);
+    }, 280);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (faqModalCloseTimeoutRef.current) {
+        clearTimeout(faqModalCloseTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Lock body scroll and handle Escape key for FAQ Modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isFaqModalOpen && !isFaqModalClosing) {
+        handleCloseFaqModal();
+      }
+    };
+    if (isFaqModalOpen) {
+      document.body.style.overflow = 'hidden';
+      window.addEventListener('keydown', handleKeyDown);
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isFaqModalOpen, isFaqModalClosing]);
+
+  // Real-time filtered FAQ list inside the modal
+  const modalFilteredFaqs = useMemo(() => {
+    const q = modalFaqSearch.trim().toLowerCase();
+    return FAQ_DATA.filter((item) => {
+      const matchCat = modalFaqCategory === 'Topik Populer' || item.category === modalFaqCategory;
+      if (!matchCat) return false;
+      if (!q) return true;
+
+      const inQuestion = item.question.toLowerCase().includes(q);
+      const inAnswer = item.answerText.toLowerCase().includes(q);
+      const inKeywords = item.keywords.some((k) => k.toLowerCase().includes(q));
+      const inCategory = item.category.toLowerCase().includes(q);
+      return inQuestion || inAnswer || inKeywords || inCategory;
+    });
+  }, [modalFaqSearch, modalFaqCategory]);
+
+  // Automatically keep first match expanded when searching inside modal
+  useEffect(() => {
+    if (modalFaqSearch.trim()) {
+      if (modalFilteredFaqs.length > 0 && (!openModalFaq || !modalFilteredFaqs.some((f) => f.id === openModalFaq))) {
+        setOpenModalFaq(modalFilteredFaqs[0].id);
+      }
+    }
+  }, [modalFaqSearch, modalFilteredFaqs, openModalFaq]);
+
+  const handleViewOnPageFaq = () => {
+    handleCloseFaqModal();
+    if (modalFaqSearch) setFaqSearch(modalFaqSearch);
+    if (modalFaqCategory) setFaqCategory(modalFaqCategory);
+    setTimeout(() => {
+      const el = document.getElementById('faq');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 300);
+  };
+
   // Tips & Artikel Search & Filter State
   const [articleSearch, setArticleSearch] = useState('');
   const [articleCategory, setArticleCategory] = useState('Semua');
@@ -2339,6 +2632,57 @@ export default function App() {
     return `https://wa.me/6285715654183?text=${encodeURIComponent(text)}`;
   };
 
+  // Pricing Table Component States & Filter Logic
+  const [pricingCategoryFilter, setPricingCategoryFilter] = useState<'all' | 'septic-tank' | 'drain-clearing' | 'combo'>('all');
+  const [pricingSearchQuery, setPricingSearchQuery] = useState('');
+  const [pricingArea, setPricingArea] = useState<string>('Semua Wilayah Bogor');
+  const [showPricingComparison, setShowPricingComparison] = useState(false);
+
+  const filteredPricingPackages = useMemo(() => {
+    return PRICING_PACKAGES.filter((p) => {
+      // Category filter
+      const matchesCategory = pricingCategoryFilter === 'all' || p.category === pricingCategoryFilter;
+      if (!matchesCategory) return false;
+
+      // Search query filter
+      if (!pricingSearchQuery.trim()) return true;
+      const q = pricingSearchQuery.toLowerCase().trim();
+      const matchesName = p.name.toLowerCase().includes(q);
+      const matchesDesc = p.description.toLowerCase().includes(q);
+      const matchesTag = p.tag.toLowerCase().includes(q);
+      const matchesBadge = p.badge ? p.badge.toLowerCase().includes(q) : false;
+      const matchesCatLabel = p.categoryLabel.toLowerCase().includes(q);
+      const matchesTarget = p.targetProperty.toLowerCase().includes(q);
+      const matchesFeatures = p.features.some((f) => f.toLowerCase().includes(q));
+      const matchesPrice = p.priceDisplay.toLowerCase().includes(q) || p.unit.toLowerCase().includes(q);
+
+      return (
+        matchesName ||
+        matchesDesc ||
+        matchesTag ||
+        matchesBadge ||
+        matchesCatLabel ||
+        matchesTarget ||
+        matchesFeatures ||
+        matchesPrice
+      );
+    });
+  }, [pricingCategoryFilter, pricingSearchQuery]);
+
+  const getPricingWaUrl = (pkg: PricingPackage, locationName: string) => {
+    const locText = locationName === 'Semua Wilayah Bogor' ? 'Bogor (Kota / Kabupaten)' : `Kecamatan ${locationName}, Bogor`;
+    const text =
+      `Halo Admin CS Mitra Bersih 24 Jam,\n\n` +
+      `Saya ingin berkonsultasi / memesan paket layanan resmi:\n` +
+      `📦 *Nama Paket:* ${pkg.name}\n` +
+      `💰 *Tarif Mulai:* ${pkg.priceDisplay} (${pkg.unit})\n` +
+      `📍 *Lokasi Pengerjaan:* ${locText}\n` +
+      `⏱️ *Estimasi Waktu:* ${pkg.estTime}\n` +
+      `🛡️ *Garansi Servis:* ${pkg.warranty}\n\n` +
+      `Mohon info ketersediaan armada terdekat dan konfirmasi jadwal kedatangan teknisi ke lokasi saya. Terima kasih!`;
+    return `https://wa.me/6285715654183?text=${encodeURIComponent(text)}`;
+  };
+
   // Ulasan Pelanggan & Carousel State
   const [reviews, setReviews] = useState<ReviewItem[]>(() => {
     try {
@@ -2442,7 +2786,7 @@ export default function App() {
         setIsScrolled(false);
       }
 
-      const sections = ['home', 'layanan', 'tentang', 'faq', 'galeri', 'artikel', 'ulasan', 'lokasi', 'kontak'];
+      const sections = ['home', 'layanan', 'tarif', 'tentang', 'faq', 'galeri', 'artikel', 'ulasan', 'lokasi', 'kontak'];
       const scrollPos = window.scrollY + 120;
 
       for (const sectionId of sections) {
@@ -2690,6 +3034,15 @@ export default function App() {
                 className={activeSection === 'layanan' ? 'active' : ''}
               >
                 Layanan
+              </a>
+            </li>
+            <li>
+              <a
+                href="#tarif"
+                onClick={(e) => scrollToSection(e, 'tarif')}
+                className={activeSection === 'tarif' ? 'active' : ''}
+              >
+                Paket Tarif
               </a>
             </li>
             <li>
@@ -3337,6 +3690,496 @@ export default function App() {
         </div>
       </section>
 
+      {/* SECTION TARIF & PAKET HARGA (RESPONSIVE PRICING TABLE) */}
+      <section className="pricing-section" id="tarif">
+        <span id="biaya" style={{ position: 'relative', top: '-100px', display: 'block', visibility: 'hidden' }}></span>
+        <div className="container">
+          <div className="section-header fade-in">
+            <span className="section-badge">
+              <i className="fas fa-tags" style={{ marginRight: '6px' }}></i>
+              DAFTAR TARIF TRANSPARAN
+            </span>
+            <h2 className="section-title">
+              Paket Layanan &amp; Estimasi Biaya Resmi Bogor
+            </h2>
+            <p className="section-subtitle">
+              Pilihan paket sedot septic tank standar dan pelancaran saluran pipa mampet di Kota &amp; Kabupaten Bogor. Tarif jujur tanpa biaya tersembunyi dengan garansi tuntas.
+            </p>
+          </div>
+
+          {/* Kolom Pencarian Cepat Paket Layanan (Search Input Top of Pricing Table) */}
+          <div className="pricing-search-container fade-in">
+            <div className="pricing-search-box-row">
+              <div className="pricing-search-box">
+                <i className="fas fa-search pricing-search-icon"></i>
+                <input
+                  type="text"
+                  id="pricing-search-input"
+                  className="pricing-search-input"
+                  placeholder="Cari paket layanan (misal: sedot septic tank, saluran pipa mampet, wastafel, ruko komersial)..."
+                  value={pricingSearchQuery}
+                  onChange={(e) => setPricingSearchQuery(e.target.value)}
+                  aria-label="Cari paket layanan dan estimasi biaya sedot WC Bogor"
+                />
+                {pricingSearchQuery && (
+                  <button
+                    type="button"
+                    className="pricing-search-clear-btn"
+                    onClick={() => setPricingSearchQuery('')}
+                    aria-label="Hapus kata kunci pencarian paket"
+                    title="Hapus pencarian"
+                  >
+                    <i className="fas fa-times"></i>
+                  </button>
+                )}
+              </div>
+
+              {pricingSearchQuery.trim() && (
+                <div className="pricing-search-result-pill">
+                  <i className="fas fa-check-circle"></i>
+                  <span>
+                    Ditemukan <strong>{filteredPricingPackages.length}</strong> paket
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Quick Keyword Chips */}
+            <div className="pricing-search-quick-tags">
+              <span className="pricing-quick-label">
+                <i className="fas fa-bolt"></i> Kata Kunci Cepat:
+              </span>
+              <div className="pricing-quick-chips">
+                {[
+                  { label: 'Septic Tank Standar', query: 'septic tank' },
+                  { label: 'Saluran Mampet', query: 'saluran mampet' },
+                  { label: 'Rumah Tinggal', query: 'rumah' },
+                  { label: 'Komersial / Ruko', query: 'komersial' },
+                  { label: 'Paket Kombo', query: 'kombo' },
+                  { label: 'Tanpa Bongkar', query: 'tanpa bongkar' }
+                ].map((chip) => {
+                  const isChipActive = pricingSearchQuery.toLowerCase() === chip.query.toLowerCase();
+                  return (
+                    <button
+                      key={chip.query}
+                      type="button"
+                      className={`pricing-quick-chip ${isChipActive ? 'active' : ''}`}
+                      onClick={() => {
+                        if (isChipActive) {
+                          setPricingSearchQuery('');
+                        } else {
+                          setPricingSearchQuery(chip.query);
+                        }
+                      }}
+                    >
+                      {chip.label}
+                    </button>
+                  );
+                })}
+                {(pricingSearchQuery || pricingCategoryFilter !== 'all') && (
+                  <button
+                    type="button"
+                    className="pricing-quick-chip reset"
+                    onClick={() => {
+                      setPricingSearchQuery('');
+                      setPricingCategoryFilter('all');
+                    }}
+                    title="Reset pencarian dan kategori paket"
+                  >
+                    <i className="fas fa-rotate-left"></i> Reset Filter
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Pricing Controls: Category Filters & Bogor Location Selector */}
+          <div className="pricing-controls-card fade-in">
+            <div className="pricing-filter-group">
+              <span className="pricing-filter-label">
+                <i className="fas fa-filter"></i> Filter Layanan:
+              </span>
+              <div className="pricing-filter-pills" role="tablist" aria-label="Filter Paket Layanan">
+                <button
+                  type="button"
+                  className={`pricing-filter-pill ${pricingCategoryFilter === 'all' ? 'active' : ''}`}
+                  onClick={() => setPricingCategoryFilter('all')}
+                  role="tab"
+                  aria-selected={pricingCategoryFilter === 'all'}
+                >
+                  Semua Paket ({PRICING_PACKAGES.length})
+                </button>
+                <button
+                  type="button"
+                  className={`pricing-filter-pill ${pricingCategoryFilter === 'septic-tank' ? 'active' : ''}`}
+                  onClick={() => setPricingCategoryFilter('septic-tank')}
+                  role="tab"
+                  aria-selected={pricingCategoryFilter === 'septic-tank'}
+                >
+                  <i className="fas fa-truck-droplet"></i> Sedot Septic Tank (2)
+                </button>
+                <button
+                  type="button"
+                  className={`pricing-filter-pill ${pricingCategoryFilter === 'drain-clearing' ? 'active' : ''}`}
+                  onClick={() => setPricingCategoryFilter('drain-clearing')}
+                  role="tab"
+                  aria-selected={pricingCategoryFilter === 'drain-clearing'}
+                >
+                  <i className="fas fa-sink"></i> Pelancaran Saluran (1)
+                </button>
+                <button
+                  type="button"
+                  className={`pricing-filter-pill ${pricingCategoryFilter === 'combo' ? 'active' : ''}`}
+                  onClick={() => setPricingCategoryFilter('combo')}
+                  role="tab"
+                  aria-selected={pricingCategoryFilter === 'combo'}
+                >
+                  <i className="fas fa-shield-virus"></i> Paket Kombo (1)
+                </button>
+              </div>
+            </div>
+
+            <div className="pricing-location-picker">
+              <label htmlFor="pricing-area-select" className="pricing-location-label">
+                <i className="fas fa-map-marker-alt"></i> Lokasi Pengerjaan:
+              </label>
+              <div className="pricing-select-wrapper">
+                <select
+                  id="pricing-area-select"
+                  className="pricing-select-input"
+                  value={pricingArea}
+                  onChange={(e) => setPricingArea(e.target.value)}
+                  aria-label="Pilih Kecamatan atau Wilayah Bogor untuk Paket Tarif"
+                >
+                  <option value="Semua Wilayah Bogor">📍 Seluruh Wilayah Kota &amp; Kab. Bogor</option>
+                  {BOGOR_AREAS.map((area) => (
+                    <option key={area} value={area}>
+                      Kecamatan {area}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Pricing Cards Grid or Empty State */}
+          {filteredPricingPackages.length > 0 ? (
+            <div className="pricing-cards-grid fade-in">
+              {filteredPricingPackages.map((pkg) => {
+                const waUrl = getPricingWaUrl(pkg, pricingArea);
+                return (
+                  <div
+                    key={pkg.id}
+                    className={`pricing-card ${pkg.isPopular ? 'popular' : ''}`}
+                  >
+                    {pkg.badge && (
+                      <div className="pricing-card-badge">
+                        <i className={`fas ${pkg.isPopular ? 'fa-fire' : 'fa-award'}`}></i>
+                        <span>{pkg.badge}</span>
+                      </div>
+                    )}
+
+                    <div className="pricing-card-header">
+                      <span className="pricing-card-tag">{pkg.tag}</span>
+                      <div className="pricing-card-title-row">
+                        <div className="pricing-card-icon">
+                          <i className={`fas ${pkg.icon}`}></i>
+                        </div>
+                        <h3 className="pricing-card-name">{pkg.name}</h3>
+                      </div>
+                      <p className="pricing-card-desc">{pkg.description}</p>
+                    </div>
+
+                    <div className="pricing-price-box">
+                      <span className="pricing-start-label">Mulai Dari</span>
+                      <div className="pricing-price-row">
+                        <span className="pricing-currency">Rp</span>
+                        <span className="pricing-amount">
+                          {pkg.startingPrice.toLocaleString('id-ID')}
+                        </span>
+                      </div>
+                      <span className="pricing-unit-text">{pkg.unit}</span>
+                    </div>
+
+                    <div className="pricing-meta-pills">
+                      <div className="pricing-meta-pill" title="Target properti yang cocok">
+                        <i className="fas fa-home"></i>
+                        <span>{pkg.targetProperty}</span>
+                      </div>
+                      <div className="pricing-meta-pill" title="Estimasi waktu pengerjaan di lokasi">
+                        <i className="fas fa-stopwatch"></i>
+                        <span>{pkg.estTime}</span>
+                      </div>
+                      <div className="pricing-meta-pill" title="Garansi perlindungan resmi">
+                        <i className="fas fa-shield-alt"></i>
+                        <span>Garansi {pkg.warranty}</span>
+                      </div>
+                    </div>
+
+                    <div className="pricing-features-section">
+                      <div className="pricing-features-title">
+                        <i className="fas fa-check-double"></i> Layanan Termasuk:
+                      </div>
+                      <ul className="pricing-features-list">
+                        {pkg.features.map((feature, fIdx) => (
+                          <li key={fIdx} className="pricing-feature-item">
+                            <i className="fas fa-check-circle pricing-check-icon"></i>
+                            <span>{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div className="pricing-card-action">
+                      <a
+                        href={waUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`pricing-cta-btn ${pkg.isPopular ? 'btn-popular' : ''}`}
+                        title={`Pesan ${pkg.name} via WhatsApp`}
+                      >
+                        <i className="fab fa-whatsapp"></i>
+                        <span>Pesan Paket via WA</span>
+                      </a>
+                      <div className="pricing-card-footnote">
+                        <i className="fas fa-bolt"></i> Respon cepat armada terdekat {pricingArea !== 'Semua Wilayah Bogor' ? `Kec. ${pricingArea}` : 'Bogor'}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="pricing-empty-state fade-in">
+              <div className="pricing-empty-icon">
+                <i className="fas fa-search-minus"></i>
+              </div>
+              <h3 className="pricing-empty-title">Tidak Ada Paket Layanan yang Sesuai</h3>
+              <p className="pricing-empty-desc">
+                Tidak ditemukan paket tarif untuk pencarian <strong>"{pricingSearchQuery}"</strong>
+                {pricingCategoryFilter !== 'all' ? ' pada kategori yang dipilih' : ''}.
+                Silakan coba kata kunci lain atau klik tombol reset di bawah untuk menampilkan seluruh paket layanan.
+              </p>
+              <div className="pricing-empty-actions">
+                <button
+                  type="button"
+                  className="pricing-empty-reset-btn"
+                  onClick={() => {
+                    setPricingSearchQuery('');
+                    setPricingCategoryFilter('all');
+                  }}
+                >
+                  <i className="fas fa-redo-alt"></i> Tampilkan Semua Paket ({PRICING_PACKAGES.length})
+                </button>
+                <a
+                  href={`https://wa.me/6285715654183?text=${encodeURIComponent(
+                    `Halo Admin Mitra Bersih 24 Jam, saya mencari layanan untuk kendala "${pricingSearchQuery}". Apakah ada paket atau estimasi biaya khusus untuk kebutuhan saya?`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="pricing-empty-wa-btn"
+                >
+                  <i className="fab fa-whatsapp"></i> Konsultasi Kendala via WA
+                </a>
+              </div>
+            </div>
+          )}
+
+          {/* Interactive Feature Comparison Toggle */}
+          <div className="pricing-compare-toggle-wrap fade-in">
+            <button
+              type="button"
+              className="pricing-compare-toggle-btn"
+              onClick={() => setShowPricingComparison(!showPricingComparison)}
+              aria-expanded={showPricingComparison}
+              aria-controls="pricing-comparison-table-wrapper"
+            >
+              <i className={`fas ${showPricingComparison ? 'fa-compress-arrows-alt' : 'fa-table-list'}`}></i>
+              <span>{showPricingComparison ? 'Sembunyikan Tabel Perbandingan Spesifikasi' : 'Bandingkan Rincian Spesifikasi & Fitur Seluruh Paket'}</span>
+              <i className={`fas ${showPricingComparison ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
+            </button>
+          </div>
+
+          {/* Detailed Responsive Comparison Table */}
+          {showPricingComparison && (
+            <div id="pricing-comparison-table-wrapper" className="pricing-compare-table-container fade-in">
+              <div className="pricing-table-responsive">
+                <table className="pricing-compare-table">
+                  <thead>
+                    <tr>
+                      <th className="col-spec">Spesifikasi &amp; Layanan</th>
+                      {PRICING_PACKAGES.map((pkg) => (
+                        <th key={pkg.id} className={`col-pkg ${pkg.isPopular ? 'highlight' : ''}`}>
+                          <div className="pkg-th-name">{pkg.name}</div>
+                          <div className="pkg-th-price">{pkg.priceDisplay}</div>
+                          <div className="pkg-th-unit">{pkg.unit}</div>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td className="spec-label">
+                        <i className="fas fa-box"></i> Kapasitas Pengerjaan
+                      </td>
+                      {PRICING_PACKAGES.map((pkg) => (
+                        <td key={pkg.id} className={pkg.isPopular ? 'highlight' : ''}>
+                          {pkg.specs.capacity}
+                        </td>
+                      ))}
+                    </tr>
+                    <tr>
+                      <td className="spec-label">
+                        <i className="fas fa-cogs"></i> Jenis Mesin / Alat
+                      </td>
+                      {PRICING_PACKAGES.map((pkg) => (
+                        <td key={pkg.id} className={pkg.isPopular ? 'highlight' : ''}>
+                          {pkg.specs.machine}
+                        </td>
+                      ))}
+                    </tr>
+                    <tr>
+                      <td className="spec-label">
+                        <i className="fas fa-ruler-combined"></i> Fasilitas Selang Standar
+                      </td>
+                      {PRICING_PACKAGES.map((pkg) => (
+                        <td key={pkg.id} className={pkg.isPopular ? 'highlight' : ''}>
+                          {pkg.specs.hose}
+                        </td>
+                      ))}
+                    </tr>
+                    <tr>
+                      <td className="spec-label">
+                        <i className="fas fa-shield-alt"></i> Garansi Pengerjaan Resmi
+                      </td>
+                      {PRICING_PACKAGES.map((pkg) => (
+                        <td key={pkg.id} className={pkg.isPopular ? 'highlight' : ''}>
+                          <span className="spec-badge-warranty">{pkg.specs.warranty}</span>
+                        </td>
+                      ))}
+                    </tr>
+                    <tr>
+                      <td className="spec-label">
+                        <i className="fas fa-spray-can-sparkles"></i> Disinfektan &amp; Pembersih Aroma
+                      </td>
+                      {PRICING_PACKAGES.map((pkg) => (
+                        <td key={pkg.id} className={pkg.isPopular ? 'highlight' : ''}>
+                          {pkg.specs.disinfectant}
+                        </td>
+                      ))}
+                    </tr>
+                    <tr>
+                      <td className="spec-label">
+                        <i className="fas fa-recycle"></i> Pembuangan Legal IPLT Bogor
+                      </td>
+                      {PRICING_PACKAGES.map((pkg) => (
+                        <td key={pkg.id} className={pkg.isPopular ? 'highlight' : ''}>
+                          {pkg.specs.ipltLegal}
+                        </td>
+                      ))}
+                    </tr>
+                    <tr>
+                      <td className="spec-label">
+                        <i className="fas fa-file-invoice"></i> Bukti Pembayaran / Kwitansi
+                      </td>
+                      {PRICING_PACKAGES.map((pkg) => (
+                        <td key={pkg.id} className={pkg.isPopular ? 'highlight' : ''}>
+                          <span className="spec-check-yes">
+                            <i className="fas fa-check"></i> Tersedia
+                          </span>
+                        </td>
+                      ))}
+                    </tr>
+                    <tr>
+                      <td className="spec-label">Pesan Paket Sekarang</td>
+                      {PRICING_PACKAGES.map((pkg) => (
+                        <td key={pkg.id} className={pkg.isPopular ? 'highlight' : ''}>
+                          <a
+                            href={getPricingWaUrl(pkg, pricingArea)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="table-order-btn"
+                          >
+                            <i className="fab fa-whatsapp"></i> Pesan
+                          </a>
+                        </td>
+                      ))}
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* Pricing Trust Badges (4 Guarantees) */}
+          <div className="pricing-trust-grid fade-in">
+            <div className="pricing-trust-card">
+              <div className="trust-card-icon">
+                <i className="fas fa-handshake"></i>
+              </div>
+              <div className="trust-card-body">
+                <h4>Kepastian Harga di Awal</h4>
+                <p>Tanpa biaya siluman. Seluruh estimasi tarif disepakati sebelum selang dan mesin diturunkan di lokasi Anda.</p>
+              </div>
+            </div>
+
+            <div className="pricing-trust-card">
+              <div className="trust-card-icon">
+                <i className="fas fa-route"></i>
+              </div>
+              <div className="trust-card-body">
+                <h4>Gratis Selang s/d 50 Meter</h4>
+                <p>Menjangkau pemukiman gang sempit dan perumahan padat di seluruh wilayah Bogor tanpa biaya tambahan selang standar.</p>
+              </div>
+            </div>
+
+            <div className="pricing-trust-card">
+              <div className="trust-card-icon">
+                <i className="fas fa-certificate"></i>
+              </div>
+              <div className="trust-card-body">
+                <h4>Garansi Servis 30 - 45 Hari</h4>
+                <p>Layanan dijamin tuntas. Apabila saluran kembali macet dalam masa garansi, teknisi siap datang kembali gratis.</p>
+              </div>
+            </div>
+
+            <div className="pricing-trust-card">
+              <div className="trust-card-icon">
+                <i className="fas fa-clock"></i>
+              </div>
+              <div className="trust-card-body">
+                <h4>Siaga 24 Jam Nonstop</h4>
+                <p>Armada tangki vakum standby di 5 pos siaga Bogor untuk panggilan darurat septic tank meluap kapan pun dibutuhkan.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Pricing Notice & Consultation Footer */}
+          <div className="pricing-notice-banner fade-in">
+            <div className="pricing-notice-left">
+              <i className="fas fa-info-circle pricing-notice-icon"></i>
+              <div>
+                <strong>Catatan Kondisi Khusus di Lapangan:</strong>
+                <p>
+                  Tarif di atas adalah harga mulai standar untuk septic tank berjarak selang standar (&le; 50 m) dan lubang kontrol yang mudah dibuka. Jika septic tank tertutup cor mati tanpa tutup atau jarak selang lebih dari 50 meter, teknisi akan memberikan opsi transparan dan meminta persetujuan Anda terlebih dahulu.
+                </p>
+              </div>
+            </div>
+            <div className="pricing-notice-right">
+              <a
+                href="https://wa.me/6285715654183?text=Halo%20Admin%20Mitra%20Bersih,%20saya%20ingin%20konsultasi%20kendala%20septic%20tank%20/%20saluran%20dan%20meminta%20estimasi%20tarif%20Bogor"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="pricing-consult-cta"
+              >
+                <i className="fab fa-whatsapp"></i>
+                <span>Tanya Estimasi via WA</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* WHY US */}
       <section className="why-us" id="tentang">
         <div className="container">
@@ -3668,28 +4511,31 @@ export default function App() {
           </div>
 
           {/* Real-time FAQ Search Bar & Category Filters */}
-          <div className={`faq-search-container fade-in ${isFaqTyping ? 'is-typing' : ''} ${faqSearch.trim() ? 'has-query' : ''}`}>
-            <div className={`faq-search-box ${isFaqTyping ? 'is-typing faq-search-pulse' : ''} ${faqSearch.trim() ? 'has-query' : ''}`}>
-              <i className={`fas fa-search faq-search-icon ${isFaqTyping ? 'icon-searching' : ''}`}></i>
+          <div className={`faq-search-container fade-in ${isSearchActive ? 'is-typing search-active' : ''} ${faqSearch.trim() ? 'has-query' : ''}`}>
+            <div className={`faq-search-box ${isSearchActive ? 'is-typing faq-search-pulse search-active is-processing' : ''} ${faqSearch.trim() ? 'has-query' : ''}`}>
+              <i className={`fas fa-search faq-search-icon ${isSearchActive ? 'icon-searching' : ''}`}></i>
               <input
                 type="text"
-                className="faq-search-input"
+                id="faq-search-input"
+                data-testid="faq-search-input"
+                className={`faq-search-input ${
+                  isSearchActive
+                    ? 'search-active soft-yellow-glow faq-search-input-filtering is-typing is-processing faq-search-pulse pulse-border typing-pulse'
+                    : ''
+                }`}
                 placeholder="Cari pertanyaan... (contoh: tarif, garansi, gang sempit, 24 jam, cara pesan)"
                 value={faqSearch}
                 onChange={(e) => handleFaqSearchChange(e.target.value)}
-                onInput={() => {
-                  setIsFaqTyping(true);
-                  if (faqTypingTimeoutRef.current) clearTimeout(faqTypingTimeoutRef.current);
-                  faqTypingTimeoutRef.current = setTimeout(() => setIsFaqTyping(false), 800);
-                }}
-                onKeyDown={() => {
-                  setIsFaqTyping(true);
-                  if (faqTypingTimeoutRef.current) clearTimeout(faqTypingTimeoutRef.current);
-                  faqTypingTimeoutRef.current = setTimeout(() => setIsFaqTyping(false), 800);
+                onInput={markSearchFilterRunning}
+                onKeyDown={markSearchFilterRunning}
+                onKeyUp={markSearchFilterRunning}
+                onFocus={() => {
+                  if (faqSearch.trim()) markSearchFilterRunning();
                 }}
                 aria-label="Cari pertanyaan FAQ"
+                aria-busy={isSearchActive}
               />
-              {isFaqTyping && (
+              {isSearchActive && (
                 <span className="faq-search-typing-indicator" title="Sedang menyaring pertanyaan...">
                   <span className="typing-pulse-dot"></span>
                   <span className="typing-pulse-text">Menyaring</span>
@@ -3723,12 +4569,12 @@ export default function App() {
               </div>
 
               <div className="faq-count-badge">
-                {faqSearch || faqCategory !== 'Semua' ? (
+                {faqSearch || faqCategory !== 'Topik Populer' ? (
                   <span>
                     Ditemukan <strong>{filteredFaqs.length}</strong> dari {FAQ_DATA.length} pertanyaan
                   </span>
                 ) : (
-                  <span>Total {FAQ_DATA.length} pertanyaan terpopuler</span>
+                  <span>Total {FAQ_DATA.length} topik populer</span>
                 )}
               </div>
             </div>
@@ -3740,7 +4586,7 @@ export default function App() {
                 <i className="fas fa-search"></i>
                 <h4>Tidak Ada Pertanyaan Ditemukan</h4>
                 <p>
-                  Maaf, tidak ada tanya jawab yang cocok dengan kata kunci &ldquo;{faqSearch}&rdquo;{faqCategory !== 'Semua' ? ` pada kategori ${faqCategory}` : ''}. Silakan coba kata kunci lain atau konsultasikan langsung dengan customer support teknis kami.
+                  Maaf, tidak ada tanya jawab yang cocok dengan kata kunci &ldquo;{faqSearch}&rdquo;{faqCategory !== 'Topik Populer' ? ` pada kategori ${faqCategory}` : ''}. Silakan coba kata kunci lain atau konsultasikan langsung dengan customer support teknis kami.
                 </p>
                 <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
                   <button
@@ -3748,11 +4594,11 @@ export default function App() {
                     className="faq-empty-reset-btn"
                     onClick={() => {
                       handleFaqSearchClear();
-                      setFaqCategory('Semua');
+                      setFaqCategory('Topik Populer');
                     }}
                   >
                     <i className="fas fa-redo-alt" style={{ marginRight: '6px' }}></i>
-                    Tampilkan Semua Pertanyaan
+                    Tampilkan Semua Topik Populer
                   </button>
                   <a
                     href={`https://wa.me/6285715654183?text=${encodeURIComponent(`Halo Mitra Bersih, saya ingin tanya kendala spesifik: ${faqSearch}`)}`}
@@ -6170,6 +7016,25 @@ export default function App() {
         </div>
       </footer>
 
+      {/* FLOATING FAQ ACTION BUTTON (BOTTOM-RIGHT CORNER) */}
+      <button
+        type="button"
+        id="faq-fab"
+        className="faq-fab"
+        onClick={handleOpenFaqModal}
+        aria-label="Buka Pusat Bantuan & FAQ Modal"
+        title="Buka Pusat Bantuan & Tanya Jawab FAQ (24 Jam)"
+      >
+        <span className="faq-fab-pulse-ring"></span>
+        <div className="faq-fab-icon-wrap">
+          <i className="fas fa-question"></i>
+        </div>
+        <div className="faq-fab-text">
+          <span className="faq-fab-badge">24 JAM</span>
+          <span className="faq-fab-title">Bantuan FAQ</span>
+        </div>
+      </button>
+
       {/* FLOATING WHATSAPP BUTTON */}
       <a
         href="https://wa.me/6285715654183?text=Halo,%20saya%20ingin%20booking%20sedot%20wc%20Bogor"
@@ -6619,6 +7484,252 @@ export default function App() {
           >
             <i className="fas fa-times"></i>
           </button>
+        </div>
+      )}
+
+      {/* FAQ SECTION MODAL OVERLAY */}
+      {isFaqModalOpen && (
+        <div
+          id="faq-modal-overlay"
+          className={`faq-section-modal-overlay ${isFaqModalClosing ? 'closing is-closing fade-out' : 'opening is-opening fade-in'}`}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="faq-modal-title"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) handleCloseFaqModal();
+          }}
+        >
+          <div className={`faq-section-modal-card ${isFaqModalClosing ? 'closing is-closing scale-out' : 'opening is-opening scale-in'}`}>
+            {/* Modal Header */}
+            <div className="faq-section-modal-header">
+              <div className="faq-section-modal-title-group">
+                <span className="faq-modal-section-badge">
+                  <i className="fas fa-circle-question"></i> PUSAT BANTUAN CEPAT 24 JAM
+                </span>
+                <h3 id="faq-modal-title" className="faq-section-modal-title">
+                  Tanya Jawab &amp; Solusi Layanan (FAQ)
+                </h3>
+                <p className="faq-section-modal-subtitle">
+                  Akses instan informasi tarif sedot WC, kesiapan armada di Bogor, garansi resmi, dan penanganan tanpa bongkar dari halaman mana pun.
+                </p>
+              </div>
+              <button
+                type="button"
+                className="faq-modal-close"
+                onClick={handleCloseFaqModal}
+                aria-label="Tutup Modal Bantuan FAQ"
+                title="Tutup (Esc)"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+
+            {/* Modal Search Bar & Filter Pills */}
+            <div className="faq-modal-search-wrapper">
+              <div className={`faq-modal-search-box ${isModalFaqTyping ? 'is-typing search-active' : ''}`}>
+                <i className="fas fa-search faq-modal-search-icon"></i>
+                <input
+                  type="text"
+                  id="faq-modal-search-input"
+                  className={`faq-modal-search-input ${
+                    isModalFaqTyping ? 'search-active is-typing soft-yellow-glow typing-pulse' : ''
+                  }`}
+                  placeholder="Cari pertanyaan... (contoh: tarif, garansi, gang sempit, 24 jam)"
+                  value={modalFaqSearch}
+                  onChange={(e) => handleModalFaqSearchChange(e.target.value)}
+                  onInput={() => handleModalFaqSearchChange(modalFaqSearch)}
+                  aria-label="Cari pertanyaan FAQ di modal"
+                  aria-busy={isModalFaqTyping}
+                  autoFocus
+                />
+                {modalFaqSearch && (
+                  <button
+                    type="button"
+                    className="faq-search-clear"
+                    onClick={() => setModalFaqSearch('')}
+                    title="Hapus kata kunci pencarian modal"
+                    aria-label="Hapus kata kunci pencarian modal"
+                  >
+                    <i className="fas fa-times"></i>
+                  </button>
+                )}
+              </div>
+
+              <div className="faq-modal-filter-bar">
+                <div className="faq-modal-filter-pills">
+                  {FAQ_CATEGORIES.map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      className={`faq-modal-filter-pill ${modalFaqCategory === cat ? 'active' : ''}`}
+                      onClick={() => setModalFaqCategory(cat)}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+                <div className="faq-modal-count-badge">
+                  <span>
+                    Ditemukan <strong>{modalFilteredFaqs.length}</strong> pertanyaan
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Accordion Questions List */}
+            <div className="faq-modal-body">
+              {modalFilteredFaqs.length === 0 ? (
+                <div className="faq-empty-state" style={{ padding: '36px 16px', background: '#F8FAFC', borderRadius: '16px' }}>
+                  <i className="fas fa-search" style={{ fontSize: '32px', color: '#94A3B8', marginBottom: '10px' }}></i>
+                  <h4 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 6px' }}>Tidak Ada Pertanyaan Ditemukan</h4>
+                  <p style={{ fontSize: '13.5px', color: '#64748B', margin: '0 0 16px' }}>
+                    Tidak ada tanya jawab yang cocok dengan kata kunci &ldquo;{modalFaqSearch}&rdquo;.
+                  </p>
+                  <button
+                    type="button"
+                    className="faq-empty-reset-btn"
+                    onClick={() => {
+                      setModalFaqSearch('');
+                      setModalFaqCategory('Topik Populer');
+                    }}
+                  >
+                    <i className="fas fa-redo-alt" style={{ marginRight: '6px' }}></i>
+                    Tampilkan Semua Pertanyaan
+                  </button>
+                </div>
+              ) : (
+                <div className="faq-modal-list">
+                  {modalFilteredFaqs.map((item) => {
+                    const isOpen = openModalFaq === item.id;
+                    const directWaUrl = `https://wa.me/6285715654183?text=${encodeURIComponent(
+                      `Halo Admin CS Mitra Bersih,\n\nSaya membaca FAQ website:\n❓ *Pertanyaan:* "${item.question}"\n📂 *Kategori:* ${item.category}\n\nMohon info estimasi tarif dan ketersediaan armada di lokasi saya di Bogor. Terima kasih!`
+                    )}`;
+
+                    return (
+                      <div
+                        key={item.id}
+                        className={`faq-item faq-modal-item ${isOpen ? 'active' : ''}`}
+                      >
+                        <div className="faq-question-bar">
+                          <button
+                            type="button"
+                            className="faq-question"
+                            onClick={() => setOpenModalFaq(isOpen ? null : item.id)}
+                            aria-expanded={isOpen}
+                            aria-controls={`faq-modal-ans-${item.id}`}
+                          >
+                            <div className="faq-question-text">
+                              <span className="faq-q-badge">{item.id}</span>
+                              <span style={{ fontWeight: 700, color: '#0F172A' }}>
+                                {highlightMatch(item.question, modalFaqSearch)}
+                              </span>
+                            </div>
+                          </button>
+                          <div className="faq-question-actions">
+                            <button
+                              type="button"
+                              className="faq-share-trigger-btn"
+                              onClick={() => {
+                                handleCloseFaqModal();
+                                openFaqShare(item);
+                              }}
+                              title="Bagikan jawaban pertanyaan ini"
+                              aria-label={`Bagikan jawaban untuk: ${item.question}`}
+                            >
+                              <i className="fas fa-share-alt"></i>
+                              <span className="faq-share-trigger-label">Bagikan</span>
+                            </button>
+                            <button
+                              type="button"
+                              className="faq-toggle-btn"
+                              onClick={() => setOpenModalFaq(isOpen ? null : item.id)}
+                              aria-expanded={isOpen}
+                              aria-label={isOpen ? `Tutup jawaban FAQ nomor ${item.id}` : `Buka jawaban FAQ nomor ${item.id}`}
+                            >
+                              <div className="faq-toggle-icon">
+                                <i className={`fas ${isOpen ? 'fa-minus' : 'fa-plus'}`}></i>
+                              </div>
+                            </button>
+                          </div>
+                        </div>
+
+                        <div
+                          id={`faq-modal-ans-${item.id}`}
+                          className={`faq-answer-collapse ${isOpen ? 'open' : ''}`}
+                        >
+                          <div className="faq-answer">
+                            <div className="faq-answer-cat-tag">
+                              <i className="fas fa-folder-open"></i> Kategori: <strong>{item.category}</strong>
+                            </div>
+                            <div className="faq-answer-content">
+                              {item.answer}
+                            </div>
+                            <div className="faq-actions-bar">
+                              <button
+                                type="button"
+                                className="faq-action-chat-btn"
+                                onClick={() => {
+                                  handleCloseFaqModal();
+                                  openFaqChatModal(item);
+                                }}
+                                title="Konsultasikan pertanyaan ini via WhatsApp"
+                              >
+                                <i className="fab fa-whatsapp"></i>
+                                <span>Tanya Admin via Form WA</span>
+                              </button>
+                              <a
+                                href={directWaUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="faq-action-direct-wa"
+                                title="Chat langsung tanpa isi formulir"
+                              >
+                                <i className="fab fa-whatsapp"></i>
+                                <span>Chat Langsung</span>
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer Quick Actions */}
+            <div className="faq-section-modal-footer">
+              <div className="faq-modal-footer-info">
+                <div className="faq-footer-icon">
+                  <i className="fas fa-headset"></i>
+                </div>
+                <div>
+                  <strong>Belum menemukan jawaban yang dicari?</strong>
+                  <span>Konsultasi gratis 24 jam dengan tim teknis armada kami di Bogor.</span>
+                </div>
+              </div>
+              <div className="faq-modal-footer-btns">
+                <button
+                  type="button"
+                  className="faq-modal-scroll-btn"
+                  onClick={handleViewOnPageFaq}
+                  title="Lihat bagian FAQ lengkap di halaman"
+                >
+                  <i className="fas fa-external-link-alt"></i>
+                  <span>Buka di Halaman</span>
+                </button>
+                <a
+                  href="https://wa.me/6285715654183?text=Halo%20Mitra%20Bersih,%20saya%20ingin%20tanya%20layanan%20sedot%20WC%20Bogor%20melalui%20Pusat%20Bantuan"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="faq-modal-wa-btn"
+                >
+                  <i className="fab fa-whatsapp"></i>
+                  <span>Chat CS 24 Jam</span>
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </>
