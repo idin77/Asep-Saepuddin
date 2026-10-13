@@ -1786,6 +1786,639 @@ const MAP_HUBS: MapHub[] = [
   }
 ];
 
+export interface PosArmadaMarker {
+  id: string;
+  name: string;
+  shortLabel: string;
+  kecamatan: string;
+  hubId: string;
+  badge: string;
+  address: string;
+  truckCount: number;
+  estArrival: string;
+  coordinates: { lat: number; lng: number };
+  x: number;
+  y: number;
+}
+
+export interface RealtimeFleetTruck {
+  id: string;
+  unitCode: string;
+  plate: string;
+  hubId: string;
+  hubName: string;
+  kecamatan: string;
+  subdistrict: string;
+  truckType: string;
+  capacity: string;
+  hoseLength: string;
+  driver: string;
+  status: 'standby' | 'dispatched' | 'service';
+  statusLabel: string;
+  speed: string;
+  eta: string;
+  distanceKm: number;
+  coordinates: { lat: number; lng: number };
+  x: number;
+  y: number;
+}
+
+export const POS_ARMADA_MARKERS: PosArmadaMarker[] = [
+  // --- KOTA BOGOR (6 KECAMATAN) ---
+  {
+    id: 'pos-tanah-sareal',
+    name: 'Pos Siaga Kec. Tanah Sareal (Sholeh Iskandar & Yasmin)',
+    shortLabel: 'Pos Kec. Tanah Sareal',
+    kecamatan: 'Tanah Sareal',
+    hubId: 'kota-bogor',
+    badge: 'Pos Siaga Tanah Sareal',
+    address: 'Jl. Sholeh Iskandar No. 88 (Dekat Simpang Yasmin), Kec. Tanah Sareal, Kota Bogor',
+    truckCount: 2,
+    estArrival: '15 – 20 Menit',
+    coordinates: { lat: -6.5580, lng: 106.7840 },
+    x: 42,
+    y: 42
+  },
+  {
+    id: 'pos-bogor-tengah',
+    name: 'Pos Pusat Kec. Bogor Tengah (Juanda & Paledang)',
+    shortLabel: 'Pos Kec. Bogor Tengah',
+    kecamatan: 'Bogor Tengah',
+    hubId: 'kota-bogor',
+    badge: 'HQ & Workshop Utama',
+    address: 'Jl. Ir. H. Juanda & Paledang (Dekat Stasiun KA Bogor), Kec. Bogor Tengah, Kota Bogor',
+    truckCount: 3,
+    estArrival: '15 – 20 Menit',
+    coordinates: { lat: -6.5971, lng: 106.7950 },
+    x: 49,
+    y: 49
+  },
+  {
+    id: 'pos-bogor-barat',
+    name: 'Pos Siaga Kec. Bogor Barat (Bubulak & Semplak)',
+    shortLabel: 'Pos Kec. Bogor Barat',
+    kecamatan: 'Bogor Barat',
+    hubId: 'kota-bogor',
+    badge: 'Pos Siaga Bogor Barat',
+    address: 'Jl. KH. R. Abdullah Bin Nuh, Bubulak & Cilendek, Kec. Bogor Barat, Kota Bogor',
+    truckCount: 2,
+    estArrival: '15 – 20 Menit',
+    coordinates: { lat: -6.5750, lng: 106.7610 },
+    x: 35,
+    y: 48
+  },
+  {
+    id: 'pos-bogor-timur',
+    name: 'Pos Siaga Kec. Bogor Timur (Baranangsiang & Katulampa)',
+    shortLabel: 'Pos Kec. Bogor Timur',
+    kecamatan: 'Bogor Timur',
+    hubId: 'kota-bogor',
+    badge: 'Pos Siaga Bogor Timur',
+    address: 'Jl. Raya Pajajaran & Baranangsiang Indah, Kec. Bogor Timur, Kota Bogor',
+    truckCount: 2,
+    estArrival: '15 – 20 Menit',
+    coordinates: { lat: -6.6060, lng: 106.8120 },
+    x: 57,
+    y: 53
+  },
+  {
+    id: 'pos-bogor-utara',
+    name: 'Pos Siaga Kec. Bogor Utara (Bantarjati & Kedunghalang)',
+    shortLabel: 'Pos Kec. Bogor Utara',
+    kecamatan: 'Bogor Utara',
+    hubId: 'kota-bogor',
+    badge: 'Pos Siaga Bogor Utara',
+    address: 'Jl. Pandu Raya & KS Tubun, Bantarjati, Kec. Bogor Utara, Kota Bogor',
+    truckCount: 2,
+    estArrival: '15 – 20 Menit',
+    coordinates: { lat: -6.5540, lng: 106.8090 },
+    x: 55,
+    y: 39
+  },
+  {
+    id: 'pos-bogor-selatan',
+    name: 'Pos Siaga Kec. Bogor Selatan (Batu Tulis & Cipaku)',
+    shortLabel: 'Pos Kec. Bogor Selatan',
+    kecamatan: 'Bogor Selatan',
+    hubId: 'kota-bogor',
+    badge: 'Pos Siaga Bogor Selatan',
+    address: 'Jl. Lawang Gintung & Batu Tulis, Kec. Bogor Selatan, Kota Bogor',
+    truckCount: 2,
+    estArrival: '15 – 25 Menit',
+    coordinates: { lat: -6.6280, lng: 106.8080 },
+    x: 51,
+    y: 59
+  },
+
+  // --- KABUPATEN BOGOR (TIMUR & SENTUL) ---
+  {
+    id: 'pos-cibinong',
+    name: 'Pos Siaga Kec. Cibinong (Kawasan Pemda Tegar Beriman)',
+    shortLabel: 'Pos Kec. Cibinong',
+    kecamatan: 'Cibinong',
+    hubId: 'cibinong',
+    badge: 'Pos Siaga Cibinong',
+    address: 'Kawasan Pemda Tegar Beriman & Sukahati, Kec. Cibinong, Kab. Bogor',
+    truckCount: 3,
+    estArrival: '15 – 20 Menit',
+    coordinates: { lat: -6.4817, lng: 106.8542 },
+    x: 69,
+    y: 24
+  },
+  {
+    id: 'pos-babakan-madang',
+    name: 'Pos Siaga Kec. Babakan Madang (Sentul City & Sirkuit)',
+    shortLabel: 'Pos Kec. Babakan Madang',
+    kecamatan: 'Babakan Madang',
+    hubId: 'cibinong',
+    badge: 'Pos Siaga Sentul City',
+    address: 'Sentul City & Akses Sirkuit Sentul, Kec. Babakan Madang, Kab. Bogor',
+    truckCount: 2,
+    estArrival: '15 – 25 Menit',
+    coordinates: { lat: -6.5385, lng: 106.8745 },
+    x: 77,
+    y: 36
+  },
+  {
+    id: 'pos-sukaraja',
+    name: 'Pos Siaga Kec. Sukaraja (Ciluar & Cijujung)',
+    shortLabel: 'Pos Kec. Sukaraja',
+    kecamatan: 'Sukaraja',
+    hubId: 'cibinong',
+    badge: 'Pos Satelit Sukaraja',
+    address: 'Jl. Raya Bogor KM 50, Ciluar & Cijujung, Kec. Sukaraja, Kab. Bogor',
+    truckCount: 1,
+    estArrival: '15 – 25 Menit',
+    coordinates: { lat: -6.5200, lng: 106.8280 },
+    x: 63,
+    y: 34
+  },
+  {
+    id: 'pos-citeureup',
+    name: 'Pos Siaga Kec. Citeureup (Kawasan Industri & Pintu Tol)',
+    shortLabel: 'Pos Kec. Citeureup',
+    kecamatan: 'Citeureup',
+    hubId: 'cibinong',
+    badge: 'Pos Satelit Citeureup',
+    address: 'Jl. Mayor Oking Jaya Atmaja, Kec. Citeureup, Kab. Bogor',
+    truckCount: 2,
+    estArrival: '20 – 30 Menit',
+    coordinates: { lat: -6.4910, lng: 106.8790 },
+    x: 79,
+    y: 24
+  },
+  {
+    id: 'pos-gunung-putri',
+    name: 'Pos Siaga Kec. Gunung Putri (Wanaherang & Cicadas)',
+    shortLabel: 'Pos Kec. Gunung Putri',
+    kecamatan: 'Gunung Putri',
+    hubId: 'cibinong',
+    badge: 'Pos Satelit Gunung Putri',
+    address: 'Jl. Raya Mercedes Benz, Wanaherang, Kec. Gunung Putri, Kab. Bogor',
+    truckCount: 1,
+    estArrival: '20 – 30 Menit',
+    coordinates: { lat: -6.4420, lng: 106.9020 },
+    x: 85,
+    y: 18
+  },
+
+  // --- KABUPATEN BOGOR (UTARA) ---
+  {
+    id: 'pos-bojonggede',
+    name: 'Pos Siaga Kec. Bojonggede (Dekat Stasiun KA Bojonggede)',
+    shortLabel: 'Pos Kec. Bojonggede',
+    kecamatan: 'Bojonggede',
+    hubId: 'parung',
+    badge: 'Pos Siaga Bojonggede',
+    address: 'Jl. Raya Bojonggede (Dekat Stasiun KA), Kec. Bojonggede, Kab. Bogor',
+    truckCount: 2,
+    estArrival: '15 – 25 Menit',
+    coordinates: { lat: -6.4952, lng: 106.7972 },
+    x: 47,
+    y: 22
+  },
+  {
+    id: 'pos-tajurhalang',
+    name: 'Pos Siaga Kec. Tajurhalang (Kalisuren & Sasak Panjang)',
+    shortLabel: 'Pos Kec. Tajurhalang',
+    kecamatan: 'Tajurhalang',
+    hubId: 'parung',
+    badge: 'Pos Satelit Tajurhalang',
+    address: 'Jl. Raya Kalisuren - Sasak Panjang, Kec. Tajurhalang, Kab. Bogor',
+    truckCount: 1,
+    estArrival: '15 – 25 Menit',
+    coordinates: { lat: -6.4680, lng: 106.7620 },
+    x: 40,
+    y: 19
+  },
+  {
+    id: 'pos-parung',
+    name: 'Pos Siaga Kec. Parung (Pasar Parung & Lebak Wangi)',
+    shortLabel: 'Pos Kec. Parung',
+    kecamatan: 'Parung',
+    hubId: 'parung',
+    badge: 'Pos Siaga Parung',
+    address: 'Jl. Raya Parung (Dekat Simpang Pasar), Kec. Parung, Kab. Bogor',
+    truckCount: 2,
+    estArrival: '15 – 25 Menit',
+    coordinates: { lat: -6.4258, lng: 106.7297 },
+    x: 27,
+    y: 14
+  },
+  {
+    id: 'pos-kemang',
+    name: 'Pos Siaga Kec. Kemang (Salabenda & Perbatasan ATS)',
+    shortLabel: 'Pos Kec. Kemang',
+    kecamatan: 'Kemang',
+    hubId: 'parung',
+    badge: 'Pos Siaga Kemang',
+    address: 'Jl. Raya Kemang - Salabenda (Akses Bandara ATS), Kec. Kemang, Kab. Bogor',
+    truckCount: 2,
+    estArrival: '15 – 25 Menit',
+    coordinates: { lat: -6.5050, lng: 106.7450 },
+    x: 33,
+    y: 28
+  },
+  {
+    id: 'pos-gunung-sindur',
+    name: 'Pos Siaga Kec. Gunung Sindur (Prumpung & Perbatasan Serpong)',
+    shortLabel: 'Pos Kec. Gunung Sindur',
+    kecamatan: 'Gunung Sindur',
+    hubId: 'parung',
+    badge: 'Pos Satelit Gn. Sindur',
+    address: 'Jl. Raya Prumpung - Gunung Sindur, Kec. Gunung Sindur, Kab. Bogor',
+    truckCount: 1,
+    estArrival: '20 – 30 Menit',
+    coordinates: { lat: -6.3750, lng: 106.7020 },
+    x: 19,
+    y: 10
+  },
+  {
+    id: 'pos-ciseeng',
+    name: 'Pos Siaga Kec. Ciseeng (Pemandian Air Panas & Babakan)',
+    shortLabel: 'Pos Kec. Ciseeng',
+    kecamatan: 'Ciseeng',
+    hubId: 'parung',
+    badge: 'Pos Satelit Ciseeng',
+    address: 'Jl. Raya Ciseeng - Babakan, Kec. Ciseeng, Kab. Bogor',
+    truckCount: 1,
+    estArrival: '20 – 30 Menit',
+    coordinates: { lat: -6.4200, lng: 106.6950 },
+    x: 19,
+    y: 20
+  },
+
+  // --- KABUPATEN BOGOR (BARAT) ---
+  {
+    id: 'pos-dramaga',
+    name: 'Pos Siaga Kec. Dramaga (Dekat Gerbang Kampus IPB)',
+    shortLabel: 'Pos Kec. Dramaga',
+    kecamatan: 'Dramaga',
+    hubId: 'dramaga',
+    badge: 'Pos Siaga Dramaga',
+    address: 'Jl. Raya Dramaga KM 7 (Dekat Kampus IPB), Kec. Dramaga, Kab. Bogor',
+    truckCount: 2,
+    estArrival: '15 – 25 Menit',
+    coordinates: { lat: -6.5828, lng: 106.7322 },
+    x: 24,
+    y: 58
+  },
+  {
+    id: 'pos-ciomas',
+    name: 'Pos Siaga Kec. Ciomas (Pagelaran & Terminal Laladon)',
+    shortLabel: 'Pos Kec. Ciomas',
+    kecamatan: 'Ciomas',
+    hubId: 'dramaga',
+    badge: 'Pos Siaga Ciomas',
+    address: 'Jl. Raya Ciomas - Pagelaran (Dekat Laladon), Kec. Ciomas, Kab. Bogor',
+    truckCount: 2,
+    estArrival: '15 – 25 Menit',
+    coordinates: { lat: -6.6022, lng: 106.7645 },
+    x: 34,
+    y: 65
+  },
+  {
+    id: 'pos-ciampea',
+    name: 'Pos Siaga Kec. Ciampea (Warung Borong & Benteng)',
+    shortLabel: 'Pos Kec. Ciampea',
+    kecamatan: 'Ciampea',
+    hubId: 'dramaga',
+    badge: 'Pos Satelit Ciampea',
+    address: 'Jl. Raya Warung Borong, Kec. Ciampea, Kab. Bogor',
+    truckCount: 1,
+    estArrival: '20 – 30 Menit',
+    coordinates: { lat: -6.5680, lng: 106.6920 },
+    x: 15,
+    y: 55
+  },
+  {
+    id: 'pos-leuwiliang',
+    name: 'Pos Siaga Kec. Leuwiliang & Cibungbulang (Bogor Barat Raya)',
+    shortLabel: 'Pos Kec. Leuwiliang',
+    kecamatan: 'Leuwiliang',
+    hubId: 'dramaga',
+    badge: 'Pos Satelit Leuwiliang',
+    address: 'Jl. Raya Leuwiliang - Cemplang, Kec. Leuwiliang, Kab. Bogor',
+    truckCount: 1,
+    estArrival: '25 – 35 Menit',
+    coordinates: { lat: -6.5740, lng: 106.6340 },
+    x: 8,
+    y: 62
+  },
+
+  // --- KABUPATEN BOGOR (SELATAN & PUNCAK) ---
+  {
+    id: 'pos-ciawi',
+    name: 'Pos Siaga Kec. Ciawi (Simpang Gadog & Tol Jagorawi)',
+    shortLabel: 'Pos Kec. Ciawi',
+    kecamatan: 'Ciawi',
+    hubId: 'ciawi',
+    badge: 'Pos Siaga Ciawi',
+    address: 'Simpang Ciawi - Pintu Tol Jagorawi, Kec. Ciawi, Kab. Bogor',
+    truckCount: 3,
+    estArrival: '15 – 25 Menit',
+    coordinates: { lat: -6.6588, lng: 106.8544 },
+    x: 69,
+    y: 70
+  },
+  {
+    id: 'pos-megamendung',
+    name: 'Pos Siaga Kec. Megamendung (Gadog & Cipayung Girang)',
+    shortLabel: 'Pos Kec. Megamendung',
+    kecamatan: 'Megamendung',
+    hubId: 'ciawi',
+    badge: 'Pos Satelit Megamendung',
+    address: 'Jl. Raya Puncak Gadog - Cipayung, Kec. Megamendung, Kab. Bogor',
+    truckCount: 2,
+    estArrival: '20 – 30 Menit',
+    coordinates: { lat: -6.6520, lng: 106.8920 },
+    x: 78,
+    y: 75
+  },
+  {
+    id: 'pos-cisarua',
+    name: 'Pos Siaga Kec. Cisarua (Tugu & Jalur Puncak KM 77)',
+    shortLabel: 'Pos Kec. Cisarua Puncak',
+    kecamatan: 'Cisarua',
+    hubId: 'ciawi',
+    badge: 'Pos Siaga Cisarua',
+    address: 'Jl. Raya Puncak Km. 77, Tugu Selatan, Kec. Cisarua, Kab. Bogor',
+    truckCount: 2,
+    estArrival: '25 – 35 Menit',
+    coordinates: { lat: -6.6987, lng: 106.9387 },
+    x: 87,
+    y: 84
+  },
+  {
+    id: 'pos-caringin',
+    name: 'Pos Siaga Kec. Caringin & Cijeruk (Akses Tol Bocimi)',
+    shortLabel: 'Pos Kec. Caringin',
+    kecamatan: 'Caringin',
+    hubId: 'ciawi',
+    badge: 'Pos Satelit Caringin',
+    address: 'Jl. Raya Sukabumi - Caringin (Akses Tol Bocimi), Kec. Caringin, Kab. Bogor',
+    truckCount: 1,
+    estArrival: '20 – 30 Menit',
+    coordinates: { lat: -6.7110, lng: 106.8290 },
+    x: 61,
+    y: 80
+  }
+];
+
+export const REALTIME_FLEET_TRUCKS: RealtimeFleetTruck[] = [
+  {
+    id: 'truck-01',
+    unitCode: 'Armada MB-01',
+    plate: 'F 8412 BA',
+    hubId: 'kota-bogor',
+    hubName: 'Pos Kota Bogor',
+    kecamatan: 'Tanah Sareal',
+    subdistrict: 'Jl. Sholeh Iskandar & Yasmin',
+    truckType: 'Truk Vakum Standar',
+    capacity: '4.000 Liter',
+    hoseLength: 'Selang 60 Meter',
+    driver: 'Pak Ujang & Kru 1',
+    status: 'standby',
+    statusLabel: 'Siaga di Pos Pangkalan',
+    speed: '0 km/j',
+    eta: '15 Menit',
+    distanceKm: 1.8,
+    coordinates: { lat: -6.5612, lng: 106.7892 },
+    x: 44,
+    y: 46
+  },
+  {
+    id: 'truck-02',
+    unitCode: 'Armada MB-02',
+    plate: 'F 8190 WS',
+    hubId: 'kota-bogor',
+    hubName: 'Pos Kota Bogor',
+    kecamatan: 'Bogor Tengah',
+    subdistrict: 'Jl. Ir. H. Juanda & Paledang',
+    truckType: 'Truk Vakum Cepat',
+    capacity: '3.000 Liter',
+    hoseLength: 'Selang 50 Meter',
+    driver: 'Pak Hendra & Kru 2',
+    status: 'dispatched',
+    statusLabel: 'Meluncur ke Lokasi Pelanggan',
+    speed: '28 km/j',
+    eta: '10 Menit',
+    distanceKm: 2.1,
+    coordinates: { lat: -6.5971, lng: 106.795 },
+    x: 53,
+    y: 52
+  },
+  {
+    id: 'truck-03',
+    unitCode: 'Armada MB-03',
+    plate: 'F 8821 BB',
+    hubId: 'kota-bogor',
+    hubName: 'Pos Kota Bogor',
+    kecamatan: 'Bogor Barat',
+    subdistrict: 'Bubulak & Cilendek',
+    truckType: 'Truk Kompak Gang Sempit',
+    capacity: '2.800 Liter',
+    hoseLength: 'Selang 80 Meter',
+    driver: 'Pak Deni & Kru 3',
+    status: 'service',
+    statusLabel: 'Sedang Pengerjaan di Lokasi',
+    speed: '0 km/j',
+    eta: 'Dalam Pengerjaan',
+    distanceKm: 2.9,
+    coordinates: { lat: -6.575, lng: 106.761 },
+    x: 38,
+    y: 51
+  },
+  {
+    id: 'truck-04',
+    unitCode: 'Armada MB-04',
+    plate: 'F 8530 CB',
+    hubId: 'cibinong',
+    hubName: 'Pos Cibinong',
+    kecamatan: 'Cibinong',
+    subdistrict: 'Kawasan Pemda Tegar Beriman',
+    truckType: 'Truk Vakum Jumbo',
+    capacity: '4.500 Liter',
+    hoseLength: 'Selang 100 Meter',
+    driver: 'Pak Yayat & Kru 4',
+    status: 'standby',
+    statusLabel: 'Siaga Pangkalan Cibinong',
+    speed: '0 km/j',
+    eta: '15 Menit',
+    distanceKm: 1.4,
+    coordinates: { lat: -6.4817, lng: 106.8542 },
+    x: 65,
+    y: 26
+  },
+  {
+    id: 'truck-05',
+    unitCode: 'Armada MB-05',
+    plate: 'F 8391 CS',
+    hubId: 'cibinong',
+    hubName: 'Pos Cibinong & Sentul',
+    kecamatan: 'Babakan Madang',
+    subdistrict: 'Sentul City & Kadumangu',
+    truckType: 'Truk Vakum Sedang',
+    capacity: '3.500 Liter',
+    hoseLength: 'Selang 70 Meter',
+    driver: 'Pak Agus & Kru 5',
+    status: 'dispatched',
+    statusLabel: 'Meluncur Area Sentul City',
+    speed: '32 km/j',
+    eta: '12 Menit',
+    distanceKm: 3.2,
+    coordinates: { lat: -6.5385, lng: 106.8745 },
+    x: 76,
+    y: 39
+  },
+  {
+    id: 'truck-06',
+    unitCode: 'Armada MB-06',
+    plate: 'F 8204 BG',
+    hubId: 'cibinong',
+    hubName: 'Pos Cibinong',
+    kecamatan: 'Bojonggede',
+    subdistrict: 'Kawasan Stasiun Bojonggede & Gaperi',
+    truckType: 'Truk Vakum Lincah',
+    capacity: '3.000 Liter',
+    hoseLength: 'Selang 60 Meter',
+    driver: 'Pak Tedi & Kru 6',
+    status: 'standby',
+    statusLabel: 'Siaga Pos Bojonggede',
+    speed: '0 km/j',
+    eta: '15 Menit',
+    distanceKm: 2.0,
+    coordinates: { lat: -6.4952, lng: 106.7972 },
+    x: 50,
+    y: 24
+  },
+  {
+    id: 'truck-07',
+    unitCode: 'Armada MB-07',
+    plate: 'F 8711 DR',
+    hubId: 'dramaga',
+    hubName: 'Pos Dramaga',
+    kecamatan: 'Dramaga',
+    subdistrict: 'Jl. Raya Dramaga (Dekat IPB)',
+    truckType: 'Truk Vakum Standar',
+    capacity: '3.500 Liter',
+    hoseLength: 'Selang 75 Meter',
+    driver: 'Pak Dedi & Kru 7',
+    status: 'standby',
+    statusLabel: 'Siaga Pangkalan Dramaga',
+    speed: '0 km/j',
+    eta: '15 Menit',
+    distanceKm: 1.5,
+    coordinates: { lat: -6.5828, lng: 106.7322 },
+    x: 23,
+    y: 54
+  },
+  {
+    id: 'truck-08',
+    unitCode: 'Armada MB-08',
+    plate: 'F 8443 CM',
+    hubId: 'dramaga',
+    hubName: 'Pos Dramaga',
+    kecamatan: 'Ciomas',
+    subdistrict: 'Pagelaran & Laladon',
+    truckType: 'Truk Kompak Perumahan',
+    capacity: '2.500 Liter',
+    hoseLength: 'Selang 80 Meter',
+    driver: 'Pak Acep & Kru 8',
+    status: 'service',
+    statusLabel: 'Sedang Pengerjaan di Ciomas',
+    speed: '0 km/j',
+    eta: 'Dalam Pengerjaan',
+    distanceKm: 2.6,
+    coordinates: { lat: -6.6022, lng: 106.7645 },
+    x: 35,
+    y: 64
+  },
+  {
+    id: 'truck-09',
+    unitCode: 'Armada MB-09',
+    plate: 'F 8660 CW',
+    hubId: 'ciawi',
+    hubName: 'Pos Ciawi',
+    kecamatan: 'Ciawi',
+    subdistrict: 'Simpang Ciawi & Gadog',
+    truckType: 'Truk Torsi Tinggi Tanjakan',
+    capacity: '4.000 Liter',
+    hoseLength: 'Selang 80 Meter',
+    driver: 'Pak Maman & Kru 9',
+    status: 'standby',
+    statusLabel: 'Siaga Simpang Ciawi Gadog',
+    speed: '0 km/j',
+    eta: '18 Menit',
+    distanceKm: 2.2,
+    coordinates: { lat: -6.6588, lng: 106.8544 },
+    x: 65,
+    y: 74
+  },
+  {
+    id: 'truck-10',
+    unitCode: 'Armada MB-10',
+    plate: 'F 8115 PC',
+    hubId: 'ciawi',
+    hubName: 'Pos Ciawi & Puncak',
+    kecamatan: 'Cisarua',
+    subdistrict: 'Jalur Raya Puncak & Megamendung',
+    truckType: 'Truk Vakum Khusus Puncak',
+    capacity: '3.500 Liter',
+    hoseLength: 'Selang 90 Meter',
+    driver: 'Pak Iwan & Kru 10',
+    status: 'dispatched',
+    statusLabel: 'Meluncur Jalur Wisata Cisarua',
+    speed: '24 km/j',
+    eta: '20 Menit',
+    distanceKm: 4.8,
+    coordinates: { lat: -6.6987, lng: 106.9387 },
+    x: 86,
+    y: 82
+  },
+  {
+    id: 'truck-11',
+    unitCode: 'Armada MB-11',
+    plate: 'F 8502 PR',
+    hubId: 'parung',
+    hubName: 'Pos Parung',
+    kecamatan: 'Parung',
+    subdistrict: 'Jl. Raya Parung & Kemang',
+    truckType: 'Truk Vakum Standar',
+    capacity: '3.500 Liter',
+    hoseLength: 'Selang 70 Meter',
+    driver: 'Pak Rudi & Kru 11',
+    status: 'standby',
+    statusLabel: 'Siaga Pangkalan Parung',
+    speed: '0 km/j',
+    eta: '15 Menit',
+    distanceKm: 1.7,
+    coordinates: { lat: -6.4258, lng: 106.7297 },
+    x: 30,
+    y: 18
+  }
+];
+
 export interface LayananAreaOption {
   value: string;
   label: string;
@@ -1962,6 +2595,24 @@ export default function App() {
   const [isMapZooming, setIsMapZooming] = useState(false);
   const [selectedLokasiKecamatan, setSelectedLokasiKecamatan] = useState('');
 
+  // Interactive Map Real-Time Fleet & Pos Marker States
+  const [mapViewMode, setMapViewMode] = useState<'visual' | 'google'>('visual');
+  const [markerCategoryFilter, setMarkerCategoryFilter] = useState<'all' | 'trucks' | 'pos'>('all');
+  const [activeMapMarker, setActiveMapMarker] = useState<{ type: 'truck' | 'pos'; id: string } | null>({
+    type: 'pos',
+    id: 'pos-bogor-tengah'
+  });
+  const [isGpsRefreshing, setIsGpsRefreshing] = useState(false);
+  const [lastGpsSync, setLastGpsSync] = useState('Baru saja');
+
+  const handleRefreshGps = () => {
+    setIsGpsRefreshing(true);
+    setTimeout(() => {
+      setIsGpsRefreshing(false);
+      setLastGpsSync('Baru saja');
+    }, 650);
+  };
+
   // Stats Real-time Section Observer & Animated Counters
   const statsSectionRef = useRef<HTMLDivElement | null>(null);
   const [statsVisible, setStatsVisible] = useState(false);
@@ -2055,6 +2706,13 @@ export default function App() {
     setSelectedMapHub(newHubIndex);
     setMapZoomKey((prev) => prev + 1);
     setIsMapZooming(true);
+    const targetHub = MAP_HUBS[newHubIndex];
+    if (targetHub) {
+      const posMarker = POS_ARMADA_MARKERS.find((p) => p.hubId === targetHub.id);
+      if (posMarker) {
+        setActiveMapMarker({ type: 'pos', id: posMarker.id });
+      }
+    }
     setTimeout(() => {
       setIsMapZooming(false);
     }, 750);
@@ -2063,6 +2721,28 @@ export default function App() {
   const handleLokasiKecamatanSelect = (kecamatanName: string) => {
     setSelectedLokasiKecamatan(kecamatanName);
     if (!kecamatanName) return;
+
+    // Cari pos armada yang menaungi kecamatan ini (prioritas agar pengguna langsung melihat titik pos armada di peta)
+    const matchingPos = POS_ARMADA_MARKERS.find(
+      (p) =>
+        p.kecamatan.toLowerCase().includes(kecamatanName.toLowerCase()) ||
+        kecamatanName.toLowerCase().includes(p.kecamatan.toLowerCase()) ||
+        p.shortLabel.toLowerCase().includes(kecamatanName.toLowerCase()) ||
+        kecamatanName.toLowerCase().includes(p.shortLabel.toLowerCase())
+    );
+
+    // Cari truk armada yang sedang siaga di/dekat kecamatan ini sebagai alternatif
+    const matchingTruck = REALTIME_FLEET_TRUCKS.find(
+      (t) =>
+        t.kecamatan.toLowerCase() === kecamatanName.toLowerCase() ||
+        kecamatanName.toLowerCase().includes(t.kecamatan.toLowerCase())
+    );
+
+    if (matchingPos) {
+      setActiveMapMarker({ type: 'pos', id: matchingPos.id });
+    } else if (matchingTruck) {
+      setActiveMapMarker({ type: 'truck', id: matchingTruck.id });
+    }
 
     const areaDetail = BOGOR_AREA_DETAILS.find((a) => a.name.toLowerCase() === kecamatanName.toLowerCase());
     if (areaDetail) {
@@ -2179,15 +2859,22 @@ export default function App() {
     }
     faqTypingTimeoutRef.current = setTimeout(() => {
       setIsFaqTyping(false);
-    }, 750);
+    }, 550);
     filterTimeoutRef.current = setTimeout(() => {
       setIsFilterRunning(false);
-    }, 800);
+    }, 600);
   };
 
   const handleFaqSearchChange = (val: string) => {
     setFaqSearch(val);
-    markSearchFilterRunning();
+    if (val.trim()) {
+      markSearchFilterRunning();
+    } else {
+      setIsFaqTyping(false);
+      setIsFilterRunning(false);
+      if (faqTypingTimeoutRef.current) clearTimeout(faqTypingTimeoutRef.current);
+      if (filterTimeoutRef.current) clearTimeout(filterTimeoutRef.current);
+    }
   };
 
   const handleFaqSearchClear = () => {
@@ -2392,17 +3079,47 @@ export default function App() {
   const [modalFaqCategory, setModalFaqCategory] = useState('Topik Populer');
   const [openModalFaq, setOpenModalFaq] = useState<number | null>(1);
   const [isModalFaqTyping, setIsModalFaqTyping] = useState(false);
+  const [isModalFilterRunning, setIsModalFilterRunning] = useState(false);
   const modalFaqTypingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const modalFilterTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleModalFaqSearchChange = (val: string) => {
-    setModalFaqSearch(val);
+  const isModalSearchActive = isModalFaqTyping || isModalFilterRunning;
+
+  const markModalSearchFilterRunning = () => {
     setIsModalFaqTyping(true);
+    setIsModalFilterRunning(true);
     if (modalFaqTypingTimeoutRef.current) {
       clearTimeout(modalFaqTypingTimeoutRef.current);
     }
+    if (modalFilterTimeoutRef.current) {
+      clearTimeout(modalFilterTimeoutRef.current);
+    }
     modalFaqTypingTimeoutRef.current = setTimeout(() => {
       setIsModalFaqTyping(false);
-    }, 750);
+    }, 550);
+    modalFilterTimeoutRef.current = setTimeout(() => {
+      setIsModalFilterRunning(false);
+    }, 600);
+  };
+
+  const handleModalFaqSearchChange = (val: string) => {
+    setModalFaqSearch(val);
+    if (val.trim()) {
+      markModalSearchFilterRunning();
+    } else {
+      setIsModalFaqTyping(false);
+      setIsModalFilterRunning(false);
+      if (modalFaqTypingTimeoutRef.current) clearTimeout(modalFaqTypingTimeoutRef.current);
+      if (modalFilterTimeoutRef.current) clearTimeout(modalFilterTimeoutRef.current);
+    }
+  };
+
+  const handleModalFaqSearchClear = () => {
+    setModalFaqSearch('');
+    setIsModalFaqTyping(false);
+    setIsModalFilterRunning(false);
+    if (modalFaqTypingTimeoutRef.current) clearTimeout(modalFaqTypingTimeoutRef.current);
+    if (modalFilterTimeoutRef.current) clearTimeout(modalFilterTimeoutRef.current);
   };
 
   const handleOpenFaqModal = () => {
@@ -2413,9 +3130,7 @@ export default function App() {
     setIsFaqModalOpen(true);
     if (faqSearch) {
       setModalFaqSearch(faqSearch);
-      setIsModalFaqTyping(true);
-      if (modalFaqTypingTimeoutRef.current) clearTimeout(modalFaqTypingTimeoutRef.current);
-      modalFaqTypingTimeoutRef.current = setTimeout(() => setIsModalFaqTyping(false), 750);
+      markModalSearchFilterRunning();
     }
     if (faqCategory) setModalFaqCategory(faqCategory);
   };
@@ -2436,6 +3151,12 @@ export default function App() {
     return () => {
       if (faqModalCloseTimeoutRef.current) {
         clearTimeout(faqModalCloseTimeoutRef.current);
+      }
+      if (modalFaqTypingTimeoutRef.current) {
+        clearTimeout(modalFaqTypingTimeoutRef.current);
+      }
+      if (modalFilterTimeoutRef.current) {
+        clearTimeout(modalFilterTimeoutRef.current);
       }
     };
   }, []);
@@ -4561,7 +5282,12 @@ export default function App() {
                     key={cat}
                     type="button"
                     className={`faq-filter-pill ${faqCategory === cat ? 'active' : ''}`}
-                    onClick={() => setFaqCategory(cat)}
+                    onClick={() => {
+                      setFaqCategory(cat);
+                      if (faqSearch.trim()) {
+                        markSearchFilterRunning();
+                      }
+                    }}
                   >
                     {cat}
                   </button>
@@ -4569,7 +5295,12 @@ export default function App() {
               </div>
 
               <div className="faq-count-badge">
-                {faqSearch || faqCategory !== 'Topik Populer' ? (
+                {isSearchActive && faqSearch.trim() ? (
+                  <span className="faq-count-searching">
+                    <i className="fas fa-spinner fa-spin" style={{ marginRight: '6px', color: '#D97706' }}></i>
+                    Menyaring pertanyaan cerdas...
+                  </span>
+                ) : faqSearch || faqCategory !== 'Topik Populer' ? (
                   <span>
                     Ditemukan <strong>{filteredFaqs.length}</strong> dari {FAQ_DATA.length} pertanyaan
                   </span>
@@ -4581,7 +5312,80 @@ export default function App() {
           </div>
 
           <div className="faq-container fade-in">
-            {filteredFaqs.length === 0 ? (
+            {isSearchActive && faqSearch.trim() ? (
+              <div
+                key={`faq-skeleton-${faqCategory}`}
+                className="faq-loading-skeleton-container faq-results-refresh faq-scale-in"
+                role="status"
+                aria-live="polite"
+                aria-label="Menyaring pertanyaan FAQ dengan AI"
+              >
+                {/* AI Filtering Progress Box */}
+                <div className="faq-filtering-progress-box">
+                  <div className="faq-filtering-progress-track">
+                    <div className="faq-filtering-progress-bar"></div>
+                  </div>
+                  <div className="faq-filtering-status-info">
+                    <div className="faq-filtering-status-left">
+                      <span className="faq-ai-filter-sparkle">
+                        <i className="fas fa-wand-magic-sparkles"></i>
+                      </span>
+                      <span className="faq-ai-filter-text">
+                        <strong>AI Smart Filter:</strong> Menyaring pertanyaan relevan untuk &ldquo;{faqSearch}&rdquo;...
+                      </span>
+                    </div>
+                    <span className="faq-filtering-loading-tag">
+                      <i className="fas fa-circle-notch fa-spin"></i> Menyaring Jawaban
+                    </span>
+                  </div>
+                </div>
+
+                {/* Skeleton Cards Preview */}
+                <div className="faq-skeleton-list">
+                  {[1, 2, 3].map((idx) => (
+                    <div
+                      key={`faq-skeleton-${idx}`}
+                      className={`faq-skeleton-card ${idx === 1 ? 'is-expanded-preview' : ''}`}
+                      style={{ animationDelay: `${(idx - 1) * 0.08}s` }}
+                    >
+                      <div className="faq-skeleton-bar">
+                        <div className="faq-skeleton-badge skeleton-shimmer"></div>
+                        <div className="faq-skeleton-content">
+                          <div
+                            className="faq-skeleton-line skeleton-title skeleton-shimmer"
+                            style={{ width: idx === 1 ? '78%' : idx === 2 ? '64%' : '82%' }}
+                          ></div>
+                          <div className="faq-skeleton-meta-row">
+                            <div
+                              className="faq-skeleton-tag skeleton-shimmer"
+                              style={{ width: idx === 1 ? '90px' : idx === 2 ? '75px' : '100px' }}
+                            ></div>
+                            <div
+                              className="faq-skeleton-line skeleton-subtitle skeleton-shimmer"
+                              style={{ width: idx === 1 ? '36%' : idx === 2 ? '28%' : '42%' }}
+                            ></div>
+                          </div>
+                        </div>
+                        <div className="faq-skeleton-action skeleton-shimmer"></div>
+                      </div>
+
+                      {/* Realistic Answer Block Skeleton Preview for the First Open Item */}
+                      {idx === 1 && (
+                        <div className="faq-skeleton-answer">
+                          <div className="faq-skeleton-line skeleton-body skeleton-shimmer" style={{ width: '94%' }}></div>
+                          <div className="faq-skeleton-line skeleton-body skeleton-shimmer" style={{ width: '86%' }}></div>
+                          <div className="faq-skeleton-line skeleton-body skeleton-shimmer" style={{ width: '62%' }}></div>
+                          <div className="faq-skeleton-btn-row">
+                            <div className="faq-skeleton-btn skeleton-shimmer" style={{ width: '185px' }}></div>
+                            <div className="faq-skeleton-btn skeleton-shimmer" style={{ width: '135px' }}></div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : filteredFaqs.length === 0 ? (
               <div key={`faq-empty-${faqSearch}-${faqCategory}`} className="faq-empty-state faq-results-refresh faq-scale-in">
                 <i className="fas fa-search"></i>
                 <h4>Tidak Ada Pertanyaan Ditemukan</h4>
@@ -6444,43 +7248,456 @@ export default function App() {
           <div className="lokasi-grid fade-in">
             {/* Interactive Map Viewport with Subtle Zoom-In Animation */}
             <div className="lokasi-map-wrapper">
+              {/* Map Top Header with Live GPS Status & View Mode Switcher */}
               <div className="lokasi-map-topbar">
                 <div className="lokasi-map-status">
                   <span className="lokasi-pulse-dot"></span>
-                  <span>LIVE GPS POS SIAGA BOGOR</span>
+                  <span className="lokasi-map-status-title">LIVE GPS ARMADA BOGOR</span>
+                  <span className="lokasi-gps-sync-badge">
+                    <i className="fas fa-satellite"></i> 11/11 Unit Online
+                  </span>
                 </div>
-                <div className="lokasi-map-active-badge">
-                  <i className="fas fa-check-circle" style={{ marginRight: '6px' }}></i>
-                  {MAP_HUBS[selectedMapHub].badge}
+
+                <div className="lokasi-map-actions-top">
+                  <div className="lokasi-view-mode-tabs" role="tablist" aria-label="Pilih Tampilan Peta">
+                    <button
+                      type="button"
+                      className={`lokasi-mode-pill ${mapViewMode === 'visual' ? 'active' : ''}`}
+                      onClick={() => setMapViewMode('visual')}
+                      role="tab"
+                      aria-selected={mapViewMode === 'visual'}
+                      title="Peta Interaktif Radar & Pos Siaga"
+                    >
+                      <i className="fas fa-radar"></i> Radar Live ({REALTIME_FLEET_TRUCKS.length} Truk)
+                    </button>
+                    <button
+                      type="button"
+                      className={`lokasi-mode-pill ${mapViewMode === 'google' ? 'active' : ''}`}
+                      onClick={() => setMapViewMode('google')}
+                      role="tab"
+                      aria-selected={mapViewMode === 'google'}
+                      title="Tampilan Google Maps Navigasi"
+                    >
+                      <i className="fas fa-map-location-dot"></i> Google Maps
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="lokasi-gps-refresh-btn"
+                    onClick={handleRefreshGps}
+                    title="Segarkan data GPS satelit real-time"
+                    aria-label="Segarkan sinyal GPS"
+                  >
+                    <i className={`fas fa-rotate-right ${isGpsRefreshing ? 'fa-spin' : ''}`}></i>
+                    <span>{lastGpsSync}</span>
+                  </button>
                 </div>
               </div>
 
-              <div className="lokasi-iframe-container">
-                <div
-                  key={`map-zoom-viewport-${selectedMapHub}-${mapZoomKey}`}
-                  className={`lokasi-map-animator ${isMapZooming ? 'map-zooming' : ''}`}
-                >
-                  <iframe
-                    key={`map-iframe-${selectedMapHub}`}
-                    title={`Peta Lokasi ${MAP_HUBS[selectedMapHub].name}`}
-                    src={`https://maps.google.com/maps?q=${encodeURIComponent(MAP_HUBS[selectedMapHub].mapQuery)}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    allowFullScreen
-                  ></iframe>
-                </div>
-
-                {/* Subtle Radar & Focus Ping Overlay on Zoom */}
-                {isMapZooming && (
-                  <div className="lokasi-map-focus-overlay">
-                    <div className="lokasi-map-focus-badge">
-                      <span className="lokasi-map-radar-pulse"></span>
-                      <i className="fas fa-crosshairs"></i>
-                      <span>Fokus Pos: <strong>{MAP_HUBS[selectedMapHub].shortLabel}</strong></span>
+              {/* Marker Filter Buttons (Only in Visual Mode) */}
+              {mapViewMode === 'visual' && (
+                <div className="lokasi-marker-filter-bar">
+                  <div className="lokasi-marker-filter-top">
+                    <span className="lokasi-marker-filter-label">
+                      <i className="fas fa-filter"></i> Filter Titik Peta:
+                    </span>
+                    <div className="lokasi-marker-filter-chips">
+                      <button
+                        type="button"
+                        className={`lokasi-filter-chip ${markerCategoryFilter === 'all' ? 'active' : ''}`}
+                        onClick={() => setMarkerCategoryFilter('all')}
+                      >
+                        Semua Titik ({POS_ARMADA_MARKERS.length + REALTIME_FLEET_TRUCKS.length})
+                      </button>
+                      <button
+                        type="button"
+                        className={`lokasi-filter-chip ${markerCategoryFilter === 'pos' ? 'active' : ''}`}
+                        onClick={() => setMarkerCategoryFilter('pos')}
+                      >
+                        <i className="fas fa-warehouse"></i> Pos Armada Siaga ({POS_ARMADA_MARKERS.length} Kecamatan)
+                      </button>
+                      <button
+                        type="button"
+                        className={`lokasi-filter-chip ${markerCategoryFilter === 'trucks' ? 'active' : ''}`}
+                        onClick={() => setMarkerCategoryFilter('trucks')}
+                      >
+                        <i className="fas fa-truck-moving"></i> Posisi Truk Real-Time ({REALTIME_FLEET_TRUCKS.length})
+                      </button>
                     </div>
+                  </div>
+
+                  {/* Quick Subdistrict Pos Siaga Selector Chips */}
+                  <div className="lokasi-pos-kecamatan-strip">
+                    <span className="lokasi-pos-kecamatan-label">
+                      <i className="fas fa-map-pin"></i> Pos Armada Siaga per Kecamatan:
+                    </span>
+                    <div className="lokasi-pos-kecamatan-scroll" tabIndex={0} aria-label="Daftar pos armada per kecamatan">
+                      {POS_ARMADA_MARKERS.map((pos) => {
+                        const isPosSelected = activeMapMarker?.type === 'pos' && activeMapMarker.id === pos.id;
+                        return (
+                          <button
+                            key={`chip-${pos.id}`}
+                            type="button"
+                            className={`pos-kecamatan-chip ${isPosSelected ? 'active' : ''}`}
+                            onClick={() => {
+                              setActiveMapMarker({ type: 'pos', id: pos.id });
+                              const hubIdx = MAP_HUBS.findIndex((h) => h.id === pos.hubId);
+                              if (hubIdx !== -1) setSelectedMapHub(hubIdx);
+                              if (markerCategoryFilter === 'trucks') setMarkerCategoryFilter('all');
+                            }}
+                            title={`Lihat Pos Siaga Kecamatan ${pos.kecamatan} (${pos.truckCount} Truk Standby)`}
+                          >
+                            <span className="pos-chip-dot"></span>
+                            <span className="pos-chip-title">{pos.shortLabel.replace(/^Pos (Kec\.\s*)?/, '')}</span>
+                            <span className="pos-chip-count">{pos.truckCount} Truk</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Map Viewport: Visual Digital Radar vs Google Maps */}
+              <div className="lokasi-iframe-container">
+                {mapViewMode === 'visual' ? (
+                  <div className="lokasi-interactive-canvas">
+                    {/* SVG Vector Map of Greater Bogor */}
+                    <svg className="lokasi-canvas-svg" viewBox="0 0 1000 650" preserveAspectRatio="none">
+                      <defs>
+                        <pattern id="radar-grid" width="45" height="45" patternUnits="userSpaceOnUse">
+                          <path d="M 45 0 L 0 0 0 45" fill="none" stroke="rgba(255, 214, 10, 0.08)" strokeWidth="0.8" />
+                        </pattern>
+                        <linearGradient id="road-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.5" />
+                          <stop offset="50%" stopColor="#FFD60A" stopOpacity="0.9" />
+                          <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.5" />
+                        </linearGradient>
+                        <linearGradient id="river-blue" x1="0%" y1="0%" x2="0%" y2="100%">
+                          <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.4" />
+                          <stop offset="100%" stopColor="#0284C7" stopOpacity="0.3" />
+                        </linearGradient>
+                      </defs>
+
+                      {/* Map Background with Coordinates Grid */}
+                      <rect width="1000" height="650" fill="#0B1329" />
+                      <rect width="1000" height="650" fill="url(#radar-grid)" />
+
+                      {/* Sungai Ciliwung Natural Curve */}
+                      <path
+                        d="M 520 0 Q 510 180 500 270 T 520 380 T 490 510 T 680 650"
+                        fill="none"
+                        stroke="url(#river-blue)"
+                        strokeWidth="7"
+                        strokeLinecap="round"
+                      />
+
+                      {/* Tol Jagorawi Main Artery (Cibinong - Sentul - Bogor - Ciawi) */}
+                      <path
+                        d="M 680 0 L 670 170 L 730 260 L 580 370 L 670 480 L 850 650"
+                        fill="none"
+                        stroke="url(#road-gold)"
+                        strokeWidth="4.5"
+                        strokeDasharray="9 4"
+                      />
+
+                      {/* Jl. Raya Parung - Kemang to Kota Bogor */}
+                      <path
+                        d="M 280 0 L 290 130 L 400 240 L 470 340"
+                        fill="none"
+                        stroke="rgba(255, 255, 255, 0.35)"
+                        strokeWidth="3.5"
+                      />
+
+                      {/* Jl. Sholeh Iskandar & Yasmin Ring Road */}
+                      <path
+                        d="M 330 290 L 540 310 L 650 330"
+                        fill="none"
+                        stroke="rgba(255, 214, 10, 0.6)"
+                        strokeWidth="3.5"
+                      />
+
+                      {/* Jl. Raya Dramaga to Bogor Barat */}
+                      <path
+                        d="M 120 370 L 260 365 L 430 350 L 490 355"
+                        fill="none"
+                        stroke="rgba(255, 255, 255, 0.35)"
+                        strokeWidth="3.5"
+                      />
+
+                      {/* Jl. Raya Ciawi - Puncak */}
+                      <path
+                        d="M 660 480 Q 750 520 850 560 T 980 650"
+                        fill="none"
+                        stroke="rgba(255, 214, 10, 0.6)"
+                        strokeWidth="3.5"
+                      />
+
+                      {/* Radar Range Rings */}
+                      <circle cx="490" cy="340" r="140" fill="none" stroke="rgba(255, 214, 10, 0.16)" strokeWidth="1" strokeDasharray="4 4" />
+                      <circle cx="490" cy="340" r="280" fill="none" stroke="rgba(255, 214, 10, 0.11)" strokeWidth="1" strokeDasharray="6 6" />
+                      <circle cx="490" cy="340" r="420" fill="none" stroke="rgba(255, 214, 10, 0.07)" strokeWidth="1" />
+                    </svg>
+
+                    {/* District Area Watermark Labels */}
+                    <div className="lokasi-district-tags" aria-hidden="true">
+                      <span className="district-tag" style={{ left: '26%', top: '12%' }}>KEC. PARUNG</span>
+                      <span className="district-tag" style={{ left: '46%', top: '16%' }}>KEC. BOJONGGEDE</span>
+                      <span className="district-tag" style={{ left: '68%', top: '18%' }}>KEC. CIBINONG</span>
+                      <span className="district-tag" style={{ left: '76%', top: '32%' }}>SENTUL CITY</span>
+                      <span className="district-tag" style={{ left: '41%', top: '38%' }}>TANAH SAREAL</span>
+                      <span className="district-tag highlight" style={{ left: '50%', top: '44%' }}>KOTA BOGOR (PUSAT)</span>
+                      <span className="district-tag" style={{ left: '20%', top: '64%' }}>KEC. DRAMAGA</span>
+                      <span className="district-tag" style={{ left: '36%', top: '68%' }}>KEC. CIOMAS</span>
+                      <span className="district-tag" style={{ left: '68%', top: '64%' }}>KEC. CIAWI</span>
+                      <span className="district-tag" style={{ left: '85%', top: '76%' }}>PUNCAK / CISARUA</span>
+                    </div>
+
+                    {/* Interactive Pos Armada Siaga Markers */}
+                    {(markerCategoryFilter === 'all' || markerCategoryFilter === 'pos') &&
+                      POS_ARMADA_MARKERS.map((pos) => {
+                        const isPosSelected = activeMapMarker?.type === 'pos' && activeMapMarker.id === pos.id;
+                        return (
+                          <div
+                            key={pos.id}
+                            className={`pos-armada-marker ${isPosSelected ? 'active' : ''}`}
+                            style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
+                            onClick={() => {
+                              setActiveMapMarker({ type: 'pos', id: pos.id });
+                              const hubIdx = MAP_HUBS.findIndex((h) => h.id === pos.hubId);
+                              if (hubIdx !== -1) setSelectedMapHub(hubIdx);
+                            }}
+                            title={`Pos Siaga: ${pos.name} (${pos.truckCount} Truk Standby)`}
+                          >
+                            <span className="pos-armada-pulse-ring"></span>
+                            <div className="pos-armada-icon-box">
+                              <i className="fas fa-warehouse"></i>
+                            </div>
+                            <div className="pos-armada-tooltip-tag">
+                              <span className="pos-armada-tag-name">{pos.shortLabel}</span>
+                              <span className="pos-armada-tag-count">{pos.truckCount} Truk Ready</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+
+                    {/* Interactive Real-Time Fleet Truck Markers */}
+                    {(markerCategoryFilter === 'all' || markerCategoryFilter === 'trucks') &&
+                      REALTIME_FLEET_TRUCKS.map((truck) => {
+                        const isTruckSelected = activeMapMarker?.type === 'truck' && activeMapMarker.id === truck.id;
+                        return (
+                          <div
+                            key={truck.id}
+                            className={`fleet-truck-marker status-${truck.status} ${isTruckSelected ? 'active' : ''}`}
+                            style={{ left: `${truck.x}%`, top: `${truck.y}%` }}
+                            onClick={() => {
+                              setActiveMapMarker({ type: 'truck', id: truck.id });
+                              const hubIdx = MAP_HUBS.findIndex((h) => h.id === truck.hubId);
+                              if (hubIdx !== -1) setSelectedMapHub(hubIdx);
+                            }}
+                            title={`Armada: ${truck.unitCode} (${truck.plate}) - ${truck.statusLabel}`}
+                          >
+                            <span className={`fleet-truck-pulse status-${truck.status}`}></span>
+                            <div className="fleet-truck-icon-circle">
+                              <i className="fas fa-truck-moving"></i>
+                            </div>
+                            <div className="fleet-truck-tag">
+                              <span className="fleet-truck-unit">{truck.unitCode}</span>
+                              <span className="fleet-truck-plate">{truck.plate}</span>
+                              {truck.status === 'dispatched' && (
+                                <span className="fleet-truck-speed">{truck.speed}</span>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+
+                    {/* Interactive Marker Popover Card Overlay */}
+                    {activeMapMarker && (
+                      <div className="map-marker-popover fade-in">
+                        {activeMapMarker.type === 'truck' && (() => {
+                          const truck = REALTIME_FLEET_TRUCKS.find((t) => t.id === activeMapMarker.id) || REALTIME_FLEET_TRUCKS[0];
+                          return (
+                            <div className="map-popover-card">
+                              <div className="map-popover-header">
+                                <div className="map-popover-title-row">
+                                  <span className={`map-popover-status-badge status-${truck.status}`}>
+                                    <span className="status-ping"></span>
+                                    {truck.statusLabel}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    className="map-popover-close-btn"
+                                    onClick={() => setActiveMapMarker(null)}
+                                    aria-label="Tutup info armada"
+                                  >
+                                    <i className="fas fa-times"></i>
+                                  </button>
+                                </div>
+                                <h4 className="map-popover-title">
+                                  <i className="fas fa-truck"></i> {truck.unitCode} ({truck.plate})
+                                </h4>
+                                <p className="map-popover-subtitle">
+                                  📍 Wilayah Operasi: <strong>Kecamatan {truck.kecamatan}</strong> ({truck.subdistrict})
+                                </p>
+                              </div>
+
+                              <div className="map-popover-body">
+                                <div className="map-popover-meta-grid">
+                                  <div className="map-popover-meta-item">
+                                    <label>Tipe Unit:</label>
+                                    <span>{truck.truckType}</span>
+                                  </div>
+                                  <div className="map-popover-meta-item">
+                                    <label>Kapasitas Tangki:</label>
+                                    <span>{truck.capacity}</span>
+                                  </div>
+                                  <div className="map-popover-meta-item">
+                                    <label>Panjang Selang:</label>
+                                    <span>{truck.hoseLength}</span>
+                                  </div>
+                                  <div className="map-popover-meta-item">
+                                    <label>Estimasi Tiba:</label>
+                                    <span className="text-eta">
+                                      <i className="fas fa-bolt"></i> {truck.eta} (~{truck.distanceKm} km)
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="map-popover-driver-row">
+                                  <i className="fas fa-user-check"></i>
+                                  <span>Petugas: <strong>{truck.driver}</strong> • Pangkalan: {truck.hubName}</span>
+                                </div>
+                              </div>
+
+                              <div className="map-popover-footer">
+                                <a
+                                  href={`https://wa.me/6285715654183?text=${encodeURIComponent(
+                                    `Halo Admin Mitra Bersih 24 Jam,\nSaya melihat di Peta Real-Time unit *${truck.unitCode} (${truck.plate})* sedang siaga di area *Kecamatan ${truck.kecamatan}*.\nMohon konfirmasi kedatangan armada ini ke alamat saya. Terima kasih!`
+                                  )}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="map-popover-cta-btn"
+                                >
+                                  <i className="fab fa-whatsapp"></i>
+                                  <span>Panggil Unit Ini Sekarang</span>
+                                </a>
+                              </div>
+                            </div>
+                          );
+                        })()}
+
+                        {activeMapMarker.type === 'pos' && (() => {
+                          const pos = POS_ARMADA_MARKERS.find((p) => p.id === activeMapMarker.id) || POS_ARMADA_MARKERS[0];
+                          return (
+                            <div className="map-popover-card">
+                              <div className="map-popover-header">
+                                <div className="map-popover-title-row">
+                                  <span className="map-popover-status-badge pos-badge">
+                                    <i className="fas fa-warehouse"></i> {pos.badge}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    className="map-popover-close-btn"
+                                    onClick={() => setActiveMapMarker(null)}
+                                    aria-label="Tutup info pos"
+                                  >
+                                    <i className="fas fa-times"></i>
+                                  </button>
+                                </div>
+                                <h4 className="map-popover-title">{pos.name}</h4>
+                                <p className="map-popover-subtitle">
+                                  📍 Wilayah Naungan: <strong>{pos.kecamatan}</strong>
+                                </p>
+                              </div>
+
+                              <div className="map-popover-body">
+                                <div className="map-popover-meta-grid">
+                                  <div className="map-popover-meta-item">
+                                    <label>Armada Standby:</label>
+                                    <span className="text-highlight">
+                                      <i className="fas fa-truck-moving"></i> {pos.truckCount} Truk Tangki Ready
+                                    </span>
+                                  </div>
+                                  <div className="map-popover-meta-item">
+                                    <label>Estimasi Respon:</label>
+                                    <span className="text-eta">
+                                      <i className="fas fa-clock"></i> {pos.estArrival}
+                                    </span>
+                                  </div>
+                                </div>
+                                <p className="map-popover-address">
+                                  <i className="fas fa-map-marker-alt"></i> {pos.address}
+                                </p>
+                              </div>
+
+                              <div className="map-popover-footer">
+                                <a
+                                  href={`https://wa.me/6285715654183?text=${encodeURIComponent(
+                                    `Halo Admin Mitra Bersih 24 Jam,\nSaya ingin order sedot WC dari *${pos.name}* (${pos.shortLabel}).\nMohon info ketersediaan armada terdekat ke wilayah saya di Bogor. Terima kasih!`
+                                  )}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="map-popover-cta-btn"
+                                >
+                                  <i className="fab fa-whatsapp"></i>
+                                  <span>Hubungi Pos Ini via WA</span>
+                                </a>
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    )}
+
+                    {/* Interactive Legend Strip at bottom of visual canvas */}
+                    <div className="lokasi-canvas-legend">
+                      <div className="legend-item">
+                        <span className="legend-dot status-standby"></span>
+                        <span>Siaga (6 Truk)</span>
+                      </div>
+                      <div className="legend-item">
+                        <span className="legend-dot status-dispatched"></span>
+                        <span>Meluncur (3 Truk)</span>
+                      </div>
+                      <div className="legend-item">
+                        <span className="legend-dot status-service"></span>
+                        <span>Pengerjaan (2 Truk)</span>
+                      </div>
+                      <div className="legend-item">
+                        <span className="legend-icon pos-icon">
+                          <i className="fas fa-warehouse"></i>
+                        </span>
+                        <span>Pos Siaga ({POS_ARMADA_MARKERS.length} Titik)</span>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    key={`map-zoom-viewport-${selectedMapHub}-${mapZoomKey}`}
+                    className={`lokasi-map-animator ${isMapZooming ? 'map-zooming' : ''}`}
+                  >
+                    <iframe
+                      key={`map-iframe-${selectedMapHub}`}
+                      title={`Peta Lokasi ${MAP_HUBS[selectedMapHub].name}`}
+                      src={`https://maps.google.com/maps?q=${encodeURIComponent(MAP_HUBS[selectedMapHub].mapQuery)}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0 }}
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      allowFullScreen
+                    ></iframe>
+
+                    {isMapZooming && (
+                      <div className="lokasi-map-focus-overlay">
+                        <div className="lokasi-map-focus-badge">
+                          <span className="lokasi-map-radar-pulse"></span>
+                          <i className="fas fa-crosshairs"></i>
+                          <span>Fokus Pos: <strong>{MAP_HUBS[selectedMapHub].shortLabel}</strong></span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -6489,96 +7706,278 @@ export default function App() {
               <div className="lokasi-map-footer">
                 <div className="lokasi-map-coords">
                   <i className="fas fa-compass"></i>
-                  <span>Koordinat: {MAP_HUBS[selectedMapHub].coordinates.lat}, {MAP_HUBS[selectedMapHub].coordinates.lng}</span>
+                  <span>
+                    Koordinat Pusat: {MAP_HUBS[selectedMapHub].coordinates.lat}, {MAP_HUBS[selectedMapHub].coordinates.lng} (Wilayah {MAP_HUBS[selectedMapHub].shortLabel})
+                  </span>
                 </div>
-                <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(MAP_HUBS[selectedMapHub].mapQuery)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="lokasi-open-gmaps-btn"
-                  title="Buka rute navigasi di Google Maps"
-                >
-                  <i className="fas fa-external-link-alt"></i> Buka di Google Maps
-                </a>
+                <div className="lokasi-map-footer-links">
+                  {mapViewMode === 'google' ? (
+                    <button
+                      type="button"
+                      className="lokasi-switch-back-btn"
+                      onClick={() => setMapViewMode('visual')}
+                    >
+                      <i className="fas fa-radar"></i> Kembali ke Radar Real-Time
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="lokasi-switch-back-btn"
+                      onClick={() => setMapViewMode('google')}
+                    >
+                      <i className="fas fa-map-location-dot"></i> Buka Google Maps
+                    </button>
+                  )}
+                  <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(MAP_HUBS[selectedMapHub].mapQuery)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="lokasi-open-gmaps-btn"
+                    title="Buka rute navigasi di Google Maps eksternal"
+                  >
+                    <i className="fas fa-external-link-alt"></i> Navigasi Google Maps
+                  </a>
+                </div>
               </div>
             </div>
 
-            {/* Hub Details & Action Card */}
-            <div key={`hub-detail-card-${selectedMapHub}`} className="lokasi-detail-card">
-              <div className="lokasi-card-header">
-                <span className="lokasi-card-tag">POS OPERASIONAL AKTIF</span>
-                <h3 className="lokasi-card-title">{MAP_HUBS[selectedMapHub].name}</h3>
-                <div className="lokasi-card-eta">
-                  <i className="fas fa-bolt"></i>
-                  <span>Estimasi Tiba: <strong>{MAP_HUBS[selectedMapHub].estTime}</strong></span>
-                </div>
-              </div>
+            {/* Hub Details & Real-Time Action Card */}
+            <div key={`hub-detail-card-${selectedMapHub}-${activeMapMarker?.id || 'hub'}`} className="lokasi-detail-card">
+              {activeMapMarker?.type === 'truck' ? (() => {
+                const truck = REALTIME_FLEET_TRUCKS.find((t) => t.id === activeMapMarker.id) || REALTIME_FLEET_TRUCKS[0];
+                return (
+                  <>
+                    <div className="lokasi-card-header">
+                      <span className="lokasi-card-tag">ARMADA AKTIF TERPILIH</span>
+                      <h3 className="lokasi-card-title">{truck.unitCode} • {truck.plate}</h3>
+                      <div className="lokasi-card-eta">
+                        <i className="fas fa-bolt"></i>
+                        <span>Estimasi Tiba: <strong>{truck.eta}</strong> (~{truck.distanceKm} km ke lokasi Anda)</span>
+                      </div>
+                    </div>
 
-              <div className="lokasi-card-body">
-                <div className="lokasi-info-item">
-                  <div className="lokasi-info-icon">
-                    <i className="fas fa-map-pin"></i>
-                  </div>
-                  <div className="lokasi-info-text">
-                    <label>Alamat / Pangkalan Siaga:</label>
-                    <p>{MAP_HUBS[selectedMapHub].address}</p>
-                  </div>
-                </div>
+                    <div className="lokasi-card-body">
+                      <div className="lokasi-info-item">
+                        <div className="lokasi-info-icon">
+                          <i className="fas fa-location-crosshairs"></i>
+                        </div>
+                        <div className="lokasi-info-text">
+                          <label>Posisi Terkini Real-Time:</label>
+                          <p>Kecamatan {truck.kecamatan} ({truck.subdistrict})</p>
+                        </div>
+                      </div>
 
-                <div className="lokasi-info-item">
-                  <div className="lokasi-info-icon">
-                    <i className="fas fa-layer-group"></i>
-                  </div>
-                  <div className="lokasi-info-text">
-                    <label>Cakupan Kecamatan &amp; Kelurahan:</label>
-                    <p>{MAP_HUBS[selectedMapHub].coverage}</p>
-                  </div>
-                </div>
+                      <div className="lokasi-info-item">
+                        <div className="lokasi-info-icon">
+                          <i className="fas fa-signal"></i>
+                        </div>
+                        <div className="lokasi-info-text">
+                          <label>Status Armada &amp; Kecepatan:</label>
+                          <p><strong>{truck.statusLabel}</strong> • Kecepatan GPS: {truck.speed}</p>
+                        </div>
+                      </div>
 
-                <div className="lokasi-info-item">
-                  <div className="lokasi-info-icon">
-                    <i className="fas fa-truck"></i>
-                  </div>
-                  <div className="lokasi-info-text">
-                    <label>Kesiapan Armada Standby:</label>
-                    <p>{MAP_HUBS[selectedMapHub].trucks}</p>
-                  </div>
-                </div>
+                      <div className="lokasi-info-item">
+                        <div className="lokasi-info-icon">
+                          <i className="fas fa-truck-droplet"></i>
+                        </div>
+                        <div className="lokasi-info-text">
+                          <label>Tipe Tangki &amp; Fasilitas:</label>
+                          <p>{truck.truckType} ({truck.capacity}) + {truck.hoseLength}</p>
+                        </div>
+                      </div>
 
-                <div className="lokasi-info-item">
-                  <div className="lokasi-info-icon">
-                    <i className="fas fa-clock"></i>
-                  </div>
-                  <div className="lokasi-info-text">
-                    <label>Jam Operasional:</label>
-                    <p><strong>Siaga 24 Jam Nonstop</strong> (Setiap Hari Termasuk Libur)</p>
-                  </div>
-                </div>
-              </div>
+                      <div className="lokasi-info-item">
+                        <div className="lokasi-info-icon">
+                          <i className="fas fa-user-shield"></i>
+                        </div>
+                        <div className="lokasi-info-text">
+                          <label>Kru Teknisi &amp; Pangkalan Pos:</label>
+                          <p>{truck.driver} • {truck.hubName}</p>
+                        </div>
+                      </div>
+                    </div>
 
-              {/* Action Buttons */}
-              <div className="lokasi-card-actions">
-                <a
-                  href={`https://wa.me/6285715654183?text=${encodeURIComponent(
-                    `Halo Mitra Bersih, saya butuh penanganan sedot WC / saluran mampet di area ${MAP_HUBS[selectedMapHub].shortLabel} Bogor. Mohon kirimkan armada terdekat ke alamat saya.`
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="lokasi-dispatch-btn"
-                >
-                  <i className="fab fa-whatsapp"></i>
-                  <span>Panggil Armada Pos Ini via WA</span>
-                </a>
+                    <div className="lokasi-card-actions">
+                      <a
+                        href={`https://wa.me/6285715654183?text=${encodeURIComponent(
+                          `Halo Admin Mitra Bersih 24 Jam,\nSaya ingin meminta kedatangan unit *${truck.unitCode} (${truck.plate})* yang sedang siaga di area *Kecamatan ${truck.kecamatan}* Bogor.\nMohon info kesiapan armada menuju alamat saya. Terima kasih!`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="lokasi-dispatch-btn"
+                      >
+                        <i className="fab fa-whatsapp"></i>
+                        <span>Panggil {truck.unitCode} via WA</span>
+                      </a>
 
-                <a
-                  href="tel:+6285715654183"
-                  className="lokasi-call-btn"
-                  title="Telepon Panggilan Cepat"
-                >
-                  <i className="fas fa-phone-alt"></i>
-                  <span>Telepon Cepat: +62 857-1565-4183</span>
-                </a>
-              </div>
+                      <a
+                        href="tel:+6285715654183"
+                        className="lokasi-call-btn"
+                        title="Telepon Panggilan Cepat"
+                      >
+                        <i className="fas fa-phone-alt"></i>
+                        <span>Telepon Cepat: +62 857-1565-4183</span>
+                      </a>
+                    </div>
+                  </>
+                );
+              })() : activeMapMarker?.type === 'pos' ? (() => {
+                const pos = POS_ARMADA_MARKERS.find((p) => p.id === activeMapMarker.id) || POS_ARMADA_MARKERS[0];
+                return (
+                  <>
+                    <div className="lokasi-card-header">
+                      <span className="lokasi-card-tag pos-tag">POS SIAGA KECAMATAN AKTIF</span>
+                      <h3 className="lokasi-card-title">{pos.name}</h3>
+                      <div className="lokasi-card-eta">
+                        <i className="fas fa-bolt"></i>
+                        <span>Estimasi Respon: <strong>{pos.estArrival}</strong> ke lokasi Anda</span>
+                      </div>
+                    </div>
+
+                    <div className="lokasi-card-body">
+                      <div className="lokasi-info-item">
+                        <div className="lokasi-info-icon">
+                          <i className="fas fa-warehouse"></i>
+                        </div>
+                        <div className="lokasi-info-text">
+                          <label>Status &amp; Kategori Pos:</label>
+                          <p><strong>{pos.badge}</strong> • Pangkalan Simpul {MAP_HUBS.find((h) => h.id === pos.hubId)?.shortLabel || 'Bogor'}</p>
+                        </div>
+                      </div>
+
+                      <div className="lokasi-info-item">
+                        <div className="lokasi-info-icon">
+                          <i className="fas fa-map-location-dot"></i>
+                        </div>
+                        <div className="lokasi-info-text">
+                          <label>Alamat Titik Pangkalan Siaga:</label>
+                          <p>{pos.address}</p>
+                        </div>
+                      </div>
+
+                      <div className="lokasi-info-item">
+                        <div className="lokasi-info-icon">
+                          <i className="fas fa-layer-group"></i>
+                        </div>
+                        <div className="lokasi-info-text">
+                          <label>Kecamatan Naungan Siaga:</label>
+                          <p>Kecamatan <strong>{pos.kecamatan}</strong> &amp; sekitarnya</p>
+                        </div>
+                      </div>
+
+                      <div className="lokasi-info-item">
+                        <div className="lokasi-info-icon">
+                          <i className="fas fa-truck-moving"></i>
+                        </div>
+                        <div className="lokasi-info-text">
+                          <label>Kesiapan Armada Standby:</label>
+                          <p><strong>{pos.truckCount} Truk Tangki Vakum</strong> Siaga Siap Berangkat 24 Jam</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="lokasi-card-actions">
+                      <a
+                        href={`https://wa.me/6285715654183?text=${encodeURIComponent(
+                          `Halo Mitra Bersih 24 Jam,\nSaya melihat titik pos siaga *${pos.name}* (Kecamatan ${pos.kecamatan}) di peta interaktif.\nMohon info ketersediaan armada terdekat ke alamat saya di Bogor. Terima kasih!`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="lokasi-dispatch-btn"
+                      >
+                        <i className="fab fa-whatsapp"></i>
+                        <span>Panggil Armada Pos {pos.shortLabel} via WA</span>
+                      </a>
+
+                      <a
+                        href="tel:+6285715654183"
+                        className="lokasi-call-btn"
+                        title="Telepon Panggilan Cepat"
+                      >
+                        <i className="fas fa-phone-alt"></i>
+                        <span>Telepon Cepat: +62 857-1565-4183</span>
+                      </a>
+                    </div>
+                  </>
+                );
+              })() : (
+                <>
+                  <div className="lokasi-card-header">
+                    <span className="lokasi-card-tag">POS OPERASIONAL AKTIF</span>
+                    <h3 className="lokasi-card-title">{MAP_HUBS[selectedMapHub].name}</h3>
+                    <div className="lokasi-card-eta">
+                      <i className="fas fa-bolt"></i>
+                      <span>Estimasi Tiba: <strong>{MAP_HUBS[selectedMapHub].estTime}</strong></span>
+                    </div>
+                  </div>
+
+                  <div className="lokasi-card-body">
+                    <div className="lokasi-info-item">
+                      <div className="lokasi-info-icon">
+                        <i className="fas fa-map-pin"></i>
+                      </div>
+                      <div className="lokasi-info-text">
+                        <label>Alamat / Pangkalan Siaga:</label>
+                        <p>{MAP_HUBS[selectedMapHub].address}</p>
+                      </div>
+                    </div>
+
+                    <div className="lokasi-info-item">
+                      <div className="lokasi-info-icon">
+                        <i className="fas fa-layer-group"></i>
+                      </div>
+                      <div className="lokasi-info-text">
+                        <label>Cakupan Kecamatan &amp; Kelurahan:</label>
+                        <p>{MAP_HUBS[selectedMapHub].coverage}</p>
+                      </div>
+                    </div>
+
+                    <div className="lokasi-info-item">
+                      <div className="lokasi-info-icon">
+                        <i className="fas fa-truck"></i>
+                      </div>
+                      <div className="lokasi-info-text">
+                        <label>Kesiapan Armada Standby:</label>
+                        <p>{MAP_HUBS[selectedMapHub].trucks}</p>
+                      </div>
+                    </div>
+
+                    <div className="lokasi-info-item">
+                      <div className="lokasi-info-icon">
+                        <i className="fas fa-clock"></i>
+                      </div>
+                      <div className="lokasi-info-text">
+                        <label>Jam Operasional:</label>
+                        <p><strong>Siaga 24 Jam Nonstop</strong> (Setiap Hari Termasuk Libur)</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="lokasi-card-actions">
+                    <a
+                      href={`https://wa.me/6285715654183?text=${encodeURIComponent(
+                        `Halo Mitra Bersih, saya butuh penanganan sedot WC / saluran mampet di area ${MAP_HUBS[selectedMapHub].shortLabel} Bogor. Mohon kirimkan armada terdekat ke alamat saya.`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="lokasi-dispatch-btn"
+                    >
+                      <i className="fab fa-whatsapp"></i>
+                      <span>Panggil Armada Pos Ini via WA</span>
+                    </a>
+
+                    <a
+                      href="tel:+6285715654183"
+                      className="lokasi-call-btn"
+                      title="Telepon Panggilan Cepat"
+                    >
+                      <i className="fas fa-phone-alt"></i>
+                      <span>Telepon Cepat: +62 857-1565-4183</span>
+                    </a>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -7537,7 +8936,6 @@ export default function App() {
                   placeholder="Cari pertanyaan... (contoh: tarif, garansi, gang sempit, 24 jam)"
                   value={modalFaqSearch}
                   onChange={(e) => handleModalFaqSearchChange(e.target.value)}
-                  onInput={() => handleModalFaqSearchChange(modalFaqSearch)}
                   aria-label="Cari pertanyaan FAQ di modal"
                   aria-busy={isModalFaqTyping}
                   autoFocus
@@ -7546,7 +8944,7 @@ export default function App() {
                   <button
                     type="button"
                     className="faq-search-clear"
-                    onClick={() => setModalFaqSearch('')}
+                    onClick={handleModalFaqSearchClear}
                     title="Hapus kata kunci pencarian modal"
                     aria-label="Hapus kata kunci pencarian modal"
                   >
@@ -7562,23 +8960,103 @@ export default function App() {
                       key={cat}
                       type="button"
                       className={`faq-modal-filter-pill ${modalFaqCategory === cat ? 'active' : ''}`}
-                      onClick={() => setModalFaqCategory(cat)}
+                      onClick={() => {
+                        setModalFaqCategory(cat);
+                        if (modalFaqSearch.trim()) {
+                          markModalSearchFilterRunning();
+                        }
+                      }}
                     >
                       {cat}
                     </button>
                   ))}
                 </div>
                 <div className="faq-modal-count-badge">
-                  <span>
-                    Ditemukan <strong>{modalFilteredFaqs.length}</strong> pertanyaan
-                  </span>
+                  {isModalSearchActive && modalFaqSearch.trim() ? (
+                    <span className="faq-count-searching">
+                      <i className="fas fa-spinner fa-spin" style={{ marginRight: '6px', color: '#D97706' }}></i>
+                      Menyaring...
+                    </span>
+                  ) : (
+                    <span>
+                      Ditemukan <strong>{modalFilteredFaqs.length}</strong> pertanyaan
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
 
             {/* Modal Accordion Questions List */}
             <div className="faq-modal-body">
-              {modalFilteredFaqs.length === 0 ? (
+              {isModalSearchActive && modalFaqSearch.trim() ? (
+                <div
+                  key="faq-modal-skeleton"
+                  className="faq-loading-skeleton-container faq-modal-skeleton-container faq-scale-in"
+                  role="status"
+                  aria-live="polite"
+                  aria-label="Menyaring pertanyaan FAQ modal dengan AI"
+                >
+                  <div className="faq-filtering-progress-box">
+                    <div className="faq-filtering-progress-track">
+                      <div className="faq-filtering-progress-bar"></div>
+                    </div>
+                    <div className="faq-filtering-status-info">
+                      <div className="faq-filtering-status-left">
+                        <span className="faq-ai-filter-sparkle">
+                          <i className="fas fa-wand-magic-sparkles"></i>
+                        </span>
+                        <span className="faq-ai-filter-text">
+                          <strong>AI Smart Filter:</strong> Menyaring pertanyaan untuk &ldquo;{modalFaqSearch}&rdquo;...
+                        </span>
+                      </div>
+                      <span className="faq-filtering-loading-tag">
+                        <i className="fas fa-circle-notch fa-spin"></i> Menyaring Jawaban
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="faq-modal-list faq-skeleton-list">
+                    {[1, 2, 3].map((idx) => (
+                      <div
+                        key={`faq-modal-skeleton-${idx}`}
+                        className={`faq-skeleton-card faq-modal-skeleton-card ${idx === 1 ? 'is-expanded-preview' : ''}`}
+                        style={{ animationDelay: `${(idx - 1) * 0.08}s` }}
+                      >
+                        <div className="faq-skeleton-bar">
+                          <div className="faq-skeleton-badge skeleton-shimmer"></div>
+                          <div className="faq-skeleton-content">
+                            <div
+                              className="faq-skeleton-line skeleton-title skeleton-shimmer"
+                              style={{ width: idx === 1 ? '74%' : idx === 2 ? '58%' : '82%' }}
+                            ></div>
+                            <div className="faq-skeleton-meta-row">
+                              <div
+                                className="faq-skeleton-tag skeleton-shimmer"
+                                style={{ width: idx === 1 ? '80px' : idx === 2 ? '65px' : '90px' }}
+                              ></div>
+                              <div
+                                className="faq-skeleton-line skeleton-subtitle skeleton-shimmer"
+                                style={{ width: idx === 1 ? '34%' : idx === 2 ? '26%' : '38%' }}
+                              ></div>
+                            </div>
+                          </div>
+                          <div className="faq-skeleton-action skeleton-shimmer"></div>
+                        </div>
+
+                        {idx === 1 && (
+                          <div className="faq-skeleton-answer">
+                            <div className="faq-skeleton-line skeleton-body skeleton-shimmer" style={{ width: '92%' }}></div>
+                            <div className="faq-skeleton-line skeleton-body skeleton-shimmer" style={{ width: '80%' }}></div>
+                            <div className="faq-skeleton-btn-row">
+                              <div className="faq-skeleton-btn skeleton-shimmer" style={{ width: '160px' }}></div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : modalFilteredFaqs.length === 0 ? (
                 <div className="faq-empty-state" style={{ padding: '36px 16px', background: '#F8FAFC', borderRadius: '16px' }}>
                   <i className="fas fa-search" style={{ fontSize: '32px', color: '#94A3B8', marginBottom: '10px' }}></i>
                   <h4 style={{ fontSize: '16px', fontWeight: 700, margin: '0 0 6px' }}>Tidak Ada Pertanyaan Ditemukan</h4>
