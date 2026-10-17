@@ -528,162 +528,212 @@ const FAQ_CATEGORIES = [
   'Pencegahan'
 ];
 
-export interface PricingPackage {
+export interface NewsletterSubscriber {
   id: string;
-  name: string;
-  category: 'septic-tank' | 'drain-clearing' | 'combo';
+  email: string;
+  name?: string;
+  category: 'warga' | 'rt_rw' | 'bisnis' | 'umum';
   categoryLabel: string;
-  tag: string;
-  badge?: string;
-  isPopular?: boolean;
-  icon: string;
-  startingPrice: number;
-  priceDisplay: string;
-  unit: string;
-  description: string;
-  targetProperty: string;
-  estTime: string;
-  warranty: string;
-  features: string[];
-  specs: {
-    capacity: string;
-    machine: string;
-    hose: string;
-    warranty: string;
-    disinfectant: string;
-    ipltLegal: string;
-  };
+  status: 'active' | 'unsubscribed';
+  subscribedAt: string;
+  source: string;
 }
 
-export const PRICING_PACKAGES: PricingPackage[] = [
+export const DEFAULT_SUBSCRIBERS: NewsletterSubscriber[] = [
   {
-    id: 'drain-clearing',
-    name: 'Pelancaran Saluran Mampet',
-    category: 'drain-clearing',
-    categoryLabel: 'Pelancaran Saluran Pipa',
-    tag: 'SPESIALIS SALURAN',
-    badge: 'Tanpa Bongkar Lantai',
-    icon: 'fa-faucet-drip',
-    startingPrice: 300000,
-    priceDisplay: 'Rp 300.000',
-    unit: 'Mulai dari / titik pengerjaan',
-    description: 'Solusi cepat untuk pipa wastafel, floor drain kamar mandi, atau bak kontrol mampet tersumbat lemak & kotoran.',
-    targetProperty: 'Rumah, Ruko, Kontrakan, Resto',
-    estTime: '30 - 60 Menit',
-    warranty: '30 Hari Resmi',
-    features: [
-      'Mesin Spiral Roto-Rooter Elektrik fleksibel',
-      'Tanpa bongkar keramik & lantai tetap utuh',
-      'Mengikis tuntas kerak lemak, rambut & sabun',
-      'Jangkauan spiral baja hingga 30 meter',
-      'Garansi kelancaran 30 hari penuh',
-      'Gratis uji debit aliran air setelah pengerjaan'
-    ],
-    specs: {
-      capacity: 'Menyesuaikan titik pipa',
-      machine: 'Spiral Elektrik Roto-Rooter',
-      hose: 'Spiral Baja s/d 30 Meter',
-      warranty: '30 Hari Resmi',
-      disinfectant: 'Pembersihan Aliran',
-      ipltLegal: 'N/A (Limbah Cair Ringan)'
-    }
+    id: 'sub-1',
+    email: 'budi.santoso.bogor@gmail.com',
+    name: 'Budi Santoso',
+    category: 'warga',
+    categoryLabel: 'Rumah Tangga / Warga',
+    status: 'active',
+    subscribedAt: '16 Okt 2026, 09:15 WIB',
+    source: 'Buletin Website'
   },
   {
-    id: 'septic-standard',
-    name: 'Sedot Septic Tank Standar',
-    category: 'septic-tank',
-    categoryLabel: 'Sedot Septic Tank',
-    tag: 'RUMAH TINGGAL & PERUMAHAN',
-    badge: 'Paling Populer & Hemat',
-    isPopular: true,
-    icon: 'fa-truck-droplet',
-    startingPrice: 450000,
-    priceDisplay: 'Rp 450.000',
-    unit: 'Mulai dari / tangki standar (3 m³)',
-    description: 'Pengurasan menyeluruh septic tank rumah tinggal dan perumahan Bogor sampai ke dasar lumpur tinja.',
-    targetProperty: 'Rumah Pribadi, Perumahan, Kost',
-    estTime: '45 - 90 Menit',
-    warranty: '30 Hari Resmi',
-    features: [
-      'Pengurasan tuntas tinja & lumpur dasar septic tank',
-      'Truk vakum hidrolik bertekanan hisap tinggi (tanpa bau)',
-      'Gratis fasilitas selang standar s/d 50 meter (aman masuk gang)',
-      'Semprot cairan disinfektan & anti bau gratis',
-      'Garansi servis tuntas 30 hari resmi',
-      'Pembuangan legal ramah lingkungan ke IPLT Pemda Bogor'
-    ],
-    specs: {
-      capacity: 'Tangki Standar 3.000 Liter (3 m³)',
-      machine: 'Vakum Hidrolik High-Power',
-      hose: 'Selang Standar 50 Meter Gratis',
-      warranty: '30 Hari Resmi',
-      disinfectant: 'Ya (Disinfektan & Anti Bau)',
-      ipltLegal: 'Ya (Resmi IPLT Pemda Bogor)'
-    }
+    id: 'sub-2',
+    email: 'rt03.baranangsiang@gmail.com',
+    name: 'Pengurus RT 03 Baranangsiang',
+    category: 'rt_rw',
+    categoryLabel: 'Pengurus RT/RW',
+    status: 'active',
+    subscribedAt: '15 Okt 2026, 14:30 WIB',
+    source: 'Form Edukasi Sanitasi'
   },
   {
-    id: 'septic-commercial',
-    name: 'Sedot Septic Tank Komersial & Jumbo',
-    category: 'septic-tank',
-    categoryLabel: 'Sedot Septic Tank',
-    tag: 'BISNIS & FASILITAS UMUM',
-    badge: 'Kapasitas 4.000 – 6.000 Liter',
-    icon: 'fa-building',
-    startingPrice: 650000,
-    priceDisplay: 'Rp 650.000',
-    unit: 'Mulai dari / rit truk jumbo (5 m³)',
-    description: 'Pengurasan septic tank volume besar dan grease trap untuk ruko, restoran, kafe, kantor, sekolah, dan tempat ibadah.',
-    targetProperty: 'Restoran, Kafe, Ruko, Kantor, Hotel',
-    estTime: '1 - 2 Jam',
-    warranty: '30 Hari Resmi',
-    features: [
-      'Kapasitas tangki armada jumbo 4.000 – 6.000 liter',
-      'Pengurasan lumpur pekat & perawatan grease trap lemak',
-      'Jadwal fleksibel (pengerjaan malam / subuh tersedia)',
-      'Faktur / Kwitansi resmi & Berita Acara Pekerjaan',
-      'Garansi servis pengerjaan 30 hari resmi',
-      'Penugasan kru teknisi ahli bersertifikat sanitasi'
-    ],
-    specs: {
-      capacity: 'Tangki Jumbo 4.000 - 6.000 Liter',
-      machine: 'Vakum Heavy-Duty High-Capacity',
-      hose: 'Selang Standar 50 Meter Gratis',
-      warranty: '30 Hari Resmi',
-      disinfectant: 'Ya (Pembersihan Ekstra)',
-      ipltLegal: 'Ya (Resmi IPLT Pemda Bogor)'
-    }
+    id: 'sub-3',
+    email: 'siti.aminah.sentul@yahoo.com',
+    name: 'Ibu Siti Aminah',
+    category: 'warga',
+    categoryLabel: 'Rumah Tangga / Warga',
+    status: 'active',
+    subscribedAt: '14 Okt 2026, 11:45 WIB',
+    source: 'Buletin Website'
   },
   {
-    id: 'combo-package',
-    name: 'Paket Kombo Tuntas Hemat',
-    category: 'combo',
-    categoryLabel: 'Paket Kombo All-in-One',
-    tag: 'SOLUSI MENYELURUH',
-    badge: 'Hemat Rp 100.000',
-    icon: 'fa-shield-virus',
-    startingPrice: 700000,
-    priceDisplay: 'Rp 700.000',
-    unit: 'Paket lengkap kombo tuntas',
-    description: 'Septic tank penuh sekaligus kloset atau wastafel mampet? Ditangani bersamaan dalam satu kedatangan teknisi.',
-    targetProperty: 'Semua Jenis Properti (Rumah, Ruko, Usaha)',
-    estTime: '1 - 2 Jam',
-    warranty: '45 Hari Resmi',
-    features: [
-      'Sedot habis 1 tangki septic tank standar 3.000 liter',
-      'Pelancaran 1 titik saluran pipa mampet dengan mesin spiral',
-      'Pemberian probiotik pengurai mikroba ramah lingkungan',
-      'Disinfeksi menyeluruh & sterilisasi aroma toilet',
-      'Garansi perlindungan ekstra 45 hari',
-      'Prioritas panggilan darurat siaga 24 jam'
-    ],
-    specs: {
-      capacity: '3.000 Liter + 1 Titik Saluran Pipa',
-      machine: 'Vakum Hidrolik + Mesin Spiral Elektrik',
-      hose: 'Selang 50m + Spiral 30m',
-      warranty: '45 Hari Resmi (Ekstra)',
-      disinfectant: 'Ya (Disinfektan & Bakteri Pengurai)',
-      ipltLegal: 'Ya (Resmi IPLT Pemda Bogor)'
-    }
+    id: 'sub-4',
+    email: 'restoran.pajajaran.bogor@gmail.com',
+    name: 'Resto Pajajaran Kuliner',
+    category: 'bisnis',
+    categoryLabel: 'Bisnis / Ruko / Resto',
+    status: 'active',
+    subscribedAt: '12 Okt 2026, 16:20 WIB',
+    source: 'Limbah Domestik STP'
+  },
+  {
+    id: 'sub-5',
+    email: 'dian.yasmin.residence@gmail.com',
+    name: 'Dian Permana',
+    category: 'warga',
+    categoryLabel: 'Rumah Tangga / Warga',
+    status: 'active',
+    subscribedAt: '10 Okt 2026, 10:05 WIB',
+    source: 'Buletin Website'
+  },
+  {
+    id: 'sub-6',
+    email: 'kantor.cibinong.sukahati@gmail.com',
+    name: 'Pengelola Ruko Sukahati',
+    category: 'bisnis',
+    categoryLabel: 'Bisnis / Ruko / Resto',
+    status: 'active',
+    subscribedAt: '08 Okt 2026, 13:10 WIB',
+    source: 'Kemitraan Pemeliharaan'
+  }
+];
+
+export interface MarketingCampaignTemplate {
+  id: string;
+  title: string;
+  subject: string;
+  previewSnippet: string;
+  badge: string;
+  category: string;
+  content: string;
+}
+
+export const MARKETING_CAMPAIGN_TEMPLATES: MarketingCampaignTemplate[] = [
+  {
+    id: 'rainy_season',
+    title: 'Waspada Musim Hujan: Panduan Cegah Kloset & Saluran Meluap di Bogor',
+    subject: '🌧️ [Edisi Khusus Bogor] 5 Langkah Antisipasi Septic Tank Meluap Saat Musim Hujan Tiba',
+    previewSnippet: 'Peningkatan muka air tanah di kawasan Bogor dapat mempercepat kejenuhan resapan septic tank...',
+    badge: 'Tips Sanitasi',
+    category: 'Musim Hujan',
+    content: 'Musim hujan dengan curah tinggi di wilayah Kota dan Kabupaten Bogor seringkali memicu luapan air tanah ke dalam tangki resapan septic tank. Tim teknisi PT MITRA BERSIH 24 JAM menyarankan pemeriksaan berkala pipa pernapasan (ventilasi), pembersihan kotoran sedimen, dan penjadwalan kuras sedot tinja sebelum masa puncak hujan agar kloset tidak tersumbat secara tiba-tiba.'
+  },
+  {
+    id: 'collective_promo',
+    title: 'Promo Komunitas RT/RW: Kuras Septic Tank Kolektif Hemat hingga 15%',
+    subject: '🏷️ Program Lingkungan Bersih RT/RW Bogor: Subsidi Sedot WC Kolektif 24 Jam',
+    previewSnippet: 'Dapatkan efisiensi biaya layanan bersama tetangga satu blok atau lingkungan RT/RW...',
+    badge: 'Program Komunitas',
+    category: 'Diskon RT/RW',
+    content: 'Program Sanitasi Sehat Bersama PT MITRA BERSIH 24 JAM menghadirkan layanan kuras septic tank kolektif untuk warga satu RT/RW atau kompleks perumahan di Bogor. Penjadwalan serentak armada truk tangki memangkas biaya operasional dan memberikan diskon hingga 15% serta pembersihan gratis saluran pipa pembuangan utama.'
+  },
+  {
+    id: 'legal_kbli',
+    title: 'Legalitas & Kepastian Layanan: Izin Resmi KBLI 37001 & Pembuangan IPLT',
+    subject: '📑 Standar Resmi Pengolahan Limbah Domestik: Legalitas NIB & IPLT PT MITRA BERSIH 24 JAM',
+    previewSnippet: 'Pastikan limbah sanitasi Anda dikelola secara legal dan dibuang ke IPLT resmi Pemda Bogor...',
+    badge: 'Resmi & Higienis',
+    category: 'Legalitas Perusahaan',
+    content: 'Sebagai badan usaha berbadan hukum PT MITRA BERSIH 24 JAM dengan NIB 2605260095769, NPWP 3215261111840004, dan sertifikasi KBLI 37001 (Pengumpulan Air Limbah), seluruh limbah tinja dan domestik disalurkan secara aman ke Instalasi Pengolahan Lumpur Tinja (IPLT) resmi tanpa mencemari sungai atau lingkungan hidup warga Bogor.'
+  }
+];
+
+export interface KalkulatorTarifItem {
+  id: string;
+  category: 'black-water' | 'grey-water' | 'cleaning-blower';
+  categoryLabel: string;
+  name: string;
+  description: string;
+  isManifest: boolean;
+  manifestLabel: 'Non Manifes' | 'Manifes Resmi';
+  pricePerM3: number;
+  icon: string;
+  tag: string;
+  targetProperty: string;
+}
+
+export const KALKULATOR_TARIF_LIST: KalkulatorTarifItem[] = [
+  {
+    id: 'black-water-non-manifest',
+    category: 'black-water',
+    categoryLabel: 'Limbah Black Water (Tinja)',
+    name: 'Limbah Black Water (Tinja) – Non Manifes',
+    description: 'Penyedotan tinja kloset & kuras septic tank hunian rumah tinggal pribadi tanpa dokumen manifes IPLT.',
+    isManifest: false,
+    manifestLabel: 'Non Manifes',
+    pricePerM3: 700000,
+    icon: 'fa-toilet',
+    tag: 'Paling Terjangkau',
+    targetProperty: 'Rumah Tinggal Pribadi / Cluster'
+  },
+  {
+    id: 'black-water-manifest',
+    category: 'black-water',
+    categoryLabel: 'Limbah Black Water (Tinja)',
+    name: 'Limbah Black Water (Tinja) – Manifes Resmi',
+    description: 'Penyedotan tinja kloset & kuras septic tank dengan dokumen resmi manifes pembuangan IPLT (izin KBLI 37001).',
+    isManifest: true,
+    manifestLabel: 'Manifes Resmi',
+    pricePerM3: 1100000,
+    icon: 'fa-file-signature',
+    tag: 'Legalitas IPLT Resmi',
+    targetProperty: 'Ruko, Kantor, Yayasan, Restoran'
+  },
+  {
+    id: 'grey-water-non-manifest',
+    category: 'grey-water',
+    categoryLabel: 'Limbah Grey Water (Lumpur & Lemak)',
+    name: 'Limbah Grey Water (Lumpur, Lemak) – Non Manifes',
+    description: 'Pengurasan bak kontrol, grease trap dapur, dan endapan lumpur domestik tanpa dokumen manifes.',
+    isManifest: false,
+    manifestLabel: 'Non Manifes',
+    pricePerM3: 1100000,
+    icon: 'fa-oil-can',
+    tag: 'Resto & Kafe',
+    targetProperty: 'Kafe, Warung Makan, Usaha Mandiri'
+  },
+  {
+    id: 'grey-water-manifest',
+    category: 'grey-water',
+    categoryLabel: 'Limbah Grey Water (Lumpur & Lemak)',
+    name: 'Limbah Grey Water (Lumpur, Lemak) – Manifes Resmi',
+    description: 'Pengurasan limbah lemak & lumpur dengan sertifikat berita acara dan manifes resmi pembuangan limbah cair.',
+    isManifest: true,
+    manifestLabel: 'Manifes Resmi',
+    pricePerM3: 1500000,
+    icon: 'fa-certificate',
+    tag: 'Standar Industri & Komersial',
+    targetProperty: 'Hotel, Mall, Rumah Sakit, Pabrik'
+  },
+  {
+    id: 'cleaning-blower-non-manifest',
+    category: 'cleaning-blower',
+    categoryLabel: 'Cleaning / Blower Lumpur',
+    name: 'Cleaning / Blower Lumpur – Non Manifes',
+    description: 'Tembak tekanan tinggi (blower/jetting) dan pengurasan kerak lumpur mengeras di saluran tanpa manifes.',
+    isManifest: false,
+    manifestLabel: 'Non Manifes',
+    pricePerM3: 1100000,
+    icon: 'fa-wind',
+    tag: 'Kerak Saluran Membatu',
+    targetProperty: 'Hunian & Saluran Kompleks Parah'
+  },
+  {
+    id: 'cleaning-blower-manifest',
+    category: 'cleaning-blower',
+    categoryLabel: 'Cleaning / Blower Lumpur',
+    name: 'Cleaning / Blower Lumpur – Manifes Resmi',
+    description: 'Pembersihan blower tekanan tinggi lumpur dengan bukti manifes pembuangan resmi instansi & gedung komersial.',
+    isManifest: true,
+    manifestLabel: 'Manifes Resmi',
+    pricePerM3: 1500000,
+    icon: 'fa-stamp',
+    tag: 'Sertifikasi KBLI 37001',
+    targetProperty: 'Gedung Instansi, Kawasan Bisnis'
   }
 ];
 
@@ -710,7 +760,7 @@ const FAQ_DATA: FAQItem[] = [
     category: 'Tarif & Biaya',
     keywords: ['biaya tambahan', 'biaya tersembunyi', 'siluman', 'tarif', 'ongkos', 'transparansi', 'harga', 'kejujuran'],
     answerText: 'Sama sekali tidak ada biaya siluman! Prinsip kami adalah keterbukaan. Tarif disepakati bersama di awal sebelum pengerjaan dimulai. Jika ada kondisi khusus di lapangan (misalnya penambahan selang ekstra di atas 50 meter atau pembuatan lubang kontrol baru karena septic tank tertutup cor semen mati), teknisi akan menjelaskan dan meminta persetujuan Anda terlebih dahulu.',
-    waTopicText: 'Halo CS Mitra Bersih, saya membaca FAQ tentang transparansi harga tanpa biaya siluman. Boleh saya minta estimasi tarif untuk kendala septic tank / kloset saya di Bogor?',
+    waTopicText: 'Halo CS PT MITRA BERSIH 24 JAM, saya membaca FAQ tentang transparansi harga tanpa biaya siluman. Boleh saya minta estimasi tarif untuk kendala septic tank / kloset saya di Bogor?',
     answer: (
       <p>
         <strong>Sama sekali tidak ada biaya siluman!</strong> Prinsip kami adalah keterbukaan. Tarif disepakati bersama di awal sebelum pengerjaan dimulai. Jika ada kondisi khusus di lapangan (misalnya penambahan selang ekstra di atas 50 meter atau pembuatan lubang kontrol baru karena septic tank tertutup cor semen mati), teknisi akan menjelaskan dan meminta persetujuan Anda terlebih dahulu.
@@ -719,11 +769,11 @@ const FAQ_DATA: FAQItem[] = [
   },
   {
     id: 2,
-    question: 'Bagaimana cara pemesanan jasa Sedot WC Mitra Bersih di Bogor?',
+    question: 'Bagaimana cara pemesanan jasa Sedot WC PT MITRA BERSIH 24 JAM di Bogor?',
     category: 'Pemesanan',
     keywords: ['cara pesan', 'order', 'whatsapp', 'telepon', 'kontak', 'prosedur', 'dp', 'tanpa dp', 'pembayaran', 'alur'],
     answerText: 'Cara pemesanan sangat mudah dan cepat tanpa perlu uang muka (DP). Hubungi kami klik tombol WhatsApp atau telepon ke +62 857-1565-4183 yang aktif 24 jam. Konsultasikan kendala dan alamat/share loc di area Bogor. Konfirmasi harga transparan dan armada terdekat langsung meluncur. Pembayaran dilakukan setelah pekerjaan selesai tuntas dan lancar.',
-    waTopicText: 'Halo CS Mitra Bersih, saya membaca FAQ tentang cara pemesanan sedot WC. Saya ingin konsultasi kendala WC/septic tank dan pesan armada untuk area Bogor.',
+    waTopicText: 'Halo CS PT MITRA BERSIH 24 JAM, saya membaca FAQ tentang cara pemesanan sedot WC. Saya ingin konsultasi kendala WC/septic tank dan pesan armada untuk area Bogor.',
     answer: (
       <>
         <p>Cara pemesanan sangat mudah dan cepat tanpa perlu uang muka (DP):</p>
@@ -742,7 +792,7 @@ const FAQ_DATA: FAQItem[] = [
     category: 'Armada & Waktu',
     keywords: ['estimasi waktu', 'berapa lama', 'cepat', 'kedatangan', 'pos siaga', 'cibinong', 'tanah sareal', 'bogor barat', 'ciawi', 'sukaraja', 'bojonggede', 'parung'],
     answerText: 'Rata-rata armada kami tiba dalam 15 hingga 30 menit untuk area Kota Bogor dan pusat pemukiman Kabupaten Bogor. Kami menempatkan armada siaga di berbagai pos strategis (seperti Cibinong, Tanah Sareal, Bogor Barat, Ciawi, Sukaraja, Bojonggede, dan Parung) sehingga penanganan darurat dapat dilakukan dengan sangat cepat.',
-    waTopicText: 'Halo CS Mitra Bersih, saya membaca FAQ tentang estimasi waktu kedatangan armada (15-30 menit). Boleh cek armada siaga terdekat ke lokasi saya di Bogor sekarang?',
+    waTopicText: 'Halo CS PT MITRA BERSIH 24 JAM, saya membaca FAQ tentang estimasi waktu kedatangan armada (15-30 menit). Boleh cek armada siaga terdekat ke lokasi saya di Bogor sekarang?',
     answer: (
       <p>
         Rata-rata armada kami tiba dalam <strong>15 hingga 30 menit</strong> untuk area Kota Bogor dan pusat pemukiman Kabupaten Bogor. Kami menempatkan armada siaga di berbagai pos strategis (seperti Cibinong, Tanah Sareal, Bogor Barat, Ciawi, Sukaraja, Bojonggede, dan Parung) sehingga penanganan darurat dapat dilakukan dengan sangat cepat.
@@ -755,7 +805,7 @@ const FAQ_DATA: FAQItem[] = [
     category: 'Armada & Waktu',
     keywords: ['gang sempit', 'selang panjang', 'perumahan padat', 'truk kompak', '50 meter', '100 meter', 'parkir jauh', 'jangkauan'],
     answerText: 'Tentu saja bisa! Kami memiliki armada truk ukuran kompak yang lincah bermanuver di jalan perumahan, serta dilengkapi selang sambung berdaya hisap tinggi hingga 50 – 100 meter. Meskipun truk tidak bisa parkir tepat di depan pintu pagar rumah Anda, penyedotan tetap berjalan maksimal, bersih, dan tuntas.',
-    waTopicText: 'Halo CS Mitra Bersih, saya membaca FAQ tentang layanan rumah di gang sempit & selang panjang 50-100 meter. Rumah saya di gang sempit area Bogor, mohon info teknis penyedotan.',
+    waTopicText: 'Halo CS PT MITRA BERSIH 24 JAM, saya membaca FAQ tentang layanan rumah di gang sempit & selang panjang 50-100 meter. Rumah saya di gang sempit area Bogor, mohon info teknis penyedotan.',
     answer: (
       <p>
         <strong>Tentu saja bisa!</strong> Kami memiliki armada truk ukuran kompak yang lincah bermanuver di jalan perumahan, serta dilengkapi <strong>selang sambung berdaya hisap tinggi hingga 50 – 100 meter</strong>. Meskipun truk tidak bisa parkir tepat di depan pintu pagar rumah Anda, penyedotan tetap berjalan maksimal, bersih, dan tuntas.
@@ -768,7 +818,7 @@ const FAQ_DATA: FAQItem[] = [
     category: 'Tanpa Bongkar',
     keywords: ['tanpa bongkar', 'bongkar kloset', 'lantai', 'spiral', 'electric drain cleaner', 'keramik aman', 'pipa paralon', 'pvc'],
     answerText: '99% pengerjaan kami TANPA BONGKAR! Kami menggunakan mesin electric drain cleaner spiral baja lentur modern yang berputar mengikuti lekukan pipa pembuangan untuk menghancurkan sumbatan (lemak beku, pembalut, sisa kain, dll.). Keramik lantai dan pipa paralon PVC Anda tetap aman, utuh, dan tidak rusak.',
-    waTopicText: 'Halo CS Mitra Bersih, saya membaca FAQ tentang pelancaran WC mampet tanpa bongkar dengan mesin spiral. Apakah bisa dicek kendala kloset mampet saya di Bogor?',
+    waTopicText: 'Halo CS PT MITRA BERSIH 24 JAM, saya membaca FAQ tentang pelancaran WC mampet tanpa bongkar dengan mesin spiral. Apakah bisa dicek kendala kloset mampet saya di Bogor?',
     answer: (
       <p>
         <strong>99% pengerjaan kami TANPA BONGKAR!</strong> Kami menggunakan mesin *electric drain cleaner* spiral baja lentur modern yang berputar mengikuti lekukan pipa pembuangan untuk menghancurkan sumbatan (lemak beku, pembalut, sisa kain, dll.). Keramik lantai dan pipa paralon PVC Anda tetap aman, utuh, dan tidak rusak.
@@ -781,7 +831,7 @@ const FAQ_DATA: FAQItem[] = [
     category: '24 Jam Nonstop',
     keywords: ['24 jam', 'tengah malam', 'hari libur', 'minggu', 'tanggal merah', 'darurat', 'nonstop', 'piket'],
     answerText: 'Ya, kami siap siaga 24 Jam Nonstop setiap hari, termasuk hari Minggu, tengah malam, dan hari libur nasional. Masalah saluran meluap sering kali terjadi tiba-tiba di waktu tak terduga, sehingga tim piket darurat kami selalu siap kapan pun Anda butuhkan.',
-    waTopicText: 'Halo CS Mitra Bersih, saya membaca FAQ tentang layanan darurat 24 jam nonstop. Saya membutuhkan penanganan darurat segera untuk lokasi saya di Bogor.',
+    waTopicText: 'Halo CS PT MITRA BERSIH 24 JAM, saya membaca FAQ tentang layanan darurat 24 jam nonstop. Saya membutuhkan penanganan darurat segera untuk lokasi saya di Bogor.',
     answer: (
       <p>
         <strong>Ya, kami siap siaga 24 Jam Nonstop setiap hari</strong>, termasuk hari Minggu, tengah malam, dan hari libur nasional. Masalah saluran meluap sering kali terjadi tiba-tiba di waktu tak terduga, sehingga tim piket darurat kami selalu siap kapan pun Anda butuhkan.
@@ -793,8 +843,8 @@ const FAQ_DATA: FAQItem[] = [
     question: 'Bagaimana prosedur dan syarat klaim garansi jika saluran mampet lagi?',
     category: 'Garansi',
     keywords: ['garansi', 'prosedur garansi', 'syarat klaim', 'mampet lagi', 'komplain', 'gratis', 'nota resmi', 'uji kelancaran'],
-    answerText: 'Setiap pengerjaan kami dilengkapi dengan garansi pengerjaan nyata: uji kelancaran bersama Anda sampai benar-benar tuntas, nota pengerjaan resmi dari teknisi Mitra Bersih, dan jika terjadi kendala mampet kembali pada titik yang sama teknisi datang melakukan pengerjaan ulang secara GRATIS.',
-    waTopicText: 'Halo CS Mitra Bersih, saya membaca FAQ tentang garansi pengerjaan dan nota resmi. Saya ingin tahu lebih lanjut seputar syarat garansi layanan sedot WC di Bogor.',
+    answerText: 'Setiap pengerjaan kami dilengkapi dengan garansi pengerjaan nyata: uji kelancaran bersama Anda sampai benar-benar tuntas, nota pengerjaan resmi dari teknisi PT MITRA BERSIH 24 JAM, dan jika terjadi kendala mampet kembali pada titik yang sama teknisi datang melakukan pengerjaan ulang secara GRATIS.',
+    waTopicText: 'Halo CS PT MITRA BERSIH 24 JAM, saya membaca FAQ tentang garansi pengerjaan dan nota resmi. Saya ingin tahu lebih lanjut seputar syarat garansi layanan sedot WC di Bogor.',
     answer: (
       <>
         <p>
@@ -802,7 +852,7 @@ const FAQ_DATA: FAQItem[] = [
         </p>
         <ul style={{ paddingLeft: '20px', marginTop: '6px' }}>
           <li>Setelah pengerjaan, teknisi akan melakukan uji kelancaran saluran bersama Anda sampai benar-benar tuntas.</li>
-          <li>Anda menerima nota pengerjaan resmi dari teknisi Mitra Bersih.</li>
+          <li>Anda menerima nota pengerjaan resmi berstempel dari teknisi PT MITRA BERSIH 24 JAM.</li>
           <li>Jika dalam masa garansi terjadi kendala mampet kembali pada titik yang sama, Anda cukup hubungi nomor WA kami, dan teknisi akan datang melakukan <strong>pengerjaan ulang secara GRATIS</strong>.</li>
         </ul>
       </>
@@ -814,7 +864,7 @@ const FAQ_DATA: FAQItem[] = [
     category: 'Pencegahan',
     keywords: ['pencegahan', 'mencegah wc mampet', 'benda terlarang', 'tisu basah', 'pembalut', 'minyak goreng', 'rambut', 'flushing', 'saringan', 'kebiasaan baik'],
     answerText: 'Pencegahan utama adalah disiplin membuang sampah: jangan pernah membuang tisu basah, pembalut, popok bayi, cotton bud, gumpalan rambut, atau sisa minyak goreng ke dalam kloset karena benda-benda tersebut tidak bisa terurai dan akan menyangkut di leher angsa pipa. Sediakan tempat sampah tertutup di kamar mandi, gunakan volume siraman air (flushing) yang cukup setiap kali buang air besar, dan siram air panas berkala sebulan sekali untuk melarutkan sisa sabun yang menempel di dinding pipa.',
-    waTopicText: 'Halo CS Mitra Bersih, saya membaca FAQ tips pencegahan WC mampet. Saya ingin konsultasi pengecekan pipa dan pencegahan saluran tersumbat di rumah saya area Bogor.',
+    waTopicText: 'Halo CS PT MITRA BERSIH 24 JAM, saya membaca FAQ tips pencegahan WC mampet. Saya ingin konsultasi pengecekan pipa dan pencegahan saluran tersumbat di rumah saya area Bogor.',
     answer: (
       <>
         <p>
@@ -843,7 +893,7 @@ const FAQ_DATA: FAQItem[] = [
     category: 'Pencegahan',
     keywords: ['soda api', 'cairan kimia keras', 'bahaya soda api', 'pipa paralon rusak', 'pvc', 'bakteri pengurai', 'septic tank penuh', 'alternatif aman', 'pencegahan'],
     answerText: 'Sangat TIDAK disarankan menggunakan soda api atau bahan kimia keras sebagai langkah perawatan atau pencegahan. Reaksi kimia soda api menghasilkan panas ekstrem di atas 100°C yang dapat melunakkan dan merusak pipa paralon PVC, menyebabkan sambungan pipa bocor atau keramik kloset retak. Selain itu, bahan kimia keras mematikan bakteri pengurai alami di septic tank, sehingga tinja tidak membusuk dan septic tank justru menjadi cepat penuh serta berbau menyengat. Gunakan serbuk mikroba pengurai alami ramah lingkungan sebagai alternatif yang aman.',
-    waTopicText: 'Halo CS Mitra Bersih, saya membaca FAQ pencegahan mengenai bahaya penggunaan soda api. Saya butuh solusi perawatan pipa yang aman dan ramah lingkungan untuk area Bogor.',
+    waTopicText: 'Halo CS PT MITRA BERSIH 24 JAM, saya membaca FAQ pencegahan mengenai bahaya penggunaan soda api. Saya butuh solusi perawatan pipa yang aman dan ramah lingkungan untuk area Bogor.',
     answer: (
       <>
         <p>
@@ -869,7 +919,7 @@ const FAQ_DATA: FAQItem[] = [
     category: 'Pencegahan',
     keywords: ['merawat septic tank', 'tidak cepat penuh', 'bebas bau', 'bakteri probiotik', 'pipa ventilasi', 'kuras berkala', 'saluran air sabun', 'resapan', 'pencegahan'],
     answerText: 'Untuk menjaga septic tank tidak cepat penuh dan bebas bau: 1) Pisahkan saluran pembuangan air cucian sabun/deterjen dari saluran tinja agar deterjen tidak membunuh bakteri pengurai di septic tank; 2) Berikan suplemen bakteri pengurai (bio-enzim) setiap 6 bulan sekali; 3) Pastikan lubang pipa hawa/ventilasi septic tank tidak tertutup tanah atau sarang serangga agar gas metana terbuang lancar ke atas; 4) Lakukan kuras sedot septic tank secara rutin tiap 2-3 tahun sekali sebelum lumpur padat mengeras dan menyumbat pori-pori resapan.',
-    waTopicText: 'Halo CS Mitra Bersih, saya membaca FAQ pencegahan mengenai cara merawat septic tank agar awet dan tidak cepat penuh. Saya ingin konsultasi jadwal pengurasan septic tank di Bogor.',
+    waTopicText: 'Halo CS PT MITRA BERSIH 24 JAM, saya membaca FAQ pencegahan mengenai cara merawat septic tank agar awet dan tidak cepat penuh. Saya ingin konsultasi jadwal pengurasan septic tank di Bogor.',
     answer: (
       <>
         <p>
@@ -2785,57 +2835,93 @@ export default function App() {
   const [faqModalNotes, setFaqModalNotes] = useState('');
   const [faqModalError, setFaqModalError] = useState<string | null>(null);
 
-  // Jadwal Layanan Rutin State & Handlers
-  const [rutinDuration, setRutinDuration] = useState<'6-bulan' | '1-tahun'>('1-tahun');
-  const [rutinName, setRutinName] = useState('');
-  const [rutinPhone, setRutinPhone] = useState('');
-  const [rutinLocation, setRutinLocation] = useState('');
-  const [rutinProperty, setRutinProperty] = useState('Rumah Tinggal Pribadi');
-  const [rutinService, setRutinService] = useState('Kuras Septic Tank & Sedot Tinja Rutin');
-  const [rutinError, setRutinError] = useState<string | null>(null);
-  const [rutinSuccess, setRutinSuccess] = useState<string | null>(null);
+  // Kalkulator Cepat Tarif Sedot Limbah State & Handlers
+  const [calcSelectedId, setCalcSelectedId] = useState<string>('black-water-non-manifest');
+  const [calcVolume, setCalcVolume] = useState<number>(3);
+  const [calcCategoryFilter, setCalcCategoryFilter] = useState<'all' | 'black-water' | 'grey-water' | 'cleaning-blower'>('all');
+  const [calcManifestFilter, setCalcManifestFilter] = useState<'all' | 'non-manifest' | 'manifest'>('all');
+  const [calcLocation, setCalcLocation] = useState<string>('');
+  const [calcProperty, setCalcProperty] = useState<string>('Rumah Tinggal Pribadi');
+  const [calcName, setCalcName] = useState<string>('');
+  const [calcPhone, setCalcPhone] = useState<string>('');
+  const [calcDate, setCalcDate] = useState<string>('');
+  const [calcNotes, setCalcNotes] = useState<string>('');
+  const [calcToast, setCalcToast] = useState<string | null>(null);
+  const [calcSuccess, setCalcSuccess] = useState<string | null>(null);
+  const [calcError, setCalcError] = useState<string | null>(null);
 
-  const handleRutinSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!rutinName.trim() || rutinName.trim().length < 2) {
-      setRutinError('Mohon masukkan Nama Anda / Penanggung Jawab (minimal 2 huruf).');
-      return;
+  useEffect(() => {
+    if (calcToast) {
+      const timer = setTimeout(() => setCalcToast(null), 3500);
+      return () => clearTimeout(timer);
     }
-    if (!rutinLocation.trim()) {
-      setRutinError('Mohon pilih Wilayah / Kecamatan properti Anda di Bogor.');
-      return;
-    }
-    setRutinError(null);
+  }, [calcToast]);
 
-    const durasiLabel =
-      rutinDuration === '6-bulan'
-        ? '6 Bulan (Semi-Tahunan / Intensif)'
-        : '1 Tahun (Tahunan / Standar Sanitasi SNI)';
+  const selectedCalcItem =
+    KALKULATOR_TARIF_LIST.find((item) => item.id === calcSelectedId) || KALKULATOR_TARIF_LIST[0];
+  const calcTotalBiaya = selectedCalcItem.pricePerM3 * calcVolume;
 
-    const text =
-      `Halo CS Mitra Bersih 24 Jam,\n\n` +
-      `Saya ingin mendaftar *Program Jadwal Layanan Rutin* untuk properti saya:\n` +
-      `• *Nama Pemilik / PIC:* ${rutinName.trim()}\n` +
-      `${rutinPhone.trim() ? `• *No. WhatsApp / HP:* ${rutinPhone.trim()}\n` : ''}` +
-      `• *Pilihan Durasi Rutin:* ${durasiLabel}\n` +
-      `• *Wilayah / Kecamatan:* ${rutinLocation.trim()}, Bogor\n` +
-      `• *Jenis Properti:* ${rutinProperty}\n` +
-      `• *Jenis Layanan:* ${rutinService}\n` +
-      `• *Kebutuhan:* Pengingat otomatis via WhatsApp sebelum jadwal pemeliharaan jatuh tempo agar septic tank/saluran tidak mampet atau meluap.\n\n` +
-      `Mohon dicatat dalam sistem pengingat Mitra Bersih dan berikan konfirmasi jadwal serta penawaran tarif rutinnya. Terima kasih!`;
-
-    window.open(`https://wa.me/6285715654183?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
-    setRutinSuccess(`Terima kasih Bapak/Ibu ${rutinName.trim()}! Pengingat jadwal rutin ${rutinDuration === '6-bulan' ? '6 Bulan' : '1 Tahun'} Anda sedang diteruskan ke WhatsApp CS kami.`);
+  const formatRupiah = (amount: number) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      maximumFractionDigits: 0
+    }).format(amount);
   };
 
-  const getDirectRutinWaUrl = (duration: '6-bulan' | '1-tahun') => {
-    const durasiText = duration === '6-bulan' ? '6 Bulan (Semi-Tahunan)' : '1 Tahun (Tahunan)';
-    const text =
-      `Halo CS Mitra Bersih 24 Jam,\n\n` +
-      `Saya ingin mendaftar *Program Pengingat Jadwal Layanan Rutin ${durasiText}* di Bogor.\n\n` +
-      `Mohon dibantu pendaftaran jadwal pemeliharaan berkala untuk septic tank / saluran pembuangan properti saya agar selalu terpantau dan tidak terlambat disedot.\n\n` +
-      `Terima kasih!`;
-    return `https://wa.me/6285715654183?text=${encodeURIComponent(text)}`;
+  const handleSelectCalcService = (serviceId: string) => {
+    setCalcSelectedId(serviceId);
+    setCalcSuccess(null);
+    setCalcError(null);
+  };
+
+  const handleQuickVolumeSelect = (vol: number) => {
+    setCalcVolume(vol);
+  };
+
+  const handleCopyCalcSummary = () => {
+    const summary =
+      `*ESTIMASI BIAYA SEDOT LIMBAH – PT MITRA BERSIH 24 JAM*\n` +
+      `Layanan: ${selectedCalcItem.name}\n` +
+      `Kategori: ${selectedCalcItem.categoryLabel}\n` +
+      `Dokumen: ${selectedCalcItem.manifestLabel}\n` +
+      `Volume Pekerjaan: ${calcVolume} m³ (Kubik)\n` +
+      `Tarif Satuan: ${formatRupiah(selectedCalcItem.pricePerM3)} / m³\n` +
+      `Total Estimasi: *${formatRupiah(calcTotalBiaya)}*\n` +
+      (calcLocation ? `Wilayah: ${calcLocation}, Bogor\n` : '') +
+      (calcProperty ? `Jenis Properti: ${calcProperty}\n` : '') +
+      `Biaya Tambahan: Rp 0 (Transparan, Tanpa Biaya Tersembunyi)\n` +
+      `Garansi: 100% Tuntas & Legalitas KBLI 37001 (IPLT Resmi)\n` +
+      `Kontak CS: 0857-1565-4183 (24 Jam Standby)\n` +
+      `Website: https://jasasedotwcbogor.my.id/`;
+
+    navigator.clipboard.writeText(summary);
+    setCalcToast('Rincian estimasi biaya berhasil disalin ke clipboard!');
+  };
+
+  const handleCalcOrderWa = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setCalcError(null);
+
+    const message =
+      `Halo CS PT MITRA BERSIH 24 JAM,\n\n` +
+      `Saya ingin memesan jasa dengan estimasi dari *Kalkulator Cepat* di website:\n` +
+      `• *Layanan:* ${selectedCalcItem.name}\n` +
+      `• *Kategori:* ${selectedCalcItem.categoryLabel}\n` +
+      `• *Status Dokumen:* ${selectedCalcItem.manifestLabel}\n` +
+      `• *Volume Estimasi:* ${calcVolume} m³ (Kubik)\n` +
+      `• *Tarif Satuan:* ${formatRupiah(selectedCalcItem.pricePerM3)} / m³\n` +
+      `• *Total Estimasi:* *${formatRupiah(calcTotalBiaya)}*\n` +
+      (calcLocation ? `• *Wilayah / Kecamatan:* ${calcLocation}, Bogor\n` : '') +
+      (calcProperty ? `• *Jenis Properti:* ${calcProperty}\n` : '') +
+      (calcName.trim() ? `• *Nama Pemesan:* ${calcName.trim()}\n` : '') +
+      (calcPhone.trim() ? `• *No. WhatsApp / HP:* ${calcPhone.trim()}\n` : '') +
+      (calcDate ? `• *Rencana Tanggal:* ${calcDate}\n` : '') +
+      (calcNotes.trim() ? `• *Catatan / Kondisi Saluran:* ${calcNotes.trim()}\n` : '') +
+      `\nMohon konfirmasi ketersediaan armada truk tangki dan teknisi untuk jadwal pengerjaan ini. Terima kasih!`;
+
+    window.open(`https://wa.me/6285715654183?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
+    setCalcSuccess(`Estimasi pesanan ${selectedCalcItem.name} (${calcVolume} m³) sedang diteruskan ke WhatsApp CS kami.`);
   };
 
   // FAQ Search & Filter State
@@ -3241,22 +3327,83 @@ export default function App() {
     });
   }, [articleSearch, articleCategory]);
 
-  // Berita Lingkungan Newsletter Subscription State
+  // Berita Lingkungan & Email Marketing List Simulation State
   const [subscribers, setSubscribers] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem('subscribers');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((item: any) => (typeof item === 'string' ? item : item.email)).filter(Boolean);
+        }
       }
     } catch {
       // fallback
     }
-    return [];
+    return DEFAULT_SUBSCRIBERS.map((s) => s.email);
   });
+
+  const [subscribersMeta, setSubscribersMeta] = useState<Record<string, {
+    name?: string;
+    category: 'warga' | 'rt_rw' | 'bisnis' | 'umum';
+    date: string;
+    status: 'active' | 'unsubscribed';
+    source: string;
+  }>>(() => {
+    try {
+      const saved = localStorage.getItem('subscribers_metadata');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && typeof parsed === 'object') return parsed;
+      }
+    } catch {
+      // fallback
+    }
+    const initialMap: Record<string, any> = {};
+    DEFAULT_SUBSCRIBERS.forEach((s) => {
+      initialMap[s.email] = {
+        name: s.name,
+        category: s.category,
+        date: s.subscribedAt,
+        status: s.status,
+        source: s.source
+      };
+    });
+    return initialMap;
+  });
+
   const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterName, setNewsletterName] = useState('');
+  const [newsletterCategory, setNewsletterCategory] = useState<'warga' | 'rt_rw' | 'bisnis' | 'umum'>('warga');
   const [newsletterSuccess, setNewsletterSuccess] = useState<string | null>(null);
   const [newsletterError, setNewsletterError] = useState<string | null>(null);
+
+  // Email Marketing Simulation Modal States
+  const [isMarketingModalOpen, setIsMarketingModalOpen] = useState(false);
+  const [marketingTab, setMarketingTab] = useState<'list' | 'broadcast'>('list');
+  const [marketingSearch, setMarketingSearch] = useState('');
+  const [marketingCategoryFilter, setMarketingCategoryFilter] = useState<'all' | 'warga' | 'rt_rw' | 'bisnis'>('all');
+  const [isAddingManualContact, setIsAddingManualContact] = useState(false);
+  const [manualEmail, setManualEmail] = useState('');
+  const [manualName, setManualName] = useState('');
+  const [manualCategory, setManualCategory] = useState<'warga' | 'rt_rw' | 'bisnis' | 'umum'>('warga');
+  const [manualError, setManualError] = useState<string | null>(null);
+  const [marketingToast, setMarketingToast] = useState<string | null>(null);
+
+  // Campaign Broadcast Simulator States
+  const [selectedCampaignId, setSelectedCampaignId] = useState('rainy_season');
+  const [customCampaignSubject, setCustomCampaignSubject] = useState('');
+  const [customCampaignContent, setCustomCampaignContent] = useState('');
+  const [isBroadcasting, setIsBroadcasting] = useState(false);
+  const [broadcastProgress, setBroadcastProgress] = useState(0);
+  const [broadcastLog, setBroadcastLog] = useState('');
+  const [broadcastReport, setBroadcastReport] = useState<{
+    totalSent: number;
+    timestamp: string;
+    subject: string;
+    openRate: string;
+    clickRate: string;
+  } | null>(null);
 
   // Arsip Artikel State & Handlers (Previous Months' Articles)
   const [selectedArchiveMonth, setSelectedArchiveMonth] = useState('all');
@@ -3353,56 +3500,7 @@ export default function App() {
     return `https://wa.me/6285715654183?text=${encodeURIComponent(text)}`;
   };
 
-  // Pricing Table Component States & Filter Logic
-  const [pricingCategoryFilter, setPricingCategoryFilter] = useState<'all' | 'septic-tank' | 'drain-clearing' | 'combo'>('all');
-  const [pricingSearchQuery, setPricingSearchQuery] = useState('');
-  const [pricingArea, setPricingArea] = useState<string>('Semua Wilayah Bogor');
-  const [showPricingComparison, setShowPricingComparison] = useState(false);
 
-  const filteredPricingPackages = useMemo(() => {
-    return PRICING_PACKAGES.filter((p) => {
-      // Category filter
-      const matchesCategory = pricingCategoryFilter === 'all' || p.category === pricingCategoryFilter;
-      if (!matchesCategory) return false;
-
-      // Search query filter
-      if (!pricingSearchQuery.trim()) return true;
-      const q = pricingSearchQuery.toLowerCase().trim();
-      const matchesName = p.name.toLowerCase().includes(q);
-      const matchesDesc = p.description.toLowerCase().includes(q);
-      const matchesTag = p.tag.toLowerCase().includes(q);
-      const matchesBadge = p.badge ? p.badge.toLowerCase().includes(q) : false;
-      const matchesCatLabel = p.categoryLabel.toLowerCase().includes(q);
-      const matchesTarget = p.targetProperty.toLowerCase().includes(q);
-      const matchesFeatures = p.features.some((f) => f.toLowerCase().includes(q));
-      const matchesPrice = p.priceDisplay.toLowerCase().includes(q) || p.unit.toLowerCase().includes(q);
-
-      return (
-        matchesName ||
-        matchesDesc ||
-        matchesTag ||
-        matchesBadge ||
-        matchesCatLabel ||
-        matchesTarget ||
-        matchesFeatures ||
-        matchesPrice
-      );
-    });
-  }, [pricingCategoryFilter, pricingSearchQuery]);
-
-  const getPricingWaUrl = (pkg: PricingPackage, locationName: string) => {
-    const locText = locationName === 'Semua Wilayah Bogor' ? 'Bogor (Kota / Kabupaten)' : `Kecamatan ${locationName}, Bogor`;
-    const text =
-      `Halo Admin CS Mitra Bersih 24 Jam,\n\n` +
-      `Saya ingin berkonsultasi / memesan paket layanan resmi:\n` +
-      `📦 *Nama Paket:* ${pkg.name}\n` +
-      `💰 *Tarif Mulai:* ${pkg.priceDisplay} (${pkg.unit})\n` +
-      `📍 *Lokasi Pengerjaan:* ${locText}\n` +
-      `⏱️ *Estimasi Waktu:* ${pkg.estTime}\n` +
-      `🛡️ *Garansi Servis:* ${pkg.warranty}\n\n` +
-      `Mohon info ketersediaan armada terdekat dan konfirmasi jadwal kedatangan teknisi ke lokasi saya. Terima kasih!`;
-    return `https://wa.me/6285715654183?text=${encodeURIComponent(text)}`;
-  };
 
   // Ulasan Pelanggan & Carousel State
   const [reviews, setReviews] = useState<ReviewItem[]>(() => {
@@ -3507,7 +3605,7 @@ export default function App() {
         setIsScrolled(false);
       }
 
-      const sections = ['home', 'layanan', 'tarif', 'tentang', 'faq', 'galeri', 'artikel', 'ulasan', 'lokasi', 'kontak'];
+      const sections = ['home', 'layanan', 'kalkulator-cepat', 'tentang', 'faq', 'galeri', 'artikel', 'ulasan', 'lokasi', 'kontak'];
       const scrollPos = window.scrollY + 120;
 
       for (const sectionId of sections) {
@@ -3608,7 +3706,7 @@ export default function App() {
 
     setQuickWaError(null);
     const topic = TESTIMONI_WA_TOPICS[selectedTestimoniTopic];
-    const text = `Halo Admin Mitra Bersih 24 Jam,\nSaya ingin konsultasi / pesan layanan:\n- Nama: ${quickWaName.trim()}\n- Lokasi: ${quickWaLocation.trim()}, Bogor\n- Topik: ${topic.label}\n- Pesan: "${topic.text}"\nMohon info respon cepat dan estimasi kedatangan armada ke lokasi saya. Terima kasih.`;
+    const text = `Halo Admin PT MITRA BERSIH 24 JAM,\nSaya ingin konsultasi / pesan layanan:\n- Nama: ${quickWaName.trim()}\n- Lokasi: ${quickWaLocation.trim()}, Bogor\n- Topik: ${topic.label}\n- Pesan: "${topic.text}"\nMohon info respon cepat dan estimasi kedatangan armada ke lokasi saya. Terima kasih.`;
     window.open(`https://wa.me/6285715654183?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
   };
 
@@ -3630,7 +3728,7 @@ export default function App() {
 
     setHubungiWaError(null);
     const topic = WA_QUICK_TOPICS[selectedWaTopic];
-    const text = `Halo CS Mitra Bersih 24 Jam,\nSaya ingin pesan layanan / cek armada:\n- Nama: ${hubungiWaName.trim()}\n- Wilayah/Kecamatan: ${hubungiWaLocation.trim()}, Bogor\n- Kendala: ${topic.label}\n- Pesan: "${topic.text}"\nMohon konfirmasi ketersediaan armada terdekat ke lokasi saya. Terima kasih.`;
+    const text = `Halo CS PT MITRA BERSIH 24 JAM,\nSaya ingin pesan layanan / cek armada:\n- Nama: ${hubungiWaName.trim()}\n- Wilayah/Kecamatan: ${hubungiWaLocation.trim()}, Bogor\n- Kendala: ${topic.label}\n- Pesan: "${topic.text}"\nMohon konfirmasi ketersediaan armada terdekat ke lokasi saya. Terima kasih.`;
     window.open(`https://wa.me/6285715654183?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
   };
 
@@ -3656,7 +3754,7 @@ export default function App() {
 
     setFaqModalError(null);
     const text =
-      `Halo Admin CS Mitra Bersih,\n\n` +
+      `Halo Admin CS PT MITRA BERSIH 24 JAM,\n\n` +
       `Saya ingin bertanya seputar pertanyaan spesifik FAQ di website:\n` +
       `❓ *Pertanyaan:* "${faqModalItem.question}"\n` +
       `📂 *Kategori:* ${faqModalItem.category}\n\n` +
@@ -3679,7 +3777,15 @@ export default function App() {
     setFaqModalNotes('');
   };
 
-  // Newsletter Subscription for Berita Lingkungan
+  // Auto-dismiss marketing toast after 3.5s
+  useEffect(() => {
+    if (marketingToast) {
+      const timer = setTimeout(() => setMarketingToast(null), 3500);
+      return () => clearTimeout(timer);
+    }
+  }, [marketingToast]);
+
+  // Newsletter Subscription for Berita Lingkungan & Email Marketing List
   const handleSubscribeNewsletter = (e: React.FormEvent) => {
     e.preventDefault();
     const email = newsletterEmail.trim();
@@ -3699,23 +3805,287 @@ export default function App() {
 
     const normalized = email.toLowerCase();
     if (subscribers.includes(normalized)) {
-      setNewsletterSuccess('Email Anda sudah terdaftar dalam buletin Berita Lingkungan kami!');
+      setNewsletterSuccess(`Email ${email} sudah terdaftar dalam Email Marketing List kami! Anda dapat membuka simulasi list audiens.`);
       setNewsletterError(null);
       setNewsletterEmail('');
       return;
     }
 
-    const updated = [normalized, ...subscribers];
-    setSubscribers(updated);
+    const nowFormatted = new Date().toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    }) + ', ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+
+    const updatedSubscribers = [normalized, ...subscribers];
+    const updatedMeta = {
+      ...subscribersMeta,
+      [normalized]: {
+        name: newsletterName.trim() || normalized.split('@')[0],
+        category: newsletterCategory,
+        date: nowFormatted,
+        status: 'active' as const,
+        source: 'Form Buletin Website'
+      }
+    };
+
+    setSubscribers(updatedSubscribers);
+    setSubscribersMeta(updatedMeta);
+
     try {
-      localStorage.setItem('subscribers', JSON.stringify(updated));
+      localStorage.setItem('subscribers', JSON.stringify(updatedSubscribers));
+      localStorage.setItem('subscribers_metadata', JSON.stringify(updatedMeta));
     } catch {
       // storage error fallback
     }
 
-    setNewsletterSuccess(`Terima kasih! Email ${email} berhasil bergabung dengan buletin Berita Lingkungan Mitra Bersih.`);
+    setNewsletterSuccess(`Terima kasih! Email ${email} berhasil bergabung dengan buletin & tersimpan di Email Marketing List PT MITRA BERSIH 24 JAM.`);
     setNewsletterError(null);
     setNewsletterEmail('');
+    setNewsletterName('');
+    setMarketingToast(`✓ Kontak ${normalized} berhasil ditambahkan ke Email Marketing List!`);
+  };
+
+  // Add Manual Subscriber in Simulator
+  const handleAddManualSubscriber = (e: React.FormEvent) => {
+    e.preventDefault();
+    const email = manualEmail.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!email) {
+      setManualError('Mohon masukkan alamat email.');
+      return;
+    }
+    if (!emailRegex.test(email)) {
+      setManualError('Format email tidak valid (contoh: warga@domain.com).');
+      return;
+    }
+
+    const normalized = email.toLowerCase();
+    if (subscribers.includes(normalized)) {
+      setManualError('Email ini sudah terdaftar dalam marketing list.');
+      return;
+    }
+
+    const nowFormatted = new Date().toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    }) + ', ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+
+    const updatedSubscribers = [normalized, ...subscribers];
+    const updatedMeta = {
+      ...subscribersMeta,
+      [normalized]: {
+        name: manualName.trim() || normalized.split('@')[0],
+        category: manualCategory,
+        date: nowFormatted,
+        status: 'active' as const,
+        source: 'Simulasi Admin'
+      }
+    };
+
+    setSubscribers(updatedSubscribers);
+    setSubscribersMeta(updatedMeta);
+
+    try {
+      localStorage.setItem('subscribers', JSON.stringify(updatedSubscribers));
+      localStorage.setItem('subscribers_metadata', JSON.stringify(updatedMeta));
+    } catch {
+      // fallback
+    }
+
+    setManualEmail('');
+    setManualName('');
+    setManualError(null);
+    setIsAddingManualContact(false);
+    setMarketingToast(`✓ Kontak baru ${normalized} berhasil disimpan ke localStorage!`);
+  };
+
+  // Delete Subscriber from LocalStorage
+  const handleDeleteSubscriber = (emailToDelete: string) => {
+    const updatedSubscribers = subscribers.filter((e) => e !== emailToDelete);
+    const updatedMeta = { ...subscribersMeta };
+    delete updatedMeta[emailToDelete];
+
+    setSubscribers(updatedSubscribers);
+    setSubscribersMeta(updatedMeta);
+
+    try {
+      localStorage.setItem('subscribers', JSON.stringify(updatedSubscribers));
+      localStorage.setItem('subscribers_metadata', JSON.stringify(updatedMeta));
+    } catch {
+      // fallback
+    }
+
+    setMarketingToast(`🗑️ Email ${emailToDelete} berhasil dihapus dari marketing list.`);
+  };
+
+  // Toggle Active / Unsubscribed Status
+  const handleToggleSubscriberStatus = (emailToToggle: string) => {
+    const currentMeta = subscribersMeta[emailToToggle] || {
+      name: emailToToggle.split('@')[0],
+      category: 'warga' as const,
+      date: '17 Okt 2026',
+      status: 'active' as const,
+      source: 'Buletin Website'
+    };
+    const newStatus: 'active' | 'unsubscribed' = currentMeta.status === 'active' ? 'unsubscribed' : 'active';
+    const updatedMeta = {
+      ...subscribersMeta,
+      [emailToToggle]: {
+        ...currentMeta,
+        status: newStatus
+      }
+    };
+
+    setSubscribersMeta(updatedMeta);
+    try {
+      localStorage.setItem('subscribers_metadata', JSON.stringify(updatedMeta));
+    } catch {
+      // fallback
+    }
+
+    setMarketingToast(`Status ${emailToToggle} diubah menjadi: ${newStatus === 'active' ? 'Aktif' : 'Unsubscribed'}`);
+  };
+
+  // Send Individual Test Email Simulation
+  const handleSendTestEmail = (email: string) => {
+    setMarketingToast(`✉️ Simulasi email buletin berhasil dikirim ke: ${email}!`);
+  };
+
+  // Copy All Emails to Clipboard
+  const handleCopyAllEmails = () => {
+    if (subscribers.length === 0) {
+      setMarketingToast('Tidak ada email di dalam daftar untuk disalin.');
+      return;
+    }
+    const textToCopy = subscribers.join(', ');
+    navigator.clipboard?.writeText(textToCopy);
+    setMarketingToast(`📋 ${subscribers.length} email berhasil disalin ke clipboard!`);
+  };
+
+  // Export CSV
+  const handleExportCsv = () => {
+    if (subscribers.length === 0) {
+      setMarketingToast('Daftar subscriber kosong, tidak ada data untuk diekspor.');
+      return;
+    }
+    const header = 'Email,Nama,Kategori,Status,Tanggal Bergabung,Sumber\n';
+    const rows = subscribers.map((email) => {
+      const meta = subscribersMeta[email] || {
+        name: email.split('@')[0],
+        category: 'warga',
+        status: 'active',
+        date: '17 Okt 2026',
+        source: 'Buletin Website'
+      };
+      return `"${email}","${meta.name || ''}","${meta.category}","${meta.status}","${meta.date}","${meta.source}"`;
+    }).join('\n');
+
+    const blob = new Blob([header + rows], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', 'subscribers-email-marketing-pt-mitra-bersih-24jam.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    setMarketingToast('📥 File CSV email marketing list berhasil diunduh!');
+  };
+
+  // Reset to Default Sample Subscribers
+  const handleResetSubscribers = () => {
+    const defaultEmails = DEFAULT_SUBSCRIBERS.map((s) => s.email);
+    const initialMap: Record<string, any> = {};
+    DEFAULT_SUBSCRIBERS.forEach((s) => {
+      initialMap[s.email] = {
+        name: s.name,
+        category: s.category,
+        date: s.subscribedAt,
+        status: s.status,
+        source: s.source
+      };
+    });
+
+    setSubscribers(defaultEmails);
+    setSubscribersMeta(initialMap);
+
+    try {
+      localStorage.setItem('subscribers', JSON.stringify(defaultEmails));
+      localStorage.setItem('subscribers_metadata', JSON.stringify(initialMap));
+    } catch {
+      // fallback
+    }
+
+    setMarketingToast('🔄 Daftar subscriber direset ke 6 kontak sampel Bogor!');
+  };
+
+  // Clear All Subscribers
+  const handleClearAllSubscribers = () => {
+    if (window.confirm('Yakin ingin mengosongkan seluruh daftar subscriber dari localStorage?')) {
+      setSubscribers([]);
+      setSubscribersMeta({});
+      try {
+        localStorage.setItem('subscribers', JSON.stringify([]));
+        localStorage.setItem('subscribers_metadata', JSON.stringify({}));
+      } catch {
+        // fallback
+      }
+      setMarketingToast('🗑️ Seluruh subscriber berhasil dibersihkan.');
+    }
+  };
+
+  // Start Broadcast Simulation
+  const handleStartBroadcastSimulation = () => {
+    const activeEmails = subscribers.filter((e) => (subscribersMeta[e]?.status || 'active') === 'active');
+    if (activeEmails.length === 0) {
+      alert('Tidak ada subscriber aktif untuk menerima broadcast. Silakan tambahkan email atau aktifkan subscriber.');
+      return;
+    }
+
+    const currentTemplate = MARKETING_CAMPAIGN_TEMPLATES.find((t) => t.id === selectedCampaignId);
+    const campaignSubject = selectedCampaignId === 'custom'
+      ? (customCampaignSubject || 'Pemberitahuan Khusus Sanitasi PT MITRA BERSIH 24 JAM')
+      : (currentTemplate?.subject || 'Buletin Sanitasi Bogor');
+
+    setIsBroadcasting(true);
+    setBroadcastProgress(10);
+    setBroadcastLog('Menyiapkan server antrian simulasi email marketing...');
+    setBroadcastReport(null);
+
+    setTimeout(() => {
+      setBroadcastProgress(35);
+      setBroadcastLog(`Menghubungkan ke ${activeEmails.length} kontak aktif di wilayah Bogor...`);
+    }, 400);
+
+    setTimeout(() => {
+      setBroadcastProgress(70);
+      const sampleEmail = activeEmails[0] || 'warga.bogor@gmail.com';
+      setBroadcastLog(`Mengirim batch simulasi: ${sampleEmail} dkk... [200 OK]`);
+    }, 900);
+
+    setTimeout(() => {
+      setBroadcastProgress(100);
+      setBroadcastLog(`Pengiriman broadcast selesai! 100% dari ${activeEmails.length} email terkirim.`);
+      setIsBroadcasting(false);
+
+      const nowFormatted = new Date().toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      }) + ', ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+
+      setBroadcastReport({
+        totalSent: activeEmails.length,
+        timestamp: nowFormatted,
+        subject: campaignSubject,
+        openRate: '44.8%',
+        clickRate: '18.5%'
+      });
+      setMarketingToast('🎉 Simulasi broadcast kampanye email berhasil dikirim!');
+    }, 1500);
   };
 
   const selectedLayananOption = LAYANAN_AREA_OPTIONS.find((o) => o.value === layananArea) || LAYANAN_AREA_OPTIONS[0];
@@ -3730,11 +4100,15 @@ export default function App() {
         <div className="container">
           <a href="#home" onClick={(e) => scrollToSection(e, 'home')} className="logo">
             <div className="logo-icon">
-              <i className="fas fa-truck"></i>
+              <img
+                src="/logo.jpeg"
+                alt="Logo PT MITRA BERSIH 24 JAM"
+                className="logo-img"
+              />
             </div>
             <div className="logo-text">
-              <strong>SEDOT WC</strong>
-              <span>MITRA BERSIH 24JAM</span>
+              <strong>PT MITRA BERSIH 24 JAM</strong>
+              <span>SEDOT WC &amp; PENGUMPULAN AIR LIMBAH BOGOR</span>
             </div>
           </a>
 
@@ -3759,11 +4133,11 @@ export default function App() {
             </li>
             <li>
               <a
-                href="#tarif"
-                onClick={(e) => scrollToSection(e, 'tarif')}
-                className={activeSection === 'tarif' ? 'active' : ''}
+                href="#kalkulator-cepat"
+                onClick={(e) => scrollToSection(e, 'kalkulator-cepat')}
+                className={activeSection === 'kalkulator-cepat' ? 'active' : ''}
               >
-                Paket Tarif
+                Kalkulator Cepat
               </a>
             </li>
             <li>
@@ -3882,16 +4256,16 @@ export default function App() {
           <div className="hero-content fade-in">
             <div className="hero-badge">
               <span className="dot"></span>
-              Online Sekarang · Siap Datang Ke Lokasi Anda
+              Badan Usaha Resmi: PT MITRA BERSIH 24 JAM · NIB: 2605260095769
             </div>
             <h1>
-              SEDOT WC BOGOR<br />MITRA BERSIH 24JAM
+              SEDOT WC BOGOR<br />PT MITRA BERSIH 24 JAM
               <span className="highlight">
-                Butuh jasa sedot wc Bogor panggilan darurat? Kami melayani sedot wc kota Bogor &amp; kabupaten Bogor 24 jam. Kuras septic tank cepat, wc mampet beres, datang cepat ke lokasi!
+                Perusahaan resmi pengumpulan air limbah (KBLI 37001) &amp; jasa sedot WC Bogor 24 jam. Kuras septic tank cepat, wc mampet beres tanpa bongkar dengan garansi tuntas dan legalitas lengkap!
               </span>
             </h1>
             <a
-              href="https://wa.me/6285715654183?text=Halo,%20saya%20ingin%20booking%20layanan%20sedot%20wc%20Bogor%20sekarang"
+              href="https://wa.me/6285715654183?text=Halo%20PT%20MITRA%20BERSIH%2024%20JAM,%20saya%20ingin%20booking%20layanan%20sedot%20wc%20Bogor%20sekarang"
               className="hero-cta"
               target="_blank"
               rel="noopener noreferrer"
@@ -3905,12 +4279,12 @@ export default function App() {
                 <span>Layanan Siaga</span>
               </div>
               <div className="stat">
-                <strong>15+</strong>
-                <span>Tahun Pengalaman</span>
+                <strong>KBLI 37001</strong>
+                <span>Pengumpulan Air Limbah</span>
               </div>
               <div className="stat">
-                <strong>5000+</strong>
-                <span>Pelanggan Puas</span>
+                <strong>NIB &amp; NPWP</strong>
+                <span>Legalitas Resmi PT</span>
               </div>
             </div>
           </div>
@@ -3945,13 +4319,16 @@ export default function App() {
                 <rect x="95" y="155" width="210" height="50" fill="rgba(17,17,17,0.1)" rx="8" />
 
                 {/* MITRA BERSIH Text */}
-                <text x="200" y="185" textAnchor="middle" fontFamily="Poppins, sans-serif" fontSize="20" fontWeight="900" fill="#111111">MITRA BERSIH</text>
-                <text x="200" y="205" textAnchor="middle" fontFamily="Poppins, sans-serif" fontSize="11" fontWeight="600" fill="#111111" opacity="0.7">24 JAM SERVICE</text>
+                <text x="200" y="185" textAnchor="middle" fontFamily="Poppins, sans-serif" fontSize="16" fontWeight="900" fill="#111111">PT MITRA BERSIH 24 JAM</text>
+                <text x="200" y="205" textAnchor="middle" fontFamily="Poppins, sans-serif" fontSize="11" fontWeight="700" fill="#111111" opacity="0.8">KBLI 37001 · NIB RESMI</text>
 
-                {/* Flame/Drop Logo on Tank */}
-                <g transform="translate(200, 225)">
-                  <circle cx="0" cy="0" r="14" fill="#111111" />
-                  <path d="M -6,-2 Q -6,-8 0,-10 Q 6,-8 6,-2 Q 6,4 0,6 Q -6,4 -6,-2 Z" fill="#FFD60A" />
+                {/* Official Logo Seal on Tank */}
+                <g transform="translate(182, 212)">
+                  <clipPath id="truckLogoClip">
+                    <circle cx="18" cy="18" r="17" />
+                  </clipPath>
+                  <circle cx="18" cy="18" r="18" fill="#FFFFFF" stroke="#111111" strokeWidth="2" />
+                  <image href="/logo.jpeg" x="0" y="0" width="36" height="36" clipPath="url(#truckLogoClip)" />
                 </g>
 
                 {/* Truck Cab */}
@@ -4379,12 +4756,13 @@ export default function App() {
 
                     <div className="service-wa-secondary-row">
                       <a
-                        href="#biaya"
-                        onClick={(e) => scrollToSection(e, 'biaya')}
+                        href={`https://wa.me/6285715654183?text=${encodeURIComponent(`Halo CS PT MITRA BERSIH 24 JAM, saya ingin konsultasi estimasi biaya pengerjaan untuk layanan ${service.title} di Bogor.`)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="service-card-calc-link"
                       >
-                        <i className="fas fa-calculator"></i>
-                        <span>Cek Estimasi Biaya</span>
+                        <i className="fab fa-whatsapp"></i>
+                        <span>Tanya Estimasi Biaya</span>
                       </a>
                       <a
                         href={`https://wa.me/6285715654183?text=${encodeURIComponent(directOrderMsg)}`}
@@ -4411,495 +4789,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* SECTION TARIF & PAKET HARGA (RESPONSIVE PRICING TABLE) */}
-      <section className="pricing-section" id="tarif">
-        <span id="biaya" style={{ position: 'relative', top: '-100px', display: 'block', visibility: 'hidden' }}></span>
-        <div className="container">
-          <div className="section-header fade-in">
-            <span className="section-badge">
-              <i className="fas fa-tags" style={{ marginRight: '6px' }}></i>
-              DAFTAR TARIF TRANSPARAN
-            </span>
-            <h2 className="section-title">
-              Paket Layanan &amp; Estimasi Biaya Resmi Bogor
-            </h2>
-            <p className="section-subtitle">
-              Pilihan paket sedot septic tank standar dan pelancaran saluran pipa mampet di Kota &amp; Kabupaten Bogor. Tarif jujur tanpa biaya tersembunyi dengan garansi tuntas.
-            </p>
-          </div>
 
-          {/* Kolom Pencarian Cepat Paket Layanan (Search Input Top of Pricing Table) */}
-          <div className="pricing-search-container fade-in">
-            <div className="pricing-search-box-row">
-              <div className="pricing-search-box">
-                <i className="fas fa-search pricing-search-icon"></i>
-                <input
-                  type="text"
-                  id="pricing-search-input"
-                  className="pricing-search-input"
-                  placeholder="Cari paket layanan (misal: sedot septic tank, saluran pipa mampet, wastafel, ruko komersial)..."
-                  value={pricingSearchQuery}
-                  onChange={(e) => setPricingSearchQuery(e.target.value)}
-                  aria-label="Cari paket layanan dan estimasi biaya sedot WC Bogor"
-                />
-                {pricingSearchQuery && (
-                  <button
-                    type="button"
-                    className="pricing-search-clear-btn"
-                    onClick={() => setPricingSearchQuery('')}
-                    aria-label="Hapus kata kunci pencarian paket"
-                    title="Hapus pencarian"
-                  >
-                    <i className="fas fa-times"></i>
-                  </button>
-                )}
-              </div>
-
-              {pricingSearchQuery.trim() && (
-                <div className="pricing-search-result-pill">
-                  <i className="fas fa-check-circle"></i>
-                  <span>
-                    Ditemukan <strong>{filteredPricingPackages.length}</strong> paket
-                  </span>
-                </div>
-              )}
-            </div>
-
-            {/* Quick Keyword Chips */}
-            <div className="pricing-search-quick-tags">
-              <span className="pricing-quick-label">
-                <i className="fas fa-bolt"></i> Kata Kunci Cepat:
-              </span>
-              <div className="pricing-quick-chips">
-                {[
-                  { label: 'Septic Tank Standar', query: 'septic tank' },
-                  { label: 'Saluran Mampet', query: 'saluran mampet' },
-                  { label: 'Rumah Tinggal', query: 'rumah' },
-                  { label: 'Komersial / Ruko', query: 'komersial' },
-                  { label: 'Paket Kombo', query: 'kombo' },
-                  { label: 'Tanpa Bongkar', query: 'tanpa bongkar' }
-                ].map((chip) => {
-                  const isChipActive = pricingSearchQuery.toLowerCase() === chip.query.toLowerCase();
-                  return (
-                    <button
-                      key={chip.query}
-                      type="button"
-                      className={`pricing-quick-chip ${isChipActive ? 'active' : ''}`}
-                      onClick={() => {
-                        if (isChipActive) {
-                          setPricingSearchQuery('');
-                        } else {
-                          setPricingSearchQuery(chip.query);
-                        }
-                      }}
-                    >
-                      {chip.label}
-                    </button>
-                  );
-                })}
-                {(pricingSearchQuery || pricingCategoryFilter !== 'all') && (
-                  <button
-                    type="button"
-                    className="pricing-quick-chip reset"
-                    onClick={() => {
-                      setPricingSearchQuery('');
-                      setPricingCategoryFilter('all');
-                    }}
-                    title="Reset pencarian dan kategori paket"
-                  >
-                    <i className="fas fa-rotate-left"></i> Reset Filter
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Pricing Controls: Category Filters & Bogor Location Selector */}
-          <div className="pricing-controls-card fade-in">
-            <div className="pricing-filter-group">
-              <span className="pricing-filter-label">
-                <i className="fas fa-filter"></i> Filter Layanan:
-              </span>
-              <div className="pricing-filter-pills" role="tablist" aria-label="Filter Paket Layanan">
-                <button
-                  type="button"
-                  className={`pricing-filter-pill ${pricingCategoryFilter === 'all' ? 'active' : ''}`}
-                  onClick={() => setPricingCategoryFilter('all')}
-                  role="tab"
-                  aria-selected={pricingCategoryFilter === 'all'}
-                >
-                  Semua Paket ({PRICING_PACKAGES.length})
-                </button>
-                <button
-                  type="button"
-                  className={`pricing-filter-pill ${pricingCategoryFilter === 'septic-tank' ? 'active' : ''}`}
-                  onClick={() => setPricingCategoryFilter('septic-tank')}
-                  role="tab"
-                  aria-selected={pricingCategoryFilter === 'septic-tank'}
-                >
-                  <i className="fas fa-truck-droplet"></i> Sedot Septic Tank (2)
-                </button>
-                <button
-                  type="button"
-                  className={`pricing-filter-pill ${pricingCategoryFilter === 'drain-clearing' ? 'active' : ''}`}
-                  onClick={() => setPricingCategoryFilter('drain-clearing')}
-                  role="tab"
-                  aria-selected={pricingCategoryFilter === 'drain-clearing'}
-                >
-                  <i className="fas fa-sink"></i> Pelancaran Saluran (1)
-                </button>
-                <button
-                  type="button"
-                  className={`pricing-filter-pill ${pricingCategoryFilter === 'combo' ? 'active' : ''}`}
-                  onClick={() => setPricingCategoryFilter('combo')}
-                  role="tab"
-                  aria-selected={pricingCategoryFilter === 'combo'}
-                >
-                  <i className="fas fa-shield-virus"></i> Paket Kombo (1)
-                </button>
-              </div>
-            </div>
-
-            <div className="pricing-location-picker">
-              <label htmlFor="pricing-area-select" className="pricing-location-label">
-                <i className="fas fa-map-marker-alt"></i> Lokasi Pengerjaan:
-              </label>
-              <div className="pricing-select-wrapper">
-                <select
-                  id="pricing-area-select"
-                  className="pricing-select-input"
-                  value={pricingArea}
-                  onChange={(e) => setPricingArea(e.target.value)}
-                  aria-label="Pilih Kecamatan atau Wilayah Bogor untuk Paket Tarif"
-                >
-                  <option value="Semua Wilayah Bogor">📍 Seluruh Wilayah Kota &amp; Kab. Bogor</option>
-                  {BOGOR_AREAS.map((area) => (
-                    <option key={area} value={area}>
-                      Kecamatan {area}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
-
-          {/* Pricing Cards Grid or Empty State */}
-          {filteredPricingPackages.length > 0 ? (
-            <div className="pricing-cards-grid fade-in">
-              {filteredPricingPackages.map((pkg) => {
-                const waUrl = getPricingWaUrl(pkg, pricingArea);
-                return (
-                  <div
-                    key={pkg.id}
-                    className={`pricing-card ${pkg.isPopular ? 'popular' : ''}`}
-                  >
-                    {pkg.badge && (
-                      <div className="pricing-card-badge">
-                        <i className={`fas ${pkg.isPopular ? 'fa-fire' : 'fa-award'}`}></i>
-                        <span>{pkg.badge}</span>
-                      </div>
-                    )}
-
-                    <div className="pricing-card-header">
-                      <span className="pricing-card-tag">{pkg.tag}</span>
-                      <div className="pricing-card-title-row">
-                        <div className="pricing-card-icon">
-                          <i className={`fas ${pkg.icon}`}></i>
-                        </div>
-                        <h3 className="pricing-card-name">{pkg.name}</h3>
-                      </div>
-                      <p className="pricing-card-desc">{pkg.description}</p>
-                    </div>
-
-                    <div className="pricing-price-box">
-                      <span className="pricing-start-label">Mulai Dari</span>
-                      <div className="pricing-price-row">
-                        <span className="pricing-currency">Rp</span>
-                        <span className="pricing-amount">
-                          {pkg.startingPrice.toLocaleString('id-ID')}
-                        </span>
-                      </div>
-                      <span className="pricing-unit-text">{pkg.unit}</span>
-                    </div>
-
-                    <div className="pricing-meta-pills">
-                      <div className="pricing-meta-pill" title="Target properti yang cocok">
-                        <i className="fas fa-home"></i>
-                        <span>{pkg.targetProperty}</span>
-                      </div>
-                      <div className="pricing-meta-pill" title="Estimasi waktu pengerjaan di lokasi">
-                        <i className="fas fa-stopwatch"></i>
-                        <span>{pkg.estTime}</span>
-                      </div>
-                      <div className="pricing-meta-pill" title="Garansi perlindungan resmi">
-                        <i className="fas fa-shield-alt"></i>
-                        <span>Garansi {pkg.warranty}</span>
-                      </div>
-                    </div>
-
-                    <div className="pricing-features-section">
-                      <div className="pricing-features-title">
-                        <i className="fas fa-check-double"></i> Layanan Termasuk:
-                      </div>
-                      <ul className="pricing-features-list">
-                        {pkg.features.map((feature, fIdx) => (
-                          <li key={fIdx} className="pricing-feature-item">
-                            <i className="fas fa-check-circle pricing-check-icon"></i>
-                            <span>{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="pricing-card-action">
-                      <a
-                        href={waUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`pricing-cta-btn ${pkg.isPopular ? 'btn-popular' : ''}`}
-                        title={`Pesan ${pkg.name} via WhatsApp`}
-                      >
-                        <i className="fab fa-whatsapp"></i>
-                        <span>Pesan Paket via WA</span>
-                      </a>
-                      <div className="pricing-card-footnote">
-                        <i className="fas fa-bolt"></i> Respon cepat armada terdekat {pricingArea !== 'Semua Wilayah Bogor' ? `Kec. ${pricingArea}` : 'Bogor'}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="pricing-empty-state fade-in">
-              <div className="pricing-empty-icon">
-                <i className="fas fa-search-minus"></i>
-              </div>
-              <h3 className="pricing-empty-title">Tidak Ada Paket Layanan yang Sesuai</h3>
-              <p className="pricing-empty-desc">
-                Tidak ditemukan paket tarif untuk pencarian <strong>"{pricingSearchQuery}"</strong>
-                {pricingCategoryFilter !== 'all' ? ' pada kategori yang dipilih' : ''}.
-                Silakan coba kata kunci lain atau klik tombol reset di bawah untuk menampilkan seluruh paket layanan.
-              </p>
-              <div className="pricing-empty-actions">
-                <button
-                  type="button"
-                  className="pricing-empty-reset-btn"
-                  onClick={() => {
-                    setPricingSearchQuery('');
-                    setPricingCategoryFilter('all');
-                  }}
-                >
-                  <i className="fas fa-redo-alt"></i> Tampilkan Semua Paket ({PRICING_PACKAGES.length})
-                </button>
-                <a
-                  href={`https://wa.me/6285715654183?text=${encodeURIComponent(
-                    `Halo Admin Mitra Bersih 24 Jam, saya mencari layanan untuk kendala "${pricingSearchQuery}". Apakah ada paket atau estimasi biaya khusus untuk kebutuhan saya?`
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="pricing-empty-wa-btn"
-                >
-                  <i className="fab fa-whatsapp"></i> Konsultasi Kendala via WA
-                </a>
-              </div>
-            </div>
-          )}
-
-          {/* Interactive Feature Comparison Toggle */}
-          <div className="pricing-compare-toggle-wrap fade-in">
-            <button
-              type="button"
-              className="pricing-compare-toggle-btn"
-              onClick={() => setShowPricingComparison(!showPricingComparison)}
-              aria-expanded={showPricingComparison}
-              aria-controls="pricing-comparison-table-wrapper"
-            >
-              <i className={`fas ${showPricingComparison ? 'fa-compress-arrows-alt' : 'fa-table-list'}`}></i>
-              <span>{showPricingComparison ? 'Sembunyikan Tabel Perbandingan Spesifikasi' : 'Bandingkan Rincian Spesifikasi & Fitur Seluruh Paket'}</span>
-              <i className={`fas ${showPricingComparison ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
-            </button>
-          </div>
-
-          {/* Detailed Responsive Comparison Table */}
-          {showPricingComparison && (
-            <div id="pricing-comparison-table-wrapper" className="pricing-compare-table-container fade-in">
-              <div className="pricing-table-responsive">
-                <table className="pricing-compare-table">
-                  <thead>
-                    <tr>
-                      <th className="col-spec">Spesifikasi &amp; Layanan</th>
-                      {PRICING_PACKAGES.map((pkg) => (
-                        <th key={pkg.id} className={`col-pkg ${pkg.isPopular ? 'highlight' : ''}`}>
-                          <div className="pkg-th-name">{pkg.name}</div>
-                          <div className="pkg-th-price">{pkg.priceDisplay}</div>
-                          <div className="pkg-th-unit">{pkg.unit}</div>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="spec-label">
-                        <i className="fas fa-box"></i> Kapasitas Pengerjaan
-                      </td>
-                      {PRICING_PACKAGES.map((pkg) => (
-                        <td key={pkg.id} className={pkg.isPopular ? 'highlight' : ''}>
-                          {pkg.specs.capacity}
-                        </td>
-                      ))}
-                    </tr>
-                    <tr>
-                      <td className="spec-label">
-                        <i className="fas fa-cogs"></i> Jenis Mesin / Alat
-                      </td>
-                      {PRICING_PACKAGES.map((pkg) => (
-                        <td key={pkg.id} className={pkg.isPopular ? 'highlight' : ''}>
-                          {pkg.specs.machine}
-                        </td>
-                      ))}
-                    </tr>
-                    <tr>
-                      <td className="spec-label">
-                        <i className="fas fa-ruler-combined"></i> Fasilitas Selang Standar
-                      </td>
-                      {PRICING_PACKAGES.map((pkg) => (
-                        <td key={pkg.id} className={pkg.isPopular ? 'highlight' : ''}>
-                          {pkg.specs.hose}
-                        </td>
-                      ))}
-                    </tr>
-                    <tr>
-                      <td className="spec-label">
-                        <i className="fas fa-shield-alt"></i> Garansi Pengerjaan Resmi
-                      </td>
-                      {PRICING_PACKAGES.map((pkg) => (
-                        <td key={pkg.id} className={pkg.isPopular ? 'highlight' : ''}>
-                          <span className="spec-badge-warranty">{pkg.specs.warranty}</span>
-                        </td>
-                      ))}
-                    </tr>
-                    <tr>
-                      <td className="spec-label">
-                        <i className="fas fa-spray-can-sparkles"></i> Disinfektan &amp; Pembersih Aroma
-                      </td>
-                      {PRICING_PACKAGES.map((pkg) => (
-                        <td key={pkg.id} className={pkg.isPopular ? 'highlight' : ''}>
-                          {pkg.specs.disinfectant}
-                        </td>
-                      ))}
-                    </tr>
-                    <tr>
-                      <td className="spec-label">
-                        <i className="fas fa-recycle"></i> Pembuangan Legal IPLT Bogor
-                      </td>
-                      {PRICING_PACKAGES.map((pkg) => (
-                        <td key={pkg.id} className={pkg.isPopular ? 'highlight' : ''}>
-                          {pkg.specs.ipltLegal}
-                        </td>
-                      ))}
-                    </tr>
-                    <tr>
-                      <td className="spec-label">
-                        <i className="fas fa-file-invoice"></i> Bukti Pembayaran / Kwitansi
-                      </td>
-                      {PRICING_PACKAGES.map((pkg) => (
-                        <td key={pkg.id} className={pkg.isPopular ? 'highlight' : ''}>
-                          <span className="spec-check-yes">
-                            <i className="fas fa-check"></i> Tersedia
-                          </span>
-                        </td>
-                      ))}
-                    </tr>
-                    <tr>
-                      <td className="spec-label">Pesan Paket Sekarang</td>
-                      {PRICING_PACKAGES.map((pkg) => (
-                        <td key={pkg.id} className={pkg.isPopular ? 'highlight' : ''}>
-                          <a
-                            href={getPricingWaUrl(pkg, pricingArea)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="table-order-btn"
-                          >
-                            <i className="fab fa-whatsapp"></i> Pesan
-                          </a>
-                        </td>
-                      ))}
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-
-          {/* Pricing Trust Badges (4 Guarantees) */}
-          <div className="pricing-trust-grid fade-in">
-            <div className="pricing-trust-card">
-              <div className="trust-card-icon">
-                <i className="fas fa-handshake"></i>
-              </div>
-              <div className="trust-card-body">
-                <h4>Kepastian Harga di Awal</h4>
-                <p>Tanpa biaya siluman. Seluruh estimasi tarif disepakati sebelum selang dan mesin diturunkan di lokasi Anda.</p>
-              </div>
-            </div>
-
-            <div className="pricing-trust-card">
-              <div className="trust-card-icon">
-                <i className="fas fa-route"></i>
-              </div>
-              <div className="trust-card-body">
-                <h4>Gratis Selang s/d 50 Meter</h4>
-                <p>Menjangkau pemukiman gang sempit dan perumahan padat di seluruh wilayah Bogor tanpa biaya tambahan selang standar.</p>
-              </div>
-            </div>
-
-            <div className="pricing-trust-card">
-              <div className="trust-card-icon">
-                <i className="fas fa-certificate"></i>
-              </div>
-              <div className="trust-card-body">
-                <h4>Garansi Servis 30 - 45 Hari</h4>
-                <p>Layanan dijamin tuntas. Apabila saluran kembali macet dalam masa garansi, teknisi siap datang kembali gratis.</p>
-              </div>
-            </div>
-
-            <div className="pricing-trust-card">
-              <div className="trust-card-icon">
-                <i className="fas fa-clock"></i>
-              </div>
-              <div className="trust-card-body">
-                <h4>Siaga 24 Jam Nonstop</h4>
-                <p>Armada tangki vakum standby di 5 pos siaga Bogor untuk panggilan darurat septic tank meluap kapan pun dibutuhkan.</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Pricing Notice & Consultation Footer */}
-          <div className="pricing-notice-banner fade-in">
-            <div className="pricing-notice-left">
-              <i className="fas fa-info-circle pricing-notice-icon"></i>
-              <div>
-                <strong>Catatan Kondisi Khusus di Lapangan:</strong>
-                <p>
-                  Tarif di atas adalah harga mulai standar untuk septic tank berjarak selang standar (&le; 50 m) dan lubang kontrol yang mudah dibuka. Jika septic tank tertutup cor mati tanpa tutup atau jarak selang lebih dari 50 meter, teknisi akan memberikan opsi transparan dan meminta persetujuan Anda terlebih dahulu.
-                </p>
-              </div>
-            </div>
-            <div className="pricing-notice-right">
-              <a
-                href="https://wa.me/6285715654183?text=Halo%20Admin%20Mitra%20Bersih,%20saya%20ingin%20konsultasi%20kendala%20septic%20tank%20/%20saluran%20dan%20meminta%20estimasi%20tarif%20Bogor"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="pricing-consult-cta"
-              >
-                <i className="fab fa-whatsapp"></i>
-                <span>Tanya Estimasi via WA</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* WHY US */}
       <section className="why-us" id="tentang">
@@ -4958,6 +4848,84 @@ export default function App() {
                 <p>
                   Harga sedot wc Bogor transparan. Tidak ada biaya tambahan. Biaya sedot wc Bogor sesuai kapasitas dan jarak lokasi, dengan harga per tangki yang jelas di awal.
                 </p>
+              </div>
+            </div>
+          </div>
+
+          {/* LEGALITAS & PERIZINAN RESMI PERUSAHAAN (PT MITRA BERSIH 24 JAM) */}
+          <div className="legalitas-box fade-in">
+            <div className="legalitas-header">
+              <div className="legalitas-seal-wrap">
+                <img
+                  src="/logo.jpeg"
+                  alt="Logo Resmi PT MITRA BERSIH 24 JAM"
+                  className="legalitas-seal-img"
+                />
+              </div>
+              <div className="legalitas-header-badge">
+                <i className="fas fa-certificate"></i>
+                <span>BADAN USAHA RESMI &amp; TERVERIFIKASI</span>
+              </div>
+              <h3 className="legalitas-title">PT MITRA BERSIH 24 JAM</h3>
+              <p className="legalitas-desc">
+                Perusahaan penyedia jasa sedot WC, kuras septic tank, pelancaran saluran pipa mampet, dan pengumpulan air limbah berbadan hukum resmi (Pengelola Limbah Jawa Barat) yang beroperasi sesuai regulasi perizinan berusaha OSS Republik Indonesia.
+              </p>
+            </div>
+
+            <div className="legalitas-items-grid">
+              <div className="legalitas-item-card">
+                <div className="legalitas-item-icon">
+                  <i className="fas fa-id-card"></i>
+                </div>
+                <div className="legalitas-item-content">
+                  <span className="legalitas-item-tag">Nomor Induk Berusaha (NIB)</span>
+                  <div className="legalitas-item-code">2605260095769</div>
+                  <p className="legalitas-item-desc">
+                    Terdaftar dan terverifikasi di Kementerian Investasi / BKPM melalui sistem Online Single Submission (OSS - RBA).
+                  </p>
+                </div>
+              </div>
+
+              <div className="legalitas-item-card">
+                <div className="legalitas-item-icon">
+                  <i className="fas fa-file-invoice-dollar"></i>
+                </div>
+                <div className="legalitas-item-content">
+                  <span className="legalitas-item-tag">Nomor Pokok Wajib Pajak (NPWP)</span>
+                  <div className="legalitas-item-code">3215261111840004</div>
+                  <p className="legalitas-item-desc">
+                    Terdaftar di Direktorat Jenderal Pajak (Kemenkeu RI). Siap menerbitkan faktur, nota, dan kuitansi resmi berstempel PT untuk rumah tinggal, perkantoran, dan komersial.
+                  </p>
+                </div>
+              </div>
+
+              <div className="legalitas-item-card legalitas-item-highlight">
+                <div className="legalitas-item-icon">
+                  <i className="fas fa-recycle"></i>
+                </div>
+                <div className="legalitas-item-content">
+                  <span className="legalitas-item-tag">Klasifikasi Baku Lapangan Usaha (KBLI)</span>
+                  <div className="legalitas-item-code">KBLI 37001</div>
+                  <div className="legalitas-item-badge">Pengumpulan Air Limbah</div>
+                  <p className="legalitas-item-desc">
+                    Izin operasional resmi untuk kegiatan pengumpulan, pengangkutan, dan pengelolaan air limbah cair toilet / septic tank serta pembuangan legal ke IPLT Bogor.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="legalitas-footer-badges">
+              <div className="legal-badge">
+                <i className="fas fa-check-circle"></i>
+                <span>Pembuangan Resmi IPLT Kota &amp; Kab. Bogor</span>
+              </div>
+              <div className="legal-badge">
+                <i className="fas fa-file-signature"></i>
+                <span>Faktur &amp; Invoice Resmi untuk SPJ / Pajak</span>
+              </div>
+              <div className="legal-badge">
+                <i className="fas fa-shield-alt"></i>
+                <span>Standar K3 &amp; Kru Teknisi Berpengalaman</span>
               </div>
             </div>
           </div>
@@ -6012,7 +5980,7 @@ export default function App() {
                   Dapatkan Tips Sanitasi &amp; Berita Lingkungan Terbaru
                 </h3>
                 <p className="newsletter-subtitle">
-                  Bergabunglah dengan buletin informatif Mitra Bersih 24 Jam. Kami membagikan panduan pencegahan WC mampet, sanitasi rumah tangga ramah lingkungan, dan berita lingkungan terkini di Kota &amp; Kabupaten Bogor langsung ke email Anda.
+                  Bergabunglah dengan buletin informatif PT MITRA BERSIH 24 JAM. Kami membagikan panduan pencegahan WC mampet, sanitasi ramah lingkungan, dan berita lingkungan terkini di Kota &amp; Kabupaten Bogor langsung ke email Anda.
                 </p>
               </div>
 
@@ -6027,11 +5995,39 @@ export default function App() {
                 </div>
                 <div className="newsletter-perk-item">
                   <i className="fas fa-check-circle"></i>
-                  <span>100% Gratis &amp; Bebas Spam</span>
+                  <span>100% Edukatif &amp; Bebas Spam</span>
                 </div>
               </div>
 
               <form onSubmit={handleSubscribeNewsletter} className="newsletter-form">
+                {/* Category Selection Pills */}
+                <div className="newsletter-category-select-group">
+                  <button
+                    type="button"
+                    onClick={() => setNewsletterCategory('warga')}
+                    className={`newsletter-cat-pill ${newsletterCategory === 'warga' ? 'active' : ''}`}
+                  >
+                    <i className="fas fa-home"></i>
+                    <span>Rumah Tangga / Warga</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNewsletterCategory('rt_rw')}
+                    className={`newsletter-cat-pill ${newsletterCategory === 'rt_rw' ? 'active' : ''}`}
+                  >
+                    <i className="fas fa-users"></i>
+                    <span>Pengurus RT / RW</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNewsletterCategory('bisnis')}
+                    className={`newsletter-cat-pill ${newsletterCategory === 'bisnis' ? 'active' : ''}`}
+                  >
+                    <i className="fas fa-store"></i>
+                    <span>Bisnis / Ruko / Resto</span>
+                  </button>
+                </div>
+
                 <div className="newsletter-input-group">
                   <i className="fas fa-envelope newsletter-field-icon"></i>
                   <input
@@ -6047,7 +6043,7 @@ export default function App() {
                   />
                   <button type="submit" className="newsletter-submit-btn">
                     <i className="fas fa-paper-plane"></i>
-                    <span>Join Sekarang</span>
+                    <span>Berlangganan</span>
                   </button>
                 </div>
 
@@ -6065,14 +6061,28 @@ export default function App() {
                   </div>
                 )}
 
-                {subscribers.length > 0 && (
-                  <div className="newsletter-counter-badge">
-                    <i className="fas fa-users"></i>
-                    <span>
-                      Telah diikuti oleh <strong>{subscribers.length}</strong> pembaca peduli sanitasi &amp; lingkungan di Bogor
-                    </span>
-                  </div>
-                )}
+                <div className="newsletter-bottom-actions">
+                  {subscribers.length > 0 && (
+                    <div className="newsletter-counter-badge">
+                      <i className="fas fa-users"></i>
+                      <span>
+                        Telah diikuti oleh <strong>{subscribers.length}</strong> pembaca &amp; kontak tersimpan di <code>localStorage</code>
+                      </span>
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => setIsMarketingModalOpen(true)}
+                    className="newsletter-marketing-open-btn"
+                    title="Buka panel simulasi email marketing list"
+                  >
+                    <span className="pulse-dot"></span>
+                    <i className="fas fa-chart-pie"></i>
+                    <span>Buka Simulasi Email Marketing List ({subscribers.length} Kontak)</span>
+                    <i className="fas fa-arrow-right"></i>
+                  </button>
+                </div>
               </form>
             </div>
           </div>
@@ -6883,301 +6893,588 @@ export default function App() {
         </div>
       </section>
 
-      {/* SECTION JADWAL LAYANAN RUTIN */}
-      <section className="jadwal-rutin-section" id="jadwal-rutin">
+      {/* SECTION KALKULATOR CEPAT */}
+      <section className="kalkulator-cepat-section" id="kalkulator-cepat">
+        {/* Anchor alias so any link pointing to #jadwal-rutin or #kalkulator works */}
+        <span id="jadwal-rutin" style={{ position: 'relative', top: '-100px', display: 'block', visibility: 'hidden' }}></span>
+        <span id="kalkulator" style={{ position: 'relative', top: '-100px', display: 'block', visibility: 'hidden' }}></span>
+
         <div className="container">
           <div className="section-header fade-in">
             <span className="section-badge">
-              <i className="fas fa-calendar-check" style={{ marginRight: '6px' }}></i>
-              PROGRAM PEMELIHARAAN BERKALA
+              <i className="fas fa-calculator" style={{ marginRight: '6px' }}></i>
+              KALKULATOR CEPAT BIAYA SEDOT LIMBAH
             </span>
             <h2 className="section-title">
-              Jadwal Layanan Rutin &amp; Pengingat Otomatis
+              Kalkulator Cepat Estimasi Biaya Layanan
             </h2>
             <p className="section-subtitle">
-              Cegah kloset mampet dan septic tank meluap sebelum terlambat. Pilih siklus pemeliharaan berkala <strong>6 Bulan</strong> atau <strong>1 Tahun</strong> dengan sistem pengingat otomatis langsung ke WhatsApp Anda.
+              Hitung estimasi transparan biaya sedot limbah <strong>Black Water (Tinja)</strong>, <strong>Grey Water (Lumpur &amp; Lemak)</strong>, dan <strong>Cleaning / Blower Lumpur</strong> per kubikasi (m³) dengan pilihan Non Manifes maupun Manifes Resmi IPLT berizin KBLI 37001 di seluruh Bogor.
             </p>
           </div>
 
-          {/* DURATION TOGGLE & COMPARISON CARDS */}
-          <div className="jadwal-cards-grid fade-in">
-            {/* Card 1: Paket 6 Bulan */}
-            <div
-              className={`jadwal-plan-card ${rutinDuration === '6-bulan' ? 'active-plan' : ''}`}
-              onClick={() => setRutinDuration('6-bulan')}
-            >
-              <div className="jadwal-plan-badge usaha">
-                <i className="fas fa-store-alt"></i> REKOMENDASI USAHA &amp; RESTO
-              </div>
-              <div className="jadwal-plan-header">
-                <div className="jadwal-plan-title-wrap">
-                  <h3 className="jadwal-plan-title">Paket 6 Bulan</h3>
-                  <span className="jadwal-plan-subtitle">Semi-Tahunan (Siklus Intensif)</span>
-                </div>
-                <div className="jadwal-plan-radio">
-                  <span className={`jadwal-radio-dot ${rutinDuration === '6-bulan' ? 'checked' : ''}`}></span>
-                </div>
-              </div>
+          {/* Quick Toast Notification if active */}
+          {calcToast && (
+            <div className="calc-toast-notification fade-in" role="alert">
+              <i className="fas fa-check-circle"></i>
+              <span>{calcToast}</span>
+            </div>
+          )}
 
-              <div className="jadwal-plan-pricing">
-                <span className="jadwal-price-prefix">Siklus:</span>
-                <strong>2x Pengecekan</strong>
-                <span className="jadwal-price-suffix">/ Tahun</span>
-              </div>
-
-              <p className="jadwal-plan-desc">
-                Sangat ideal untuk properti dengan intensitas pembuangan tinggi agar saluran tidak pernah tersumbat lemak membeku atau septic tank meluap mendadak.
-              </p>
-
-              <div className="jadwal-plan-target">
-                <strong><i className="fas fa-building"></i> Cocok Untuk:</strong>
-                <span>Resto, Kafe, Ruko, Kosan, Usaha Katering, &amp; Keluarga &gt; 5 Orang</span>
-              </div>
-
-              <ul className="jadwal-plan-features">
-                <li>
-                  <i className="fas fa-check-circle"></i>
-                  <span>Pengingat otomatis via WhatsApp <strong>H-7</strong> sebelum jadwal jatuh tempo</span>
-                </li>
-                <li>
-                  <i className="fas fa-check-circle"></i>
-                  <span>Prioritas pemesanan armada weekend &amp; jam sibuk tanpa antre</span>
-                </li>
-                <li>
-                  <i className="fas fa-check-circle"></i>
-                  <span>Gratis inspeksi resapan &amp; pengecekan kerak grease trap</span>
-                </li>
-                <li>
-                  <i className="fas fa-check-circle"></i>
-                  <span>Diskon tarif berkala flat transparan di seluruh Bogor</span>
-                </li>
-              </ul>
-
-              <div className="jadwal-plan-actions">
+          {/* Filter Pills: Kategori Limbah & Dokumen Manifes */}
+          <div className="calc-filter-bar fade-in">
+            <div className="calc-filter-group">
+              <span className="calc-filter-label"><i className="fas fa-filter"></i> Kategori Limbah:</span>
+              <div className="calc-filter-buttons">
                 <button
                   type="button"
-                  className={`jadwal-select-btn ${rutinDuration === '6-bulan' ? 'selected' : ''}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setRutinDuration('6-bulan');
-                  }}
+                  className={`calc-filter-btn ${calcCategoryFilter === 'all' ? 'active' : ''}`}
+                  onClick={() => setCalcCategoryFilter('all')}
                 >
-                  <i className="fas fa-check"></i> {rutinDuration === '6-bulan' ? 'Paket Terpilih (6 Bulan)' : 'Pilih Siklus 6 Bulan'}
+                  Semua ({KALKULATOR_TARIF_LIST.length})
                 </button>
-                <a
-                  href={getDirectRutinWaUrl('6-bulan')}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="jadwal-direct-wa-btn"
-                  onClick={(e) => e.stopPropagation()}
-                  title="Daftar Langsung 6 Bulan via WhatsApp"
+                <button
+                  type="button"
+                  className={`calc-filter-btn ${calcCategoryFilter === 'black-water' ? 'active' : ''}`}
+                  onClick={() => setCalcCategoryFilter('black-water')}
                 >
-                  <i className="fab fa-whatsapp"></i> Chat CS
-                </a>
+                  <i className="fas fa-toilet"></i> Black Water (Tinja)
+                </button>
+                <button
+                  type="button"
+                  className={`calc-filter-btn ${calcCategoryFilter === 'grey-water' ? 'active' : ''}`}
+                  onClick={() => setCalcCategoryFilter('grey-water')}
+                >
+                  <i className="fas fa-oil-can"></i> Grey Water (Lumpur/Lemak)
+                </button>
+                <button
+                  type="button"
+                  className={`calc-filter-btn ${calcCategoryFilter === 'cleaning-blower' ? 'active' : ''}`}
+                  onClick={() => setCalcCategoryFilter('cleaning-blower')}
+                >
+                  <i className="fas fa-wind"></i> Cleaning / Blower
+                </button>
               </div>
             </div>
 
-            {/* Card 2: Paket 1 Tahun */}
-            <div
-              className={`jadwal-plan-card ${rutinDuration === '1-tahun' ? 'active-plan' : ''}`}
-              onClick={() => setRutinDuration('1-tahun')}
-            >
-              <div className="jadwal-plan-badge sni">
-                <i className="fas fa-shield-alt"></i> STANDAR SANITASI SNI
-              </div>
-              <div className="jadwal-plan-header">
-                <div className="jadwal-plan-title-wrap">
-                  <h3 className="jadwal-plan-title">Paket 1 Tahun</h3>
-                  <span className="jadwal-plan-subtitle">Tahunan (Standar Rumah Tangga)</span>
-                </div>
-                <div className="jadwal-plan-radio">
-                  <span className={`jadwal-radio-dot ${rutinDuration === '1-tahun' ? 'checked' : ''}`}></span>
-                </div>
-              </div>
-
-              <div className="jadwal-plan-pricing">
-                <span className="jadwal-price-prefix">Siklus:</span>
-                <strong>1x Pengurasan</strong>
-                <span className="jadwal-price-suffix">/ Tahun</span>
-              </div>
-
-              <p className="jadwal-plan-desc">
-                Sesuai standar baku mutu sanitasi Kementerian PUPR untuk menjaga kualitas air tanah, mencegah bau gas berbahaya, dan memastikan resapan tetap awet.
-              </p>
-
-              <div className="jadwal-plan-target">
-                <strong><i className="fas fa-home"></i> Cocok Untuk:</strong>
-                <span>Rumah tinggal pribadi, perumahan cluster, villa, dan ruko hunian keluarga</span>
-              </div>
-
-              <ul className="jadwal-plan-features">
-                <li>
-                  <i className="fas fa-check-circle"></i>
-                  <span>Pengingat otomatis via WhatsApp <strong>H-14</strong> sebelum tanggal pemeliharaan</span>
-                </li>
-                <li>
-                  <i className="fas fa-check-circle"></i>
-                  <span>Jaminan pengurasan tuntas hingga dasar tangki tanpa bongkar keramik</span>
-                </li>
-                <li>
-                  <i className="fas fa-check-circle"></i>
-                  <span>Garansi kelancaran saluran kloset &amp; pipa pembuangan</span>
-                </li>
-                <li>
-                  <i className="fas fa-check-circle"></i>
-                  <span>Bebas biaya survei lokasi untuk seluruh wilayah Bogor</span>
-                </li>
-              </ul>
-
-              <div className="jadwal-plan-actions">
+            <div className="calc-filter-group">
+              <span className="calc-filter-label"><i className="fas fa-file-contract"></i> Status Dokumen:</span>
+              <div className="calc-filter-buttons">
                 <button
                   type="button"
-                  className={`jadwal-select-btn ${rutinDuration === '1-tahun' ? 'selected' : ''}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setRutinDuration('1-tahun');
-                  }}
+                  className={`calc-filter-btn ${calcManifestFilter === 'all' ? 'active' : ''}`}
+                  onClick={() => setCalcManifestFilter('all')}
                 >
-                  <i className="fas fa-check"></i> {rutinDuration === '1-tahun' ? 'Paket Terpilih (1 Tahun)' : 'Pilih Siklus 1 Tahun'}
+                  Semua
                 </button>
-                <a
-                  href={getDirectRutinWaUrl('1-tahun')}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="jadwal-direct-wa-btn"
-                  onClick={(e) => e.stopPropagation()}
-                  title="Daftar Langsung 1 Tahun via WhatsApp"
+                <button
+                  type="button"
+                  className={`calc-filter-btn ${calcManifestFilter === 'non-manifest' ? 'active' : ''}`}
+                  onClick={() => setCalcManifestFilter('non-manifest')}
                 >
-                  <i className="fab fa-whatsapp"></i> Chat CS
-                </a>
+                  <i className="fas fa-home"></i> Non Manifes
+                </button>
+                <button
+                  type="button"
+                  className={`calc-filter-btn ${calcManifestFilter === 'manifest' ? 'active' : ''}`}
+                  onClick={() => setCalcManifestFilter('manifest')}
+                >
+                  <i className="fas fa-certificate"></i> Manifes Resmi IPLT
+                </button>
               </div>
             </div>
           </div>
 
-          {/* INTERACTIVE BOOKING / REMINDER FORM */}
-          <div className="jadwal-form-container fade-in">
-            <div className="jadwal-form-header">
-              <div className="jadwal-form-title-wrap">
-                <div className="jadwal-form-icon">
-                  <i className="fab fa-whatsapp"></i>
+          {/* 6 Services Grid Cards */}
+          <div className="calc-services-grid fade-in">
+            {KALKULATOR_TARIF_LIST
+              .filter((item) => {
+                if (calcCategoryFilter !== 'all' && item.category !== calcCategoryFilter) return false;
+                if (calcManifestFilter === 'non-manifest' && item.isManifest) return false;
+                if (calcManifestFilter === 'manifest' && !item.isManifest) return false;
+                return true;
+              })
+              .map((item) => {
+                const isSelected = item.id === calcSelectedId;
+                return (
+                  <div
+                    key={item.id}
+                    className={`calc-service-card ${isSelected ? 'selected' : ''}`}
+                    onClick={() => handleSelectCalcService(item.id)}
+                  >
+                    <div className="calc-card-top">
+                      <div className="calc-card-icon-wrap">
+                        <i className={`fas ${item.icon}`}></i>
+                      </div>
+                      <div className="calc-card-badges">
+                        <span className={`calc-manifest-badge ${item.isManifest ? 'manifest' : 'non-manifest'}`}>
+                          {item.isManifest ? (
+                            <>
+                              <i className="fas fa-stamp"></i> Manifes Resmi IPLT
+                            </>
+                          ) : (
+                            <>
+                              <i className="fas fa-check"></i> Non Manifes
+                            </>
+                          )}
+                        </span>
+                        {item.tag && (
+                          <span className="calc-tag-badge">{item.tag}</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <h3 className="calc-service-name">{item.name}</h3>
+                    <p className="calc-service-desc">{item.description}</p>
+
+                    <div className="calc-service-rate-box">
+                      <span className="calc-rate-label">Tarif per Kubikasi:</span>
+                      <div className="calc-rate-price">
+                        <strong>{formatRupiah(item.pricePerM3)}</strong>
+                        <span>/ kubik (m³)</span>
+                      </div>
+                    </div>
+
+                    <div className="calc-card-target">
+                      <i className="fas fa-building"></i>
+                      <span><strong>Target:</strong> {item.targetProperty}</span>
+                    </div>
+
+                    <button
+                      type="button"
+                      className={`calc-card-select-btn ${isSelected ? 'active' : ''}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSelectCalcService(item.id);
+                      }}
+                    >
+                      {isSelected ? (
+                        <>
+                          <i className="fas fa-check-circle"></i> Sedang Dihitung
+                        </>
+                      ) : (
+                        <>
+                          <i className="fas fa-calculator"></i> Hitung Layanan Ini
+                        </>
+                      )}
+                    </button>
+                  </div>
+                );
+              })}
+          </div>
+
+          {/* Interactive Calculator Workspace & Receipt Breakdown */}
+          <div className="calc-workspace-box fade-in" id="calc-workspace">
+            <div className="calc-workspace-grid">
+              {/* Left Column: Parameter Volume & Controls */}
+              <div className="calc-controls-col">
+                <div className="calc-controls-header">
+                  <div className="calc-icon-title">
+                    <div className="calc-header-icon">
+                      <i className="fas fa-sliders-h"></i>
+                    </div>
+                    <div>
+                      <h3>Atur Parameter Estimasi</h3>
+                      <p>Sesuaikan volume tangki / saluran dan lokasi pengerjaan</p>
+                    </div>
+                  </div>
+                  <div className="calc-active-service-pill">
+                    <span>Layanan Terpilih:</span>
+                    <strong>{selectedCalcItem.name}</strong>
+                  </div>
                 </div>
-                <div>
-                  <h3>Aktifkan Pengingat Jadwal Rutin via WhatsApp</h3>
-                  <p>Isi formulir ringkas di bawah. Sistem kami akan otomatis mencatat data Anda dan memicu pesan WhatsApp pengingat.</p>
+
+                {/* Volume Selector Controls */}
+                <div className="calc-volume-section">
+                  <div className="calc-volume-label-row">
+                    <label htmlFor="calc-volume-slider">
+                      <strong>Estimasi Volume Kubikasi:</strong>
+                    </label>
+                    <span className="calc-volume-display-val">
+                      <strong>{calcVolume}</strong> m³ (Kubik)
+                    </span>
+                  </div>
+
+                  {/* Stepper + Slider */}
+                  <div className="calc-volume-stepper-row">
+                    <button
+                      type="button"
+                      className="calc-stepper-btn"
+                      onClick={() => setCalcVolume((prev) => Math.max(1, prev - 1))}
+                      disabled={calcVolume <= 1}
+                      aria-label="Kurangi 1 kubik"
+                    >
+                      <i className="fas fa-minus"></i>
+                    </button>
+
+                    <div className="calc-slider-wrap">
+                      <input
+                        id="calc-volume-slider"
+                        type="range"
+                        min="1"
+                        max="15"
+                        step="1"
+                        value={calcVolume}
+                        onChange={(e) => setCalcVolume(Number(e.target.value))}
+                        className="calc-range-input"
+                      />
+                      <div className="calc-slider-ticks">
+                        <span>1 m³</span>
+                        <span>4 m³ (Standar)</span>
+                        <span>8 m³</span>
+                        <span>12 m³</span>
+                        <span>15 m³</span>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="calc-stepper-btn"
+                      onClick={() => setCalcVolume((prev) => Math.min(20, prev + 1))}
+                      disabled={calcVolume >= 20}
+                      aria-label="Tambah 1 kubik"
+                    >
+                      <i className="fas fa-plus"></i>
+                    </button>
+                  </div>
+
+                  {/* Quick Preset Buttons */}
+                  <div className="calc-quick-presets">
+                    <span className="calc-preset-label">Pilihan Cepat:</span>
+                    <div className="calc-preset-chips">
+                      {[1, 2, 3, 4, 5, 6, 8, 10].map((v) => (
+                        <button
+                          key={v}
+                          type="button"
+                          className={`calc-preset-chip ${calcVolume === v ? 'active' : ''}`}
+                          onClick={() => handleQuickVolumeSelect(v)}
+                        >
+                          {v} m³ {v === 4 ? '(Standar Truk)' : ''}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <p className="calc-volume-hint">
+                    <i className="fas fa-info-circle"></i> <strong>Panduan Kapasitas:</strong> Rumah tinggal umumnya 2–4 m³; Kafe/Restoran 3–5 m³; Gedung Kantor/Pabrik 6–10+ m³.
+                  </p>
+                </div>
+
+                {/* Form Fields: Lokasi, Properti & Kontak Cepat */}
+                <form onSubmit={handleCalcOrderWa} className="calc-booking-form">
+                  <div className="calc-form-grid">
+                    <div className="form-group">
+                      <label htmlFor="calc-location-select">
+                        Wilayah / Kecamatan di Bogor <span className="req">*</span>
+                      </label>
+                      <div className="input-with-icon">
+                        <i className="fas fa-map-marker-alt"></i>
+                        <select
+                          id="calc-location-select"
+                          value={calcLocation}
+                          onChange={(e) => setCalcLocation(e.target.value)}
+                        >
+                          <option value="">-- Pilih Kecamatan di Bogor --</option>
+                          {BOGOR_AREAS.map((area, idx) => (
+                            <option key={idx} value={area}>{area}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="calc-property-select">Jenis Properti</label>
+                      <div className="input-with-icon">
+                        <i className="fas fa-building"></i>
+                        <select
+                          id="calc-property-select"
+                          value={calcProperty}
+                          onChange={(e) => setCalcProperty(e.target.value)}
+                        >
+                          <option value="Rumah Tinggal Pribadi">Rumah Tinggal Pribadi / Cluster</option>
+                          <option value="Resto / Cafe / Kuliner">Restoran / Kafe / Warung Makan</option>
+                          <option value="Ruko / Kantor / Tempat Usaha">Ruko / Kantor / Perbankan</option>
+                          <option value="Kos-kosan / Kontrakan">Kos-kosan / Kontrakan</option>
+                          <option value="Hotel / Villa / Penginapan">Hotel / Villa / Penginapan</option>
+                          <option value="Pabrik / Kawasan Industri">Pabrik / Kawasan Industri</option>
+                          <option value="Rumah Sakit / Klinik">Rumah Sakit / Klinik Medis</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="calc-cust-name">Nama Pemesan / PIC (Opsional)</label>
+                      <div className="input-with-icon">
+                        <i className="fas fa-user"></i>
+                        <input
+                          id="calc-cust-name"
+                          type="text"
+                          placeholder="Nama Anda / PIC Properti"
+                          value={calcName}
+                          onChange={(e) => setCalcName(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label htmlFor="calc-cust-phone">No. WhatsApp / HP (Opsional)</label>
+                      <div className="input-with-icon">
+                        <i className="fab fa-whatsapp"></i>
+                        <input
+                          id="calc-cust-phone"
+                          type="tel"
+                          placeholder="0812-xxxx-xxxx"
+                          value={calcPhone}
+                          onChange={(e) => setCalcPhone(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-group span-2">
+                      <label htmlFor="calc-cust-notes">Catatan Tambahan / Kondisi Saluran (Opsional)</label>
+                      <div className="input-with-icon">
+                        <i className="fas fa-comment-alt"></i>
+                        <input
+                          id="calc-cust-notes"
+                          type="text"
+                          placeholder="Contoh: Saluran kloset meluap, butuh selang panjang 40m, dll."
+                          value={calcNotes}
+                          onChange={(e) => setCalcNotes(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              {/* Right Column: Live Invoice / Breakdown Card */}
+              <div className="calc-receipt-col">
+                <div className="calc-receipt-card">
+                  <div className="calc-receipt-top">
+                    <div className="calc-receipt-logo-row">
+                      <img
+                        src="/logo.jpeg"
+                        alt="Logo PT MITRA BERSIH 24 JAM"
+                        className="calc-receipt-logo"
+                      />
+                      <div>
+                        <span className="calc-receipt-company">PT MITRA BERSIH 24 JAM</span>
+                        <span className="calc-receipt-badge">NIB 2605260095769 • KBLI 37001</span>
+                      </div>
+                    </div>
+                    <div className="calc-live-indicator">
+                      <span className="pulse-dot"></span>
+                      <span>Real-Time Kalkulasi</span>
+                    </div>
+                  </div>
+
+                  <h4 className="calc-receipt-title">Rincian Estimasi Biaya</h4>
+
+                  <div className="calc-receipt-table">
+                    <div className="calc-receipt-row">
+                      <span className="label">Layanan Terpilih</span>
+                      <span className="value strong">{selectedCalcItem.name}</span>
+                    </div>
+
+                    <div className="calc-receipt-row">
+                      <span className="label">Kategori Limbah</span>
+                      <span className="value">{selectedCalcItem.categoryLabel}</span>
+                    </div>
+
+                    <div className="calc-receipt-row">
+                      <span className="label">Dokumen Manifes</span>
+                      <span className="value">
+                        <span className={`calc-manifest-pill ${selectedCalcItem.isManifest ? 'manifest' : 'non-manifest'}`}>
+                          {selectedCalcItem.manifestLabel}
+                        </span>
+                      </span>
+                    </div>
+
+                    <div className="calc-receipt-row">
+                      <span className="label">Tarif Satuan</span>
+                      <span className="value">{formatRupiah(selectedCalcItem.pricePerM3)} / m³</span>
+                    </div>
+
+                    <div className="calc-receipt-row">
+                      <span className="label">Estimasi Volume</span>
+                      <span className="value strong highlight">{calcVolume} m³ (Kubik)</span>
+                    </div>
+
+                    {calcLocation && (
+                      <div className="calc-receipt-row">
+                        <span className="label">Wilayah Bogor</span>
+                        <span className="value">{calcLocation}</span>
+                      </div>
+                    )}
+
+                    <div className="calc-receipt-divider"></div>
+
+                    <div className="calc-receipt-row">
+                      <span className="label">Subtotal Jasa</span>
+                      <span className="value">{formatRupiah(calcTotalBiaya)}</span>
+                    </div>
+
+                    <div className="calc-receipt-row">
+                      <span className="label">Biaya Survei Lokasi</span>
+                      <span className="value free">Rp 0 (GRATIS BOGOR)</span>
+                    </div>
+
+                    <div className="calc-receipt-row">
+                      <span className="label">Biaya Bongkar Tanpa Rusak</span>
+                      <span className="value free">Rp 0 (GRATIS)</span>
+                    </div>
+
+                    <div className="calc-receipt-row">
+                      <span className="label">Biaya Tersembunyi / Siluman</span>
+                      <span className="value free">Rp 0 (100% TRANSPARAN)</span>
+                    </div>
+                  </div>
+
+                  {/* Total Highlight */}
+                  <div className="calc-total-banner">
+                    <span className="calc-total-caption">TOTAL ESTIMASI BIAYA</span>
+                    <div className="calc-total-amount">
+                      <strong>{formatRupiah(calcTotalBiaya)}</strong>
+                    </div>
+                    <span className="calc-total-subtext">
+                      *Estimasi biaya akurat sesuai volume kubik riil, garansi tuntas &amp; legalitas IPLT resmi.
+                    </span>
+                  </div>
+
+                  {calcSuccess && (
+                    <div className="calc-alert success fade-in">
+                      <i className="fas fa-check-circle"></i> {calcSuccess}
+                    </div>
+                  )}
+
+                  {calcError && (
+                    <div className="calc-alert error fade-in">
+                      <i className="fas fa-exclamation-circle"></i> {calcError}
+                    </div>
+                  )}
+
+                  {/* Actions Buttons */}
+                  <div className="calc-receipt-actions">
+                    <button
+                      type="button"
+                      className="calc-main-wa-btn"
+                      onClick={() => handleCalcOrderWa()}
+                    >
+                      <i className="fab fa-whatsapp"></i>
+                      <span>Pesan via WhatsApp Sekarang</span>
+                    </button>
+
+                    <div className="calc-sub-actions-row">
+                      <button
+                        type="button"
+                        className="calc-copy-btn"
+                        onClick={handleCopyCalcSummary}
+                        title="Salin ringkasan estimasi ke clipboard"
+                      >
+                        <i className="fas fa-copy"></i>
+                        <span>Salin Rincian</span>
+                      </button>
+
+                      <a
+                        href="tel:+6285715654183"
+                        className="calc-call-btn"
+                        title="Hubungi CS via Telepon Langsung"
+                      >
+                        <i className="fas fa-phone-alt"></i>
+                        <span>Telepon CS</span>
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Assurance Strip */}
+                  <div className="calc-trust-guarantee">
+                    <div className="calc-trust-item">
+                      <i className="fas fa-shield-alt"></i>
+                      <span>Legalitas KBLI 37001 Resmi</span>
+                    </div>
+                    <div className="calc-trust-item">
+                      <i className="fas fa-water"></i>
+                      <span>Pembuangan ke IPLT Bogor</span>
+                    </div>
+                    <div className="calc-trust-item">
+                      <i className="fas fa-clock"></i>
+                      <span>Layanan Cepat Siaga 24 Jam</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="jadwal-active-pill">
-                <span>Durasi Aktif:</span>
-                <strong>{rutinDuration === '6-bulan' ? '6 Bulan (Semi-Tahunan)' : '1 Tahun (Tahunan)'}</strong>
+            </div>
+          </div>
+
+          {/* Quick Comparison Summary Table */}
+          <div className="calc-summary-table-section fade-in">
+            <div className="calc-summary-table-header">
+              <div className="calc-summary-title-wrap">
+                <i className="fas fa-table"></i>
+                <div>
+                  <h3>Tabel Ringkasan Tarif Resmi Semua Layanan</h3>
+                  <p>Perbandingan transparan seluruh jenis limbah cair dan dokumen IPLT</p>
+                </div>
               </div>
             </div>
 
-            {rutinError && (
-              <div className="jadwal-alert error">
-                <i className="fas fa-exclamation-circle"></i> {rutinError}
-              </div>
-            )}
-
-            {rutinSuccess && (
-              <div className="jadwal-alert success">
-                <i className="fas fa-check-circle"></i> {rutinSuccess}
-              </div>
-            )}
-
-            <form onSubmit={handleRutinSubmit} className="jadwal-form-grid">
-              <div className="form-group">
-                <label htmlFor="rutin-name">Nama Pemilik / Penanggung Jawab <span className="req">*</span></label>
-                <div className="input-with-icon">
-                  <i className="fas fa-user"></i>
-                  <input
-                    id="rutin-name"
-                    type="text"
-                    placeholder="Contoh: Bpk. Bambang / Ibu Dewi"
-                    value={rutinName}
-                    onChange={(e) => setRutinName(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="rutin-phone">No. WhatsApp / HP</label>
-                <div className="input-with-icon">
-                  <i className="fab fa-whatsapp"></i>
-                  <input
-                    id="rutin-phone"
-                    type="tel"
-                    placeholder="Contoh: 0812-xxxx-xxxx"
-                    value={rutinPhone}
-                    onChange={(e) => setRutinPhone(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="rutin-location">Wilayah / Kecamatan di Bogor <span className="req">*</span></label>
-                <div className="input-with-icon">
-                  <i className="fas fa-map-marker-alt"></i>
-                  <select
-                    id="rutin-location"
-                    value={rutinLocation}
-                    onChange={(e) => setRutinLocation(e.target.value)}
-                    required
-                  >
-                    <option value="">-- Pilih Kecamatan di Bogor --</option>
-                    {BOGOR_AREAS.map((area, idx) => (
-                      <option key={idx} value={area}>{area}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="rutin-property">Jenis Properti</label>
-                <div className="input-with-icon">
-                  <i className="fas fa-city"></i>
-                  <select
-                    id="rutin-property"
-                    value={rutinProperty}
-                    onChange={(e) => setRutinProperty(e.target.value)}
-                  >
-                    <option value="Rumah Tinggal Pribadi">Rumah Tinggal Pribadi / Cluster</option>
-                    <option value="Resto / Cafe / Rumah Makan">Resto / Cafe / Rumah Makan</option>
-                    <option value="Ruko / Kantor / Tempat Usaha">Ruko / Kantor / Tempat Usaha</option>
-                    <option value="Kos-kosan / Kontrakan">Kos-kosan / Kontrakan</option>
-                    <option value="Villa / Penginapan">Villa / Penginapan (Puncak &amp; Sekitarnya)</option>
-                    <option value="Pabrik / Gudang / Industri">Pabrik / Gudang / Industri</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="form-group span-2">
-                <label htmlFor="rutin-service">Pilihan Layanan Pemeliharaan</label>
-                <div className="input-with-icon">
-                  <i className="fas fa-tools"></i>
-                  <select
-                    id="rutin-service"
-                    value={rutinService}
-                    onChange={(e) => setRutinService(e.target.value)}
-                  >
-                    <option value="Kuras Septic Tank & Sedot Tinja Rutin">Kuras Septic Tank &amp; Sedot Tinja Rutin</option>
-                    <option value="Pengurasan Bak Grease Trap Lemak Dapur">Pengurasan Bak Grease Trap Lemak Dapur</option>
-                    <option value="Perawatan & Pelancaran Saluran Pipa Mampet">Perawatan &amp; Pelancaran Saluran Pipa Mampet</option>
-                    <option value="Paket Komplit (Kuras Tangki + Saluran Lancar)">Paket Komplit (Kuras Tangki + Saluran Lancar)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="jadwal-form-actions span-2">
-                <button type="submit" className="jadwal-submit-btn">
-                  <i className="fab fa-whatsapp"></i>
-                  <span>Daftarkan Pengingat Rutin via WhatsApp Sekarang</span>
-                </button>
-                <p className="jadwal-form-note">
-                  <i className="fas fa-shield-alt"></i> Tanpa biaya pendaftaran. Notifikasi pengingat pemeliharaan dikirimkan langsung via WhatsApp secara sopan tanpa spam.
-                </p>
-              </div>
-            </form>
+            <div className="calc-table-responsive">
+              <table className="calc-comparison-table">
+                <thead>
+                  <tr>
+                    <th>Jenis Layanan</th>
+                    <th>Kategori Limbah</th>
+                    <th>Dokumen Manifes</th>
+                    <th>Tarif per Kubik (m³)</th>
+                    <th>Peruntukan Properti</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {KALKULATOR_TARIF_LIST.map((item) => {
+                    const isSelected = item.id === calcSelectedId;
+                    return (
+                      <tr key={item.id} className={isSelected ? 'selected-row' : ''}>
+                        <td>
+                          <div className="calc-table-service-col">
+                            <i className={`fas ${item.icon}`}></i>
+                            <strong>{item.name}</strong>
+                          </div>
+                        </td>
+                        <td>
+                          <span className="calc-table-category-tag">{item.categoryLabel}</span>
+                        </td>
+                        <td>
+                          <span className={`calc-manifest-badge ${item.isManifest ? 'manifest' : 'non-manifest'}`}>
+                            {item.manifestLabel}
+                          </span>
+                        </td>
+                        <td>
+                          <strong className="calc-table-price">{formatRupiah(item.pricePerM3)}</strong>
+                          <span className="calc-table-unit">/ m³</span>
+                        </td>
+                        <td className="calc-table-target">{item.targetProperty}</td>
+                        <td>
+                          <button
+                            type="button"
+                            className={`calc-table-calc-btn ${isSelected ? 'active' : ''}`}
+                            onClick={() => {
+                              handleSelectCalcService(item.id);
+                              const el = document.getElementById('calc-workspace');
+                              if (el) {
+                                el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                              }
+                            }}
+                          >
+                            {isSelected ? '✓ Terpilih' : 'Hitung Ini'}
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </section>
@@ -8279,7 +8576,29 @@ export default function App() {
         <div className="container">
           <div className="footer-grid">
             <div className="footer-col">
-              <h4>Informasi Kontak</h4>
+              <div className="footer-brand-header">
+                <img
+                  src="/logo.jpeg"
+                  alt="Logo Resmi PT MITRA BERSIH 24 JAM"
+                  className="footer-brand-logo-img"
+                />
+                <div>
+                  <h4 style={{ margin: 0, padding: 0, fontSize: '15px', color: '#FFFFFF' }}>PT MITRA BERSIH 24 JAM</h4>
+                  <div style={{ fontSize: '10.5px', color: '#FFD60A', fontWeight: 700, letterSpacing: '0.5px' }}>
+                    PENGELOLA LIMBAH JAWA BARAT
+                  </div>
+                </div>
+              </div>
+
+              <div className="footer-company-legal">
+                <div className="footer-legal-tag">Legalitas Perusahaan Terverifikasi:</div>
+                <ul className="footer-legal-list">
+                  <li><strong>NIB:</strong> 2605260095769</li>
+                  <li><strong>NPWP:</strong> 3215261111840004</li>
+                  <li><strong>KBLI:</strong> 37001 – Pengumpulan Air Limbah</li>
+                </ul>
+              </div>
+
               <div className="footer-contact-item">
                 <i className="fas fa-phone-alt"></i>
                 <div className="info">
@@ -8290,7 +8609,7 @@ export default function App() {
               <div className="footer-contact-item">
                 <i className="fab fa-whatsapp"></i>
                 <div className="info">
-                  <span>No HP / WhatsApp</span>
+                  <span>No HP / WhatsApp Siaga</span>
                   <strong>+62 857-1565-4183</strong>
                 </div>
               </div>
@@ -8360,8 +8679,13 @@ export default function App() {
               <h4>Lainnya</h4>
               <ul className="footer-links">
                 <li>
+                  <a href="#kalkulator-cepat" onClick={(e) => scrollToSection(e, 'kalkulator-cepat')}>
+                    <i className="fas fa-chevron-right"></i> Kalkulator Cepat (Tarif Resmi)
+                  </a>
+                </li>
+                <li>
                   <a href="#tentang" onClick={(e) => scrollToSection(e, 'tentang')}>
-                    <i className="fas fa-chevron-right"></i> Tentang Kami
+                    <i className="fas fa-chevron-right"></i> Tentang Kami &amp; Legalitas
                   </a>
                 </li>
                 <li>
@@ -8376,7 +8700,7 @@ export default function App() {
                 </li>
                 <li>
                   <a href="#artikel" onClick={(e) => scrollToSection(e, 'artikel')}>
-                    <i className="fas fa-chevron-right"></i> Tips &amp; Artikel SEO
+                    <i className="fas fa-chevron-right"></i> Tips &amp; Artikel Sanitasi
                   </a>
                 </li>
                 <li>
@@ -8409,8 +8733,8 @@ export default function App() {
           </div>
 
           <div className="footer-bottom">
-            <div className="brand">SEDOT WC BOGOR - MITRA BERSIH 24JAM</div>
-            <div className="copyright">&copy; 2024 Mitra Bersih 24Jam. All Rights Reserved.</div>
+            <div className="brand">PT MITRA BERSIH 24 JAM · SEDOT WC &amp; PENGUMPULAN AIR LIMBAH BOGOR</div>
+            <div className="copyright">&copy; 2024 PT MITRA BERSIH 24 JAM · NIB: 2605260095769 | NPWP: 3215261111840004 | KBLI 37001. All Rights Reserved.</div>
           </div>
         </div>
       </footer>
@@ -8672,7 +8996,7 @@ export default function App() {
               <div style={{ textAlign: 'center', marginTop: '14px', paddingTop: '10px', borderTop: '1px dashed #E2E8F0' }}>
                 <a
                   href={`https://wa.me/6285715654183?text=${encodeURIComponent(
-                    `Halo Admin CS Mitra Bersih,\n\nSaya membaca pertanyaan FAQ:\n❓ *Pertanyaan:* "${faqModalItem.question}"\n📂 *Kategori:* ${faqModalItem.category}\n\nSaya ingin berkonsultasi mengenai penanganan kendala ini untuk lokasi saya di Bogor. Terima kasih!`
+                    `Halo Admin CS PT MITRA BERSIH 24 JAM,\n\nSaya membaca pertanyaan FAQ:\n❓ *Pertanyaan:* "${faqModalItem.question}"\n📂 *Kategori:* ${faqModalItem.category}\n\nSaya ingin berkonsultasi mengenai penanganan kendala ini untuk lokasi saya di Bogor. Terima kasih!`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -8726,7 +9050,7 @@ export default function App() {
               <div className="faq-share-preview-meta">
                 <span className="faq-share-badge">#{shareFaqItem.id}</span>
                 <span className="faq-share-category-tag">{shareFaqItem.category}</span>
-                <span className="faq-share-source-tag">Mitra Bersih Bogor 24 Jam</span>
+                <span className="faq-share-source-tag">PT MITRA BERSIH 24 JAM</span>
               </div>
               <h4 className="faq-share-preview-q">{shareFaqItem.question}</h4>
               <p className="faq-share-preview-a">
@@ -8861,7 +9185,7 @@ export default function App() {
             <div className="faq-share-footer-note">
               <i className="fas fa-shield-heart"></i>
               <span>
-                Tips dan panduan sanitasi ini diverifikasi oleh tim teknisi resmi <strong>Mitra Bersih 24 Jam Bogor</strong>.
+                Tips dan panduan sanitasi ini diverifikasi oleh tim teknisi resmi <strong>PT MITRA BERSIH 24 JAM Bogor</strong>.
               </span>
             </div>
           </div>
@@ -9080,7 +9404,7 @@ export default function App() {
                   {modalFilteredFaqs.map((item) => {
                     const isOpen = openModalFaq === item.id;
                     const directWaUrl = `https://wa.me/6285715654183?text=${encodeURIComponent(
-                      `Halo Admin CS Mitra Bersih,\n\nSaya membaca FAQ website:\n❓ *Pertanyaan:* "${item.question}"\n📂 *Kategori:* ${item.category}\n\nMohon info estimasi tarif dan ketersediaan armada di lokasi saya di Bogor. Terima kasih!`
+                      `Halo Admin CS PT MITRA BERSIH 24 JAM,\n\nSaya membaca FAQ website:\n❓ *Pertanyaan:* "${item.question}"\n📂 *Kategori:* ${item.category}\n\nMohon info estimasi tarif dan ketersediaan armada di lokasi saya di Bogor. Terima kasih!`
                     )}`;
 
                     return (
@@ -9206,6 +9530,499 @@ export default function App() {
                   <span>Chat CS 24 Jam</span>
                 </a>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* EMAIL MARKETING LIST & AUDIENCE SIMULATION MODAL */}
+      {isMarketingModalOpen && (
+        <div
+          className="email-marketing-modal-overlay"
+          onClick={() => setIsMarketingModalOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="marketing-modal-title"
+        >
+          <div
+            className="email-marketing-modal-container"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="marketing-modal-header">
+              <div className="marketing-modal-header-left">
+                <div className="marketing-header-icon" style={{ overflow: 'hidden', padding: 0 }}>
+                  <img
+                    src="/logo.jpeg"
+                    alt="Logo PT MITRA BERSIH 24 JAM"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                </div>
+                <div>
+                  <h3 id="marketing-modal-title" className="marketing-header-title">
+                    Simulasi Email Marketing List
+                  </h3>
+                  <p className="marketing-header-subtitle">
+                    Manajemen audiens buletin &amp; simulasi broadcast email PT MITRA BERSIH 24 JAM
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="marketing-modal-close-btn"
+                onClick={() => setIsMarketingModalOpen(false)}
+                aria-label="Tutup modal simulasi email marketing"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="marketing-modal-body">
+              {/* Marketing Toast Alert */}
+              {marketingToast && (
+                <div className="marketing-toast-banner" role="status">
+                  <i className="fas fa-info-circle"></i>
+                  <span>{marketingToast}</span>
+                </div>
+              )}
+
+              {/* KPI Stat Cards */}
+              <div className="marketing-kpi-grid">
+                <div className="marketing-kpi-card">
+                  <div className="marketing-kpi-icon blue">
+                    <i className="fas fa-users"></i>
+                  </div>
+                  <div className="marketing-kpi-meta">
+                    <span className="marketing-kpi-label">Total Kontak</span>
+                    <strong className="marketing-kpi-val">{subscribers.length}</strong>
+                  </div>
+                </div>
+
+                <div className="marketing-kpi-card">
+                  <div className="marketing-kpi-icon green">
+                    <i className="fas fa-check-circle"></i>
+                  </div>
+                  <div className="marketing-kpi-meta">
+                    <span className="marketing-kpi-label">Status Aktif</span>
+                    <strong className="marketing-kpi-val">
+                      {subscribers.filter((e) => (subscribersMeta[e]?.status || 'active') === 'active').length}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="marketing-kpi-card">
+                  <div className="marketing-kpi-icon purple">
+                    <i className="fas fa-map-marker-alt"></i>
+                  </div>
+                  <div className="marketing-kpi-meta">
+                    <span className="marketing-kpi-label">Wilayah Target</span>
+                    <strong className="marketing-kpi-val" style={{ fontSize: '15px' }}>
+                      Kota &amp; Kab Bogor
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="marketing-kpi-card">
+                  <div className="marketing-kpi-icon amber">
+                    <i className="fas fa-envelope-open-text"></i>
+                  </div>
+                  <div className="marketing-kpi-meta">
+                    <span className="marketing-kpi-label">Est. Open Rate</span>
+                    <strong className="marketing-kpi-val">44.8%</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tab Navigation */}
+              <div className="marketing-tabs-nav">
+                <button
+                  type="button"
+                  className={`marketing-tab-btn ${marketingTab === 'list' ? 'active' : ''}`}
+                  onClick={() => setMarketingTab('list')}
+                >
+                  <i className="fas fa-address-book"></i>
+                  <span>Daftar Subscriber</span>
+                  <span className="marketing-tab-badge">{subscribers.length}</span>
+                </button>
+                <button
+                  type="button"
+                  className={`marketing-tab-btn ${marketingTab === 'broadcast' ? 'active' : ''}`}
+                  onClick={() => setMarketingTab('broadcast')}
+                >
+                  <i className="fas fa-paper-plane"></i>
+                  <span>Simulasi Broadcast Kampanye</span>
+                </button>
+              </div>
+
+              {/* TAB 1: LIST MANAGEMENT */}
+              {marketingTab === 'list' && (
+                <div>
+                  {/* Toolbar */}
+                  <div className="marketing-toolbar">
+                    <div className="marketing-search-wrap">
+                      <i className="fas fa-search"></i>
+                      <input
+                        type="text"
+                        className="marketing-search-input"
+                        placeholder="Cari email atau nama subscriber..."
+                        value={marketingSearch}
+                        onChange={(e) => setMarketingSearch(e.target.value)}
+                      />
+                    </div>
+
+                    <div className="marketing-toolbar-actions">
+                      <button
+                        type="button"
+                        onClick={() => setIsAddingManualContact(!isAddingManualContact)}
+                        className={`marketing-tool-btn ${isAddingManualContact ? 'primary' : ''}`}
+                      >
+                        <i className={`fas ${isAddingManualContact ? 'fa-times' : 'fa-plus'}`}></i>
+                        <span>{isAddingManualContact ? 'Tutup Form' : 'Tambah Email'}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleCopyAllEmails}
+                        className="marketing-tool-btn"
+                        title="Salin seluruh email subscriber ke clipboard"
+                      >
+                        <i className="fas fa-copy"></i>
+                        <span>Salin Semua</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleExportCsv}
+                        className="marketing-tool-btn"
+                        title="Unduh daftar subscriber dalam format file CSV"
+                      >
+                        <i className="fas fa-file-csv"></i>
+                        <span>Ekspor CSV</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleResetSubscribers}
+                        className="marketing-tool-btn"
+                        title="Muat ulang 6 contoh email warga dan bisnis Bogor"
+                      >
+                        <i className="fas fa-sync-alt"></i>
+                        <span>Reset Sampel</span>
+                      </button>
+
+                      {subscribers.length > 0 && (
+                        <button
+                          type="button"
+                          onClick={handleClearAllSubscribers}
+                          className="marketing-tool-btn danger"
+                          title="Hapus seluruh data subscriber dari localStorage"
+                        >
+                          <i className="fas fa-trash"></i>
+                          <span>Hapus Semua</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Inline Manual Add Form */}
+                  {isAddingManualContact && (
+                    <form onSubmit={handleAddManualSubscriber} className="marketing-inline-add-card">
+                      <div style={{ fontWeight: 700, fontSize: '13px', color: '#065F46', marginBottom: '10px' }}>
+                        <i className="fas fa-user-plus"></i> Tambah Kontak Baru ke Email Marketing List
+                      </div>
+                      <div className="marketing-inline-form-row">
+                        <input
+                          type="email"
+                          className="marketing-inline-input"
+                          placeholder="Alamat email (contoh: warga@bogor.id)..."
+                          value={manualEmail}
+                          onChange={(e) => {
+                            setManualEmail(e.target.value);
+                            if (manualError) setManualError(null);
+                          }}
+                        />
+                        <input
+                          type="text"
+                          className="marketing-inline-input"
+                          placeholder="Nama lengkap / Instansi (opsional)..."
+                          value={manualName}
+                          onChange={(e) => setManualName(e.target.value)}
+                        />
+                        <select
+                          className="marketing-inline-select"
+                          value={manualCategory}
+                          onChange={(e: any) => setManualCategory(e.target.value)}
+                        >
+                          <option value="warga">Rumah Tangga / Warga</option>
+                          <option value="rt_rw">Pengurus RT / RW</option>
+                          <option value="bisnis">Bisnis / Ruko / Resto</option>
+                          <option value="umum">Umum</option>
+                        </select>
+                        <button type="submit" className="marketing-tool-btn primary">
+                          <i className="fas fa-save"></i>
+                          <span>Simpan</span>
+                        </button>
+                      </div>
+                      {manualError && (
+                        <div style={{ color: '#DC2626', fontSize: '12px', marginTop: '6px', fontWeight: 600 }}>
+                          <i className="fas fa-exclamation-circle"></i> {manualError}
+                        </div>
+                      )}
+                    </form>
+                  )}
+
+                  {/* Subscribers List Cards */}
+                  <div className="marketing-subscribers-list">
+                    {(() => {
+                      const q = marketingSearch.trim().toLowerCase();
+                      const filtered = subscribers.filter((email) => {
+                        const meta = subscribersMeta[email] || { name: '', category: 'warga' };
+                        if (!q) return true;
+                        return email.toLowerCase().includes(q) || (meta.name || '').toLowerCase().includes(q);
+                      });
+
+                      if (filtered.length === 0) {
+                        return (
+                          <div className="marketing-empty-subscribers">
+                            <i className="fas fa-search"></i>
+                            <div style={{ fontWeight: 700, fontSize: '15px', color: '#0F172A', marginBottom: '4px' }}>
+                              Tidak Ada Kontak Ditemukan
+                            </div>
+                            <p style={{ fontSize: '13px', margin: 0 }}>
+                              {subscribers.length === 0
+                                ? 'Belum ada email yang terdaftar. Gunakan tombol "Reset Sampel" atau berlangganan lewat formulir di atas.'
+                                : `Tidak ada subscriber yang cocok dengan kata kunci "${marketingSearch}".`}
+                            </p>
+                          </div>
+                        );
+                      }
+
+                      return filtered.map((email) => {
+                        const meta = subscribersMeta[email] || {
+                          name: email.split('@')[0],
+                          category: 'warga',
+                          date: '17 Okt 2026',
+                          status: 'active',
+                          source: 'Buletin Website'
+                        };
+                        const isActive = meta.status === 'active';
+
+                        return (
+                          <div key={email} className="marketing-subscriber-item">
+                            <div className="marketing-subscriber-left">
+                              <div className="marketing-sub-avatar">
+                                <i className={`fas ${
+                                  meta.category === 'bisnis'
+                                    ? 'fa-store'
+                                    : meta.category === 'rt_rw'
+                                    ? 'fa-users'
+                                    : 'fa-user'
+                                }`}></i>
+                              </div>
+                              <div className="marketing-sub-info">
+                                <div className="marketing-sub-email-row">
+                                  <span className="marketing-sub-email">{email}</span>
+                                  <span className={`marketing-sub-category-tag ${meta.category}`}>
+                                    {meta.category === 'bisnis'
+                                      ? 'Bisnis / Ruko'
+                                      : meta.category === 'rt_rw'
+                                      ? 'Pengurus RT/RW'
+                                      : 'Warga / Rumah'}
+                                  </span>
+                                </div>
+                                <div className="marketing-sub-meta">
+                                  {meta.name && <span><i className="fas fa-id-badge"></i> {meta.name}</span>}
+                                  <span><i className="fas fa-calendar-alt"></i> {meta.date}</span>
+                                  <span>
+                                    <span className={`marketing-sub-status-dot ${isActive ? 'active' : 'unsubscribed'}`}></span>
+                                    {isActive ? 'Aktif Berlangganan' : 'Unsubscribed'}
+                                  </span>
+                                  <span><i className="fas fa-tag"></i> {meta.source}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="marketing-subscriber-actions">
+                              <button
+                                type="button"
+                                className="marketing-action-btn"
+                                onClick={() => handleSendTestEmail(email)}
+                                title={`Kirim email simulasi individual ke ${email}`}
+                              >
+                                <i className="fas fa-paper-plane"></i>
+                              </button>
+                              <button
+                                type="button"
+                                className="marketing-action-btn"
+                                onClick={() => handleToggleSubscriberStatus(email)}
+                                title={isActive ? 'Nonaktifkan / Unsubscribe' : 'Aktifkan kembali'}
+                              >
+                                <i className={`fas ${isActive ? 'fa-pause' : 'fa-play'}`}></i>
+                              </button>
+                              <button
+                                type="button"
+                                className="marketing-action-btn delete"
+                                onClick={() => handleDeleteSubscriber(email)}
+                                title="Hapus kontak dari localStorage"
+                              >
+                                <i className="fas fa-trash-alt"></i>
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      });
+                    })()}
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 2: BROADCAST CAMPAIGN SIMULATOR */}
+              {marketingTab === 'broadcast' && (
+                <div className="marketing-broadcast-container">
+                  {/* Preset Campaign Chooser */}
+                  <div>
+                    <label style={{ fontSize: '13px', fontWeight: 700, color: '#0F172A', display: 'block', marginBottom: '8px' }}>
+                      Pilih Topik Kampanye Email Buletin:
+                    </label>
+                    <div className="marketing-preset-grid">
+                      {MARKETING_CAMPAIGN_TEMPLATES.map((tpl) => (
+                        <div
+                          key={tpl.id}
+                          className={`marketing-preset-card ${selectedCampaignId === tpl.id ? 'active' : ''}`}
+                          onClick={() => setSelectedCampaignId(tpl.id)}
+                        >
+                          <div>
+                            <span className="marketing-preset-badge">{tpl.badge}</span>
+                            <div className="marketing-preset-title">{tpl.title}</div>
+                          </div>
+                          <div className="marketing-preset-snippet">{tpl.previewSnippet}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Email Preview Mockup */}
+                  <div className="marketing-email-preview-box">
+                    <div className="marketing-email-preview-header">
+                      <span>
+                        <i className="fas fa-desktop"></i> Pratinjau Tampilan Email di Inbox Pelanggan
+                      </span>
+                      <span>
+                        Target: {subscribers.filter((e) => (subscribersMeta[e]?.status || 'active') === 'active').length} Kontak Aktif
+                      </span>
+                    </div>
+
+                    <div className="marketing-email-preview-body">
+                      <div className="marketing-email-mockup-header">
+                        <div className="marketing-email-company-logo" style={{ overflow: 'hidden', padding: 0, width: '42px', height: '42px', borderRadius: '50%', background: '#FFFFFF', border: '1.5px solid #FFD60A' }}>
+                          <img
+                            src="/logo.jpeg"
+                            alt="Logo PT MITRA BERSIH 24 JAM"
+                            style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
+                          />
+                        </div>
+                        <div>
+                          <div style={{ fontSize: '13px', fontWeight: 800, color: '#064E3B' }}>
+                            PT MITRA BERSIH 24 JAM
+                          </div>
+                          <div style={{ fontSize: '11.5px', color: '#64748B' }}>
+                            Dari: redaksi@mitrabersih24jam.com · NIB 2605260095769 · KBLI 37001
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="marketing-email-subject">
+                        {MARKETING_CAMPAIGN_TEMPLATES.find((t) => t.id === selectedCampaignId)?.subject}
+                      </div>
+
+                      <div className="marketing-email-text">
+                        {MARKETING_CAMPAIGN_TEMPLATES.find((t) => t.id === selectedCampaignId)?.content}
+                      </div>
+
+                      <div className="marketing-email-legal-footer">
+                        <strong>PT MITRA BERSIH 24 JAM – Layanan Sedot WC &amp; Pengumpulan Air Limbah Bogor</strong>
+                        <br />
+                        NIB: 2605260095769 | NPWP: 3215261111840004 | KBLI 37001 (Pengumpulan Air Limbah)
+                        <br />
+                        Email ini dikirimkan ke pelanggan terdaftar buletin edukasi lingkungan Kota &amp; Kabupaten Bogor.
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Broadcast Simulation Action & Live Report */}
+                  <div>
+                    {!isBroadcasting && !broadcastReport && (
+                      <button
+                        type="button"
+                        onClick={handleStartBroadcastSimulation}
+                        className="marketing-broadcast-btn"
+                        style={{ width: '100%' }}
+                      >
+                        <i className="fas fa-paper-plane"></i>
+                        <span>
+                          Simulasikan Broadcast ke{' '}
+                          {subscribers.filter((e) => (subscribersMeta[e]?.status || 'active') === 'active').length} Email Subscriber
+                        </span>
+                      </button>
+                    )}
+
+                    {isBroadcasting && (
+                      <div className="marketing-broadcast-progress-card">
+                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', fontWeight: 700, color: '#065F46' }}>
+                          <span><i className="fas fa-spinner fa-spin"></i> Proses Pengiriman Simulasi...</span>
+                          <span>{broadcastProgress}%</span>
+                        </div>
+                        <div className="marketing-progress-bar-bg">
+                          <div className="marketing-progress-bar-fill" style={{ width: `${broadcastProgress}%` }}></div>
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#065F46' }}>
+                          {broadcastLog}
+                        </div>
+                      </div>
+                    )}
+
+                    {broadcastReport && (
+                      <div className="marketing-broadcast-progress-card" style={{ borderColor: '#10B981', background: '#ECFDF5' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <div style={{ fontWeight: 800, fontSize: '15px', color: '#064E3B' }}>
+                            <i className="fas fa-check-circle" style={{ color: '#10B981' }}></i> Laporan Broadcast Kampanye Berhasil
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setBroadcastReport(null)}
+                            style={{ background: 'none', border: 'none', color: '#065F46', fontSize: '12px', cursor: 'pointer', fontWeight: 700 }}
+                          >
+                            Kirim Kampanye Baru
+                          </button>
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#334155', marginTop: '6px' }}>
+                          Subjek: <strong>{broadcastReport.subject}</strong> · Waktu: {broadcastReport.timestamp}
+                        </div>
+
+                        <div className="marketing-report-grid">
+                          <div className="marketing-report-stat">
+                            <div className="val">{broadcastReport.totalSent} / {broadcastReport.totalSent}</div>
+                            <div className="lbl">Terkirim (100%)</div>
+                          </div>
+                          <div className="marketing-report-stat">
+                            <div className="val">{broadcastReport.openRate}</div>
+                            <div className="lbl">Est. Open Rate</div>
+                          </div>
+                          <div className="marketing-report-stat">
+                            <div className="val">{broadcastReport.clickRate}</div>
+                            <div className="lbl">Est. CTR</div>
+                          </div>
+                          <div className="marketing-report-stat">
+                            <div className="val">0</div>
+                            <div className="lbl">Bounced</div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
