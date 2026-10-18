@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import QRCode from 'qrcode';
 import articleImg1 from './assets/images/septic_tank_signs_1791232849125.jpg';
 import articleImg2 from './assets/images/septic_vacuum_truck_1791232864840.jpg';
 import articleImg3 from './assets/images/clogged_drain_cleaning_1791232881201.jpg';
@@ -2850,12 +2851,57 @@ export default function App() {
   const [calcSuccess, setCalcSuccess] = useState<string | null>(null);
   const [calcError, setCalcError] = useState<string | null>(null);
 
+  // QRIS Payment Modal State
+  const [isQrisModalOpen, setIsQrisModalOpen] = useState<boolean>(false);
+  const [isQrisReceiptPreviewOpen, setIsQrisReceiptPreviewOpen] = useState<boolean>(false);
+  const [qrisQrUrl, setQrisQrUrl] = useState<string>('');
+  const [qrisReceiptTimestamp, setQrisReceiptTimestamp] = useState<string>('');
+  const [qrisReceiptRefNo, setQrisReceiptRefNo] = useState<string>('');
+  const [qrisScanCount, setQrisScanCount] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem('mitra_bersih_qris_scan_count');
+      if (saved) {
+        const parsed = parseInt(saved, 10);
+        if (!isNaN(parsed) && parsed > 0) return parsed;
+      }
+    } catch {
+      // fallback
+    }
+    return 148;
+  });
+
+  const incrementQrisScanCount = () => {
+    setQrisScanCount((prev) => {
+      const next = prev + 1;
+      try {
+        localStorage.setItem('mitra_bersih_qris_scan_count', String(next));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  };
+
   useEffect(() => {
     if (calcToast) {
       const timer = setTimeout(() => setCalcToast(null), 3500);
       return () => clearTimeout(timer);
     }
   }, [calcToast]);
+
+  useEffect(() => {
+    if (isQrisReceiptPreviewOpen) {
+      document.body.classList.add('print-qris-receipt-only');
+      document.body.setAttribute('data-print-mode', 'qris-receipt');
+    } else {
+      document.body.classList.remove('print-qris-receipt-only');
+      document.body.removeAttribute('data-print-mode');
+    }
+    return () => {
+      document.body.classList.remove('print-qris-receipt-only');
+      document.body.removeAttribute('data-print-mode');
+    };
+  }, [isQrisReceiptPreviewOpen]);
 
   const selectedCalcItem =
     KALKULATOR_TARIF_LIST.find((item) => item.id === calcSelectedId) || KALKULATOR_TARIF_LIST[0];
@@ -2868,6 +2914,40 @@ export default function App() {
       maximumFractionDigits: 0
     }).format(amount);
   };
+
+  // Generate dynamic QRIS QR code whenever amount or service changes
+  useEffect(() => {
+    let isMounted = true;
+    const generateQris = async () => {
+      try {
+        const nominalStr = calcTotalBiaya.toString();
+        const nominalLen = nominalStr.length.toString().padStart(2, '0');
+        // Standard Indonesian EMVCo QRIS compliant payload structure
+        const payload = `00020101021226670014ID.LINKAJA.WWW011893600911002605260020300351440014ID.OR.GPNQRIS0215ID10260526009570303UKE52047399530336054${nominalLen}${nominalStr}5802ID5921PT MITRA BERSIH 24 JAM6005BOGOR61051611062070703A016304`;
+
+        const url = await QRCode.toDataURL(payload, {
+          width: 320,
+          margin: 1,
+          color: {
+            dark: '#0B192C',
+            light: '#FFFFFF'
+          },
+          errorCorrectionLevel: 'M'
+        });
+
+        if (isMounted) {
+          setQrisQrUrl(url);
+        }
+      } catch (err) {
+        console.error('Failed to generate dynamic QRIS code:', err);
+      }
+    };
+
+    generateQris();
+    return () => {
+      isMounted = false;
+    };
+  }, [calcTotalBiaya, calcSelectedId]);
 
   const handleSelectCalcService = (serviceId: string) => {
     setCalcSelectedId(serviceId);
@@ -2897,6 +2977,135 @@ export default function App() {
 
     navigator.clipboard.writeText(summary);
     setCalcToast('Rincian estimasi biaya berhasil disalin ke clipboard!');
+  };
+
+  const getEstimatedDuration = (volume: number, category: string) => {
+    const isBlower = category === 'cleaning-blower';
+    if (volume <= 1) return isBlower ? '± 30 - 45 Menit' : '± 20 - 30 Menit';
+    if (volume === 2) return isBlower ? '± 45 - 60 Menit' : '± 30 - 45 Menit';
+    if (volume === 3) return isBlower ? '± 60 - 75 Menit' : '± 45 - 60 Menit';
+    if (volume === 4) return isBlower ? '± 75 - 90 Menit' : '± 60 - 75 Menit';
+    if (volume <= 6) return isBlower ? '± 1.5 - 2 Jam' : '± 75 - 90 Menit';
+    if (volume <= 8) return isBlower ? '± 2 - 2.5 Jam' : '± 1.5 - 2 Jam';
+    if (volume <= 10) return isBlower ? '± 2.5 - 3 Jam' : '± 2 - 2.5 Jam';
+    return isBlower ? '± 3.5 - 5 Jam' : '± 2.5 - 3.5 Jam';
+  };
+
+  // Opens dynamic QRIS Payment & Print modal when 'Cetak PDF' is clicked
+  const handlePrintPdf = () => {
+    setIsQrisModalOpen(true);
+  };
+
+  // Specifically triggers a high-contrast print preview of just the dynamic QRIS section using the CSS print media query
+  const handleTriggerQrisReceiptPrintPreview = () => {
+    // Increment scan engagement counter on receipt print attempt
+    incrementQrisScanCount();
+
+    const now = new Date();
+    const dateFormatted = now.toLocaleDateString('id-ID', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+    const timeFormatted =
+      now.toLocaleTimeString('id-ID', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      }) + ' WIB';
+
+    setQrisReceiptTimestamp(`${dateFormatted} • ${timeFormatted}`);
+    setQrisReceiptRefNo(`QRIS-MB24-${Date.now().toString().slice(-8)}`);
+    setIsQrisReceiptPreviewOpen(true);
+
+    // Apply high-contrast monochrome print media query flags
+    document.body.classList.add('print-qris-receipt-only');
+    document.body.setAttribute('data-print-mode', 'qris-receipt');
+
+    const cleanup = () => {
+      window.removeEventListener('afterprint', cleanup);
+    };
+    window.addEventListener('afterprint', cleanup);
+
+    // Trigger browser print preview
+    try {
+      window.print();
+    } catch (e) {
+      console.warn('Browser print dialog could not be opened automatically:', e);
+    }
+  };
+
+  // Direct trigger for high-contrast QRIS struk print preview
+  const handleExecutePrintQrisOnly = () => {
+    incrementQrisScanCount();
+    document.body.classList.add('print-qris-receipt-only');
+    document.body.setAttribute('data-print-mode', 'qris-receipt');
+    const cleanup = () => {
+      window.removeEventListener('afterprint', cleanup);
+    };
+    window.addEventListener('afterprint', cleanup);
+    try {
+      window.print();
+    } catch (e) {
+      console.warn('Browser print dialog error:', e);
+    }
+  };
+
+  const handleCopyQrisReceiptText = () => {
+    const receiptText =
+      `========================================\n` +
+      `       PT MITRA BERSIH 24 JAM\n` +
+      `  STRUK RESMI PEMBAYARAN QRIS DINAMIS\n` +
+      `========================================\n` +
+      `No. Ref   : ${qrisReceiptRefNo || `QRIS-MB24-${Date.now().toString().slice(-8)}`}\n` +
+      `Waktu     : ${qrisReceiptTimestamp || new Date().toLocaleString('id-ID')}\n` +
+      `Pelanggan : ${calcName.trim() || 'Pelanggan Umum (Mitra Bersih)'}\n` +
+      `Lokasi    : ${calcLocation ? `${calcLocation}, Bogor` : 'Bogor & Sekitarnya'}\n` +
+      `Properti  : ${calcProperty}\n` +
+      `----------------------------------------\n` +
+      `Layanan   : ${selectedCalcItem.name}\n` +
+      `Volume    : ${calcVolume} m³ (Kubik)\n` +
+      `Durasi    : ${getEstimatedDuration(calcVolume, selectedCalcItem.category)}\n` +
+      `Manifes   : ${selectedCalcItem.manifestLabel}\n` +
+      `Tarif/m³  : ${formatRupiah(selectedCalcItem.pricePerM3)}\n` +
+      `----------------------------------------\n` +
+      `TOTAL     : ${formatRupiah(calcTotalBiaya)}\n` +
+      `Status    : SIAP SCAN QRIS (AUTO VALIDASI)\n` +
+      `NMID      : ID1026052600957 (A01)\n` +
+      `========================================\n` +
+      `Simpan struk ini sebagai bukti pesanan resmi.\n` +
+      `Hotline 24 Jam: 0857-1565-4183`;
+
+    navigator.clipboard.writeText(receiptText);
+    setCalcToast('Teks Struk QRIS berhasil disalin ke clipboard!');
+  };
+
+  // Direct trigger for browser print / Save as PDF
+  const handleExecutePrint = () => {
+    window.print();
+  };
+
+  const handleCopyNominal = () => {
+    navigator.clipboard.writeText(String(calcTotalBiaya));
+    setCalcToast(`Nominal ${formatRupiah(calcTotalBiaya)} berhasil disalin!`);
+  };
+
+  const handleConfirmQrisWa = () => {
+    const message =
+      `Halo CS PT MITRA BERSIH 24 JAM,\n\n` +
+      `Saya ingin konfirmasi pembayaran via *QRIS Dinamis Mitra Bersih* untuk pemesanan jasa:\n` +
+      `• *Layanan:* ${selectedCalcItem.name}\n` +
+      `• *Volume:* ${calcVolume} m³ (Kubik)\n` +
+      `• *Status Dokumen:* ${selectedCalcItem.manifestLabel}\n` +
+      `• *Estimasi Durasi:* ${getEstimatedDuration(calcVolume, selectedCalcItem.category)}\n` +
+      `• *Total Pembayaran QRIS:* *${formatRupiah(calcTotalBiaya)}*\n` +
+      (calcName ? `• *Nama Pemesan / PIC:* ${calcName}\n` : '') +
+      (calcPhone ? `• *No. WhatsApp:* ${calcPhone}\n` : '') +
+      (calcLocation ? `• *Wilayah Bogor:* ${calcLocation}\n` : '') +
+      (calcProperty ? `• *Jenis Properti:* ${calcProperty}\n` : '') +
+      `\nBerikut saya lampirkan bukti transaksi QRIS saya. Mohon dicek dan dikonfirmasi jadwal kedatangan armada truk tangki. Terima kasih!`;
+
+    window.open(`https://wa.me/6285715654183?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
   };
 
   const handleCalcOrderWa = (e?: React.FormEvent) => {
@@ -7341,6 +7550,41 @@ export default function App() {
                     </span>
                   </div>
 
+                  {/* CETAK PDF, CETAK STRUK QRIS & ESTIMASI DURASI PENGERJAAN */}
+                  <div className="calc-pdf-duration-strip">
+                    <button
+                      type="button"
+                      className="calc-pdf-btn"
+                      onClick={handlePrintPdf}
+                      title="Cetak atau Unduh Dokumen Estimasi Biaya Resmi sebagai PDF"
+                    >
+                      <i className="fas fa-file-pdf"></i>
+                      <span>Cetak PDF</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className="calc-qris-receipt-btn"
+                      onClick={handleTriggerQrisReceiptPrintPreview}
+                      title="Cetak Struk QRIS (High-Contrast Print Preview)"
+                    >
+                      <i className="fas fa-receipt"></i>
+                      <span>Cetak Struk QRIS</span>
+                    </button>
+
+                    <div className="calc-duration-info">
+                      <div className="calc-duration-icon">
+                        <i className="fas fa-clock"></i>
+                      </div>
+                      <div className="calc-duration-text">
+                        <span className="calc-duration-label">Estimasi Durasi Pengerjaan:</span>
+                        <strong className="calc-duration-value">
+                          {getEstimatedDuration(calcVolume, selectedCalcItem.category)}
+                        </strong>
+                      </div>
+                    </div>
+                  </div>
+
                   {calcSuccess && (
                     <div className="calc-alert success fade-in">
                       <i className="fas fa-check-circle"></i> {calcSuccess}
@@ -7474,6 +7718,315 @@ export default function App() {
                   })}
                 </tbody>
               </table>
+            </div>
+          </div>
+
+          {/* PRINT-ONLY OFFICIAL INVOICE / ESTIMATION DOCUMENT */}
+          <div id="calc-printable-invoice" className="calc-printable-invoice">
+            <div className="print-header">
+              <div className="print-header-brand">
+                <img src="/logo.jpeg" alt="Logo PT MITRA BERSIH 24 JAM" className="print-logo" />
+                <div>
+                  <h1 className="print-company-name">PT MITRA BERSIH 24 JAM</h1>
+                  <p className="print-company-sub">
+                    PENGELOLAAN &amp; PENGUMPULAN AIR LIMBAH RESMI BOGOR<br />
+                    NIB: 2605260095769 | NPWP: 3215261111840004 | KBLI: 37001
+                  </p>
+                </div>
+              </div>
+              <div className="print-header-meta">
+                <div className="print-doc-badge">SURAT ESTIMASI RESMI</div>
+                <div className="print-meta-item">
+                  <span>No. Dokumen:</span>
+                  <strong>MB/EST/{new Date().getFullYear()}/0492</strong>
+                </div>
+                <div className="print-meta-item">
+                  <span>Tanggal:</span>
+                  <strong>{new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</strong>
+                </div>
+                <div className="print-meta-item">
+                  <span>Legalitas IPLT:</span>
+                  <strong style={{ color: '#059669' }}>TERVALIDASI &amp; RESMI</strong>
+                </div>
+              </div>
+            </div>
+
+            <div className="print-divider"></div>
+
+            <div className="print-info-grid">
+              <div className="print-info-box">
+                <h4>Informasi Pemesan / Properti:</h4>
+                <table className="print-kv-table">
+                  <tbody>
+                    <tr>
+                      <td className="kv-label">Nama Pemesan</td>
+                      <td className="kv-val">: <strong>{calcName.trim() || 'Pelanggan Terhormat'}</strong></td>
+                    </tr>
+                    <tr>
+                      <td className="kv-label">No. Kontak / WA</td>
+                      <td className="kv-val">: {calcPhone.trim() || '-'}</td>
+                    </tr>
+                    <tr>
+                      <td className="kv-label">Wilayah / Lokasi</td>
+                      <td className="kv-val">: {calcLocation ? `${calcLocation}, Bogor` : 'Wilayah Bogor'}</td>
+                    </tr>
+                    <tr>
+                      <td className="kv-label">Jenis Properti</td>
+                      <td className="kv-val">: {calcProperty}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="print-info-box">
+                <h4>Detail Penugasan Armada &amp; Waktu:</h4>
+                <table className="print-kv-table">
+                  <tbody>
+                    <tr>
+                      <td className="kv-label">Pos Siaga Pelaksana</td>
+                      <td className="kv-val">: Pos Siaga Mitra Bersih Bogor</td>
+                    </tr>
+                    <tr>
+                      <td className="kv-label">Armada Ditugaskan</td>
+                      <td className="kv-val">: Truk Tangki Vakum Modern (Kapasitas 4 m³)</td>
+                    </tr>
+                    <tr>
+                      <td className="kv-label">Estimasi Durasi Kerja</td>
+                      <td className="kv-val">: <strong style={{ color: '#0284C7' }}>{getEstimatedDuration(calcVolume, selectedCalcItem.category)}</strong></td>
+                    </tr>
+                    <tr>
+                      <td className="kv-label">Tujuan Pembuangan</td>
+                      <td className="kv-val">: IPLT Resmi Pemda Bogor (KBLI 37001)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <h4 className="print-table-title">Rincian Perhitungan Biaya:</h4>
+            <table className="print-breakdown-table">
+              <thead>
+                <tr>
+                  <th style={{ width: '40px' }}>No</th>
+                  <th>Deskripsi Layanan</th>
+                  <th>Kelengkapan Dokumen</th>
+                  <th style={{ textAlign: 'center' }}>Volume</th>
+                  <th>Tarif / m³</th>
+                  <th style={{ textAlign: 'right' }}>Total Biaya</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>
+                    <strong>{selectedCalcItem.name}</strong>
+                    <div className="print-desc-small">{selectedCalcItem.description}</div>
+                  </td>
+                  <td>
+                    <span className="print-badge-pill">{selectedCalcItem.manifestLabel}</span>
+                  </td>
+                  <td style={{ textAlign: 'center', fontWeight: 800 }}>{calcVolume} m³</td>
+                  <td>{formatRupiah(selectedCalcItem.pricePerM3)}</td>
+                  <td style={{ textAlign: 'right', fontWeight: 800 }}>{formatRupiah(calcTotalBiaya)}</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>Biaya Survei Lokasi &amp; Transport Armada Wilayah Bogor</td>
+                  <td>Gratis Seluruh Bogor</td>
+                  <td style={{ textAlign: 'center' }}>1 Paket</td>
+                  <td>Rp 0</td>
+                  <td style={{ textAlign: 'right', color: '#059669', fontWeight: 700 }}>Rp 0 (GRATIS)</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td>Pengecekan Saluran &amp; Pasang Selang Hingga 50m (Tanpa Bongkar)</td>
+                  <td>Standar Prosedur</td>
+                  <td style={{ textAlign: 'center' }}>1 Unit</td>
+                  <td>Rp 0</td>
+                  <td style={{ textAlign: 'right', color: '#059669', fontWeight: 700 }}>Rp 0 (GRATIS)</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr className="print-total-row">
+                  <td colSpan={5} style={{ textAlign: 'right', fontWeight: 800 }}>TOTAL ESTIMASI BIAYA:</td>
+                  <td style={{ textAlign: 'right', fontWeight: 900, fontSize: '16px', color: '#0F172A' }}>
+                    {formatRupiah(calcTotalBiaya)}
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <div className="print-notes-section">
+              <h5>Ketentuan &amp; Jaminan Layanan Resmi:</h5>
+              <ol>
+                <li>Tarif estimasi di atas bersifat transparan tanpa biaya tambahan mendadak atau pungutan tersembunyi.</li>
+                <li>Estimasi durasi pengerjaan adalah <strong>{getEstimatedDuration(calcVolume, selectedCalcItem.category)}</strong> (berdasarkan volume kubikasi {calcVolume} m³).</li>
+                <li>Pekerjaan bergaransi tuntas hingga dasar tangki septic tank / saluran lancar tanpa merusak keramik bangunan.</li>
+                <li>Seluruh limbah cair disalurkan ke Instalasi Pengolahan Lumpur Tinja (IPLT) berizin resmi Kementerian Lingkungan Hidup &amp; PUPR.</li>
+              </ol>
+            </div>
+
+            <div className="print-payment-qr-strip">
+              <div className="print-qris-card">
+                <div className="print-qris-top-badge">PEMBAYARAN RESMI NON-TUNAI (QRIS STANDAR NASIONAL)</div>
+                <div className="print-qris-content-row">
+                  {qrisQrUrl && <img src={qrisQrUrl} alt="QRIS PT MITRA BERSIH 24 JAM" className="print-qris-img" />}
+                  <div className="print-qris-desc-col">
+                    <strong className="print-qris-merchant-title">PT MITRA BERSIH 24 JAM</strong>
+                    <span className="print-qris-nmid-text">NMID: ID1026052600957 (A01)</span>
+                    <span className="print-qris-nominal-text">Total Tagihan: {formatRupiah(calcTotalBiaya)}</span>
+                    <p className="print-qris-apps-list">
+                      Didukung oleh seluruh mobile banking (BCA, Mandiri, BRI, BNI, BSI) &amp; e-wallet (GoPay, OVO, DANA, ShopeePay, LinkAja).
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="print-signatures">
+              <div className="print-sig-col">
+                <p>Penyetuju / Pemesan:</p>
+                <div className="print-sig-space"></div>
+                <strong>( {calcName.trim() || '...........................................'} )</strong>
+              </div>
+              <div className="print-sig-col right">
+                <p>Bogor, {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                <p className="print-sig-company">PT MITRA BERSIH 24 JAM</p>
+                <div className="print-seal-wrap">
+                  <img src="/logo.jpeg" alt="Stempel Resmi" className="print-seal-img" />
+                  <div className="print-seal-stamp">TERVERIFIKASI<br />KBLI 37001</div>
+                </div>
+                <strong>Divisi Operasional &amp; Layanan 24 Jam</strong>
+              </div>
+            </div>
+
+            <div className="print-footer">
+              <span>Hotline 24 Jam: 0857-1565-4183 | Email: info@mitrabersih24jam.com | Website: https://jasasedotwcbogor.my.id/</span>
+              <span>Dokumen ini diterbitkan resmi oleh sistem Kalkulator Cepat PT MITRA BERSIH 24 JAM</span>
+            </div>
+          </div>
+
+          {/* HIGH-CONTRAST QRIS STRUK (KHUSUS CETAK STRUK QRIS) */}
+          <div className="qris-struk-printable" id="qris-struk-print-target">
+            <div className="rcpt-header">
+              <img src="/logo.jpeg" alt="Logo PT Mitra Bersih" className="rcpt-logo" />
+              <h4 className="rcpt-brand">PT MITRA BERSIH 24 JAM</h4>
+              <p className="rcpt-sub">JASA SEDOT WC &amp; PENGOLAHAN LIMBAH BOGOR</p>
+              <p className="rcpt-contact">Hotline 24 Jam: 0857-1565-4183 • www.jasasedotwcbogor.my.id</p>
+              <p className="rcpt-sub">KBLI 37001 • Legalitas IPLT Kementerian PUPR &amp; KLH</p>
+            </div>
+
+            <div className="rcpt-dashed-line"></div>
+
+            <div className="rcpt-title-box">
+              <strong className="rcpt-title-main">STRUK RESMI PEMBAYARAN QRIS</strong>
+              <span className="rcpt-title-sub">STANDAR PEMBAYARAN NASIONAL BANK INDONESIA (ASPI)</span>
+            </div>
+
+            <div className="rcpt-dashed-line"></div>
+
+            <div className="rcpt-meta-table">
+              <div className="rcpt-row">
+                <span className="rcpt-k">No. Transaksi</span>
+                <span className="rcpt-v mono">{qrisReceiptRefNo || `QRIS-MB24-${Date.now().toString().slice(-8)}`}</span>
+              </div>
+              <div className="rcpt-row">
+                <span className="rcpt-k">Waktu Cetak</span>
+                <span className="rcpt-v">{qrisReceiptTimestamp || new Date().toLocaleString('id-ID')}</span>
+              </div>
+              <div className="rcpt-row">
+                <span className="rcpt-k">Pelanggan / PIC</span>
+                <span className="rcpt-v bold">{calcName.trim() || 'Pelanggan Umum (Mitra Bersih)'}</span>
+              </div>
+              {calcPhone && (
+                <div className="rcpt-row">
+                  <span className="rcpt-k">No. Telepon / WA</span>
+                  <span className="rcpt-v">{calcPhone}</span>
+                </div>
+              )}
+              <div className="rcpt-row">
+                <span className="rcpt-k">Lokasi Layanan</span>
+                <span className="rcpt-v">{calcLocation ? `${calcLocation}, Bogor` : 'Wilayah Bogor & Sekitarnya'}</span>
+              </div>
+              <div className="rcpt-row">
+                <span className="rcpt-k">Tipe Properti</span>
+                <span className="rcpt-v">{calcProperty}</span>
+              </div>
+            </div>
+
+            <div className="rcpt-dashed-line"></div>
+
+            <div className="rcpt-service-box">
+              <div className="rcpt-row">
+                <span className="rcpt-k">Layanan Utama</span>
+                <span className="rcpt-v bold">{selectedCalcItem.name}</span>
+              </div>
+              <div className="rcpt-row">
+                <span className="rcpt-k">Kategori Limbah</span>
+                <span className="rcpt-v">{selectedCalcItem.categoryLabel}</span>
+              </div>
+              <div className="rcpt-row">
+                <span className="rcpt-k">Volume Estimasi</span>
+                <span className="rcpt-v bold">{calcVolume} m³ (Kubik)</span>
+              </div>
+              <div className="rcpt-row">
+                <span className="rcpt-k">Durasi Kerja</span>
+                <span className="rcpt-v">{getEstimatedDuration(calcVolume, selectedCalcItem.category)}</span>
+              </div>
+              <div className="rcpt-row">
+                <span className="rcpt-k">Dokumen Manifes</span>
+                <span className="rcpt-v">{selectedCalcItem.manifestLabel}</span>
+              </div>
+              <div className="rcpt-row">
+                <span className="rcpt-k">Tarif per m³</span>
+                <span className="rcpt-v">{formatRupiah(selectedCalcItem.pricePerM3)}</span>
+              </div>
+            </div>
+
+            <div className="rcpt-dashed-line"></div>
+
+            <div className="rcpt-total-contrast-box">
+              <span className="rcpt-total-lbl">TOTAL PEMBAYARAN QRIS:</span>
+              <strong className="rcpt-total-val">{formatRupiah(calcTotalBiaya)}</strong>
+              <span className="rcpt-total-note">TARIF PASTI • 100% BEBAS BIAYA SILUMAN</span>
+            </div>
+
+            <div className="rcpt-dashed-line"></div>
+
+            <div className="rcpt-qris-display-area">
+              <div className="rcpt-qris-tag-row">
+                <strong className="rcpt-qris-brand">QRIS</strong>
+                <span className="rcpt-gpn-tag">GPN RESMI</span>
+              </div>
+              <span className="rcpt-nmid">NMID: <strong>ID1026052600957</strong> (A01)</span>
+              <span className="rcpt-merchant">PT MITRA BERSIH 24 JAM</span>
+
+              <div className="rcpt-qr-img-frame">
+                {qrisQrUrl && (
+                  <img
+                    src={qrisQrUrl}
+                    alt="QRIS Dinamis PT MITRA BERSIH 24 JAM"
+                    className="rcpt-qr-img"
+                  />
+                )}
+              </div>
+
+              <div className="rcpt-scan-instruction">
+                <strong>CARA PEMBAYARAN CEPAT:</strong>
+                <p>
+                  Pindai kode QRIS di atas via BCA Mobile, Mandiri Livin&apos;, BRImo, BNI Mobile, BSI, GoPay, OVO, DANA, ShopeePay, atau LinkAja.
+                </p>
+                <span className="rcpt-scan-counter-tag">Status Aktif • Telah dipindai {qrisScanCount} kali</span>
+              </div>
+            </div>
+
+            <div className="rcpt-dashed-line"></div>
+
+            <div className="rcpt-footer-notes">
+              <p className="rcpt-guarantee">GARANSI TUNTAS • SIAGA 24 JAM NONSTOP</p>
+              <p>Simpan struk ini sebagai tanda bukti pemesanan &amp; pembayaran sah.</p>
+              <p>Petugas armada resmi siap di lokasi sesuai jadwal pemesanan.</p>
+              <p className="rcpt-closing">*** TERIMA KASIH ATAS KEPERCAYAAN ANDA ***</p>
             </div>
           </div>
         </div>
@@ -10023,6 +10576,452 @@ export default function App() {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* QRIS PEMBAYARAN DINAMIS & CETAK PDF MODAL */}
+      {isQrisModalOpen && (
+        <div
+          className="qris-modal-overlay fade-in"
+          onClick={() => setIsQrisModalOpen(false)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="qris-modal-container"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="qris-modal-header">
+              <div className="qris-modal-header-left">
+                <div className="qris-brand-badge">
+                  <span className="qris-badge-red">QRIS</span>
+                  <span className="qris-badge-text">PEMBAYARAN RESMI</span>
+                </div>
+                <div className="qris-header-title-box">
+                  <h3>Pembayaran QRIS &amp; Cetak Dokumen</h3>
+                  <p>PT MITRA BERSIH 24 JAM • Verifikasi Pembayaran Instan</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="qris-modal-close-btn"
+                onClick={() => setIsQrisModalOpen(false)}
+                aria-label="Tutup Modal"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="qris-modal-body">
+              <div className="qris-modal-grid">
+                {/* Left: Dynamic QRIS Standar Nasional Card */}
+                <div className="qris-card-wrapper">
+                  <div className="qris-official-card">
+                    {/* QRIS Top Banner */}
+                    <div className="qris-card-header">
+                      <div className="qris-gpn-row">
+                        <span className="qris-main-logo">QRIS</span>
+                        <span className="qris-gpn-logo"><i className="fas fa-shield-alt"></i> GPN</span>
+                      </div>
+                      <span className="qris-type-tag">Standar Pembayaran Nasional Bank Indonesia</span>
+                    </div>
+
+                    {/* Merchant Info */}
+                    <div className="qris-merchant-info">
+                      <h4 className="qris-merchant-name">PT MITRA BERSIH 24 JAM</h4>
+                      <div className="qris-nmid-row">
+                        <span>NMID: <strong>ID1026052600957</strong></span>
+                        <span className="qris-verified-pill"><i className="fas fa-check-circle"></i> Terverifikasi</span>
+                      </div>
+                    </div>
+
+                    {/* QR Code Container */}
+                    <div className="qris-qr-display-box">
+                      {qrisQrUrl ? (
+                        <div className="qris-qr-frame">
+                          <img
+                            src={qrisQrUrl}
+                            alt="QRIS Dinamis PT MITRA BERSIH 24 JAM"
+                            className="qris-qr-img"
+                          />
+                          <div className="qris-center-badge">
+                            <img src="/logo.jpeg" alt="Logo" className="qris-center-logo" />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="qris-loading-qr">
+                          <i className="fas fa-spinner fa-spin"></i>
+                          <span>Membuat QRIS Dinamis...</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Scan Guide */}
+                    <div className="qris-scan-guide">
+                      <div className="qris-guide-icon">
+                        <i className="fas fa-qrcode"></i>
+                      </div>
+                      <div className="qris-guide-content">
+                        <span className="qris-guide-instruction">
+                          Arahkan kamera scanner m-Banking atau E-Wallet Anda ke kode QR di atas
+                        </span>
+                        <div className="qris-scan-counter-badge">
+                          <span className="qris-scan-dot"></span>
+                          <i className="fas fa-check-circle"></i>
+                          <span className="qris-scan-counter-text">Telah dipindai {qrisScanCount} kali</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Accepted Payment Logos */}
+                    <div className="qris-accepted-strip">
+                      <span className="qris-strip-label">Mendukung Seluruh Bank &amp; Dompet Digital:</span>
+                      <div className="qris-bank-badges">
+                        <span className="bank-pill">BCA</span>
+                        <span className="bank-pill">Mandiri</span>
+                        <span className="bank-pill">BRI</span>
+                        <span className="bank-pill">BNI</span>
+                        <span className="bank-pill">BSI</span>
+                        <span className="bank-pill gopay">GoPay</span>
+                        <span className="bank-pill ovo">OVO</span>
+                        <span className="bank-pill dana">DANA</span>
+                        <span className="bank-pill shopee">ShopeePay</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right: Bill Details & Fast Actions */}
+                <div className="qris-details-wrapper">
+                  {/* Total Tagihan Box */}
+                  <div className="qris-amount-box">
+                    <span className="qris-amount-label">NOMINAL PEMBAYARAN DINAMIS</span>
+                    <div className="qris-amount-row">
+                      <strong className="qris-amount-value">{formatRupiah(calcTotalBiaya)}</strong>
+                      <button
+                        type="button"
+                        className="qris-copy-nominal-btn"
+                        onClick={handleCopyNominal}
+                        title="Salin Angka Nominal"
+                      >
+                        <i className="fas fa-copy"></i>
+                        <span>Salin Nominal</span>
+                      </button>
+                    </div>
+                    <span className="qris-amount-note">
+                      *Nominal otomatis tervalidasi pada aplikasi m-Banking Anda.
+                    </span>
+                  </div>
+
+                  {/* Summary of Order */}
+                  <div className="qris-summary-card">
+                    <h5 className="qris-summary-title">
+                      <i className="fas fa-receipt"></i>
+                      <span>Rincian Estimasi Layanan:</span>
+                    </h5>
+                    <div className="qris-summary-list">
+                      <div className="qris-summary-item">
+                        <span className="lbl">Jenis Layanan:</span>
+                        <span className="val bold">{selectedCalcItem.name}</span>
+                      </div>
+                      <div className="qris-summary-item">
+                        <span className="lbl">Volume Kubikasi:</span>
+                        <span className="val highlight">{calcVolume} m³ (Kubik)</span>
+                      </div>
+                      <div className="qris-summary-item">
+                        <span className="lbl">Estimasi Durasi Kerja:</span>
+                        <span className="val durasi">{getEstimatedDuration(calcVolume, selectedCalcItem.category)}</span>
+                      </div>
+                      <div className="qris-summary-item">
+                        <span className="lbl">Dokumen Manifes:</span>
+                        <span className="val">{selectedCalcItem.manifestLabel}</span>
+                      </div>
+                      {calcLocation && (
+                        <div className="qris-summary-item">
+                          <span className="lbl">Lokasi Properti:</span>
+                          <span className="val">{calcLocation}, Bogor</span>
+                        </div>
+                      )}
+                      {calcName && (
+                        <div className="qris-summary-item">
+                          <span className="lbl">Nama Pemesan:</span>
+                          <span className="val">{calcName}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Step by Step Guide */}
+                  <div className="qris-steps-box">
+                    <span className="qris-steps-title">Panduan Pembayaran Cepat:</span>
+                    <ol className="qris-steps-list">
+                      <li>Buka m-Banking (BCA, Mandiri, BRI, BNI) atau E-Wallet (GoPay, OVO, DANA, ShopeePay).</li>
+                      <li>Pilih menu <strong>Scan QRIS</strong> lalu arahkan kamera ke barcode QRIS di samping.</li>
+                      <li>Periksa nama penerima <strong>PT MITRA BERSIH 24 JAM</strong> dan selesaikan transaksi.</li>
+                    </ol>
+                  </div>
+
+                  {/* Primary Action Buttons */}
+                  <div className="qris-actions-panel">
+                    <button
+                      type="button"
+                      className="qris-action-print-btn"
+                      onClick={() => handleExecutePrint()}
+                    >
+                      <i className="fas fa-file-pdf"></i>
+                      <span>Cetak / Unduh Dokumen PDF Resmi</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className="qris-action-struk-btn"
+                      onClick={() => {
+                        setIsQrisModalOpen(false);
+                        handleTriggerQrisReceiptPrintPreview();
+                      }}
+                    >
+                      <i className="fas fa-receipt"></i>
+                      <span>Cetak Struk QRIS (High-Contrast)</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className="qris-action-wa-btn"
+                      onClick={handleConfirmQrisWa}
+                    >
+                      <i className="fab fa-whatsapp"></i>
+                      <span>Konfirmasi Pembayaran via WhatsApp CS</span>
+                    </button>
+                  </div>
+
+                  {/* Guarantee Strip */}
+                  <div className="qris-footer-trust">
+                    <span><i className="fas fa-shield-alt"></i> Transaksi Aman Terstandarisasi Bank Indonesia</span>
+                    <span><i className="fas fa-bolt"></i> Siaga Pelayanan 24 Jam Nonstop</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* HIGH-CONTRAST QRIS STRUK PRINT PREVIEW MODAL */}
+      {isQrisReceiptPreviewOpen && (
+        <div
+          className="qris-preview-modal-overlay fade-in"
+          onClick={() => setIsQrisReceiptPreviewOpen(false)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="qris-preview-modal-container"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="qris-preview-modal-header">
+              <div className="qris-preview-header-left">
+                <span className="qris-preview-badge">PRINT PREVIEW • HIGH-CONTRAST</span>
+                <h3>Cetak Struk QRIS Resmi</h3>
+                <p>Khusus Bagian QRIS Dinamis • Format Cetak High-Contrast Standar Kasir / Bukti Transaksi</p>
+              </div>
+              <div className="qris-preview-header-right">
+                <button
+                  type="button"
+                  className="qris-preview-top-print-btn"
+                  onClick={handleExecutePrintQrisOnly}
+                  title="Cetak Struk Sekarang (Print / PDF)"
+                >
+                  <i className="fas fa-print"></i>
+                  <span>Cetak Struk</span>
+                </button>
+                <button
+                  type="button"
+                  className="qris-preview-close-btn"
+                  onClick={() => setIsQrisReceiptPreviewOpen(false)}
+                  aria-label="Tutup Preview"
+                >
+                  <i className="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Preview Body */}
+            <div className="qris-preview-modal-body">
+              <div className="qris-preview-paper-stage">
+                <div className="qris-receipt-paper">
+                  {/* Top Header */}
+                  <div className="rcpt-header">
+                    <img src="/logo.jpeg" alt="Logo PT Mitra Bersih" className="rcpt-logo" />
+                    <h4 className="rcpt-brand">PT MITRA BERSIH 24 JAM</h4>
+                    <p className="rcpt-sub">JASA SEDOT WC &amp; PENGOLAHAN LIMBAH BOGOR</p>
+                    <p className="rcpt-contact">Hotline 24 Jam: 0857-1565-4183 • www.jasasedotwcbogor.my.id</p>
+                    <p className="rcpt-sub">KBLI 37001 • Legalitas IPLT Kementerian PUPR &amp; KLH</p>
+                  </div>
+
+                  <div className="rcpt-dashed-line"></div>
+
+                  <div className="rcpt-title-box">
+                    <strong className="rcpt-title-main">STRUK RESMI PEMBAYARAN QRIS</strong>
+                    <span className="rcpt-title-sub">STANDAR PEMBAYARAN NASIONAL BANK INDONESIA (ASPI)</span>
+                  </div>
+
+                  <div className="rcpt-dashed-line"></div>
+
+                  {/* Transaction Metadata */}
+                  <div className="rcpt-meta-table">
+                    <div className="rcpt-row">
+                      <span className="rcpt-k">No. Transaksi</span>
+                      <span className="rcpt-v mono">{qrisReceiptRefNo || `QRIS-MB24-${Date.now().toString().slice(-8)}`}</span>
+                    </div>
+                    <div className="rcpt-row">
+                      <span className="rcpt-k">Waktu Cetak</span>
+                      <span className="rcpt-v">{qrisReceiptTimestamp || new Date().toLocaleString('id-ID')}</span>
+                    </div>
+                    <div className="rcpt-row">
+                      <span className="rcpt-k">Pelanggan / PIC</span>
+                      <span className="rcpt-v bold">{calcName.trim() || 'Pelanggan Umum (Mitra Bersih)'}</span>
+                    </div>
+                    {calcPhone && (
+                      <div className="rcpt-row">
+                        <span className="rcpt-k">No. Telepon / WA</span>
+                        <span className="rcpt-v">{calcPhone}</span>
+                      </div>
+                    )}
+                    <div className="rcpt-row">
+                      <span className="rcpt-k">Lokasi Layanan</span>
+                      <span className="rcpt-v">{calcLocation ? `${calcLocation}, Bogor` : 'Wilayah Bogor & Sekitarnya'}</span>
+                    </div>
+                    <div className="rcpt-row">
+                      <span className="rcpt-k">Tipe Properti</span>
+                      <span className="rcpt-v">{calcProperty}</span>
+                    </div>
+                  </div>
+
+                  <div className="rcpt-dashed-line"></div>
+
+                  {/* Service Items */}
+                  <div className="rcpt-service-box">
+                    <div className="rcpt-row">
+                      <span className="rcpt-k">Layanan Utama</span>
+                      <span className="rcpt-v bold">{selectedCalcItem.name}</span>
+                    </div>
+                    <div className="rcpt-row">
+                      <span className="rcpt-k">Kategori Limbah</span>
+                      <span className="rcpt-v">{selectedCalcItem.categoryLabel}</span>
+                    </div>
+                    <div className="rcpt-row">
+                      <span className="rcpt-k">Volume Estimasi</span>
+                      <span className="rcpt-v bold">{calcVolume} m³ (Kubik)</span>
+                    </div>
+                    <div className="rcpt-row">
+                      <span className="rcpt-k">Durasi Kerja</span>
+                      <span className="rcpt-v">{getEstimatedDuration(calcVolume, selectedCalcItem.category)}</span>
+                    </div>
+                    <div className="rcpt-row">
+                      <span className="rcpt-k">Dokumen Manifes</span>
+                      <span className="rcpt-v">{selectedCalcItem.manifestLabel}</span>
+                    </div>
+                    <div className="rcpt-row">
+                      <span className="rcpt-k">Tarif per m³</span>
+                      <span className="rcpt-v">{formatRupiah(selectedCalcItem.pricePerM3)}</span>
+                    </div>
+                  </div>
+
+                  <div className="rcpt-dashed-line"></div>
+
+                  {/* HIGH-CONTRAST TOTAL BOX */}
+                  <div className="rcpt-total-contrast-box">
+                    <span className="rcpt-total-lbl">TOTAL PEMBAYARAN QRIS:</span>
+                    <strong className="rcpt-total-val">{formatRupiah(calcTotalBiaya)}</strong>
+                    <span className="rcpt-total-note">TARIF PASTI • 100% BEBAS BIAYA SILUMAN</span>
+                  </div>
+
+                  <div className="rcpt-dashed-line"></div>
+
+                  {/* QRIS Dynamic Code Box */}
+                  <div className="rcpt-qris-display-area">
+                    <div className="rcpt-qris-tag-row">
+                      <strong className="rcpt-qris-brand">QRIS</strong>
+                      <span className="rcpt-gpn-tag">GPN RESMI</span>
+                    </div>
+                    <span className="rcpt-nmid">NMID: <strong>ID1026052600957</strong> (A01)</span>
+                    <span className="rcpt-merchant">PT MITRA BERSIH 24 JAM</span>
+
+                    <div className="rcpt-qr-img-frame">
+                      {qrisQrUrl ? (
+                        <img
+                          src={qrisQrUrl}
+                          alt="QRIS Dinamis Struk"
+                          className="rcpt-qr-img"
+                        />
+                      ) : (
+                        <div className="rcpt-qr-loading">Membuat QRIS...</div>
+                      )}
+                    </div>
+
+                    <div className="rcpt-scan-instruction">
+                      <strong>CARA PEMBAYARAN CEPAT:</strong>
+                      <p>
+                        Pindai kode QRIS di atas via BCA Mobile, Mandiri Livin&apos;, BRImo, BNI Mobile, BSI, GoPay, OVO, DANA, ShopeePay, atau LinkAja. Nominal otomatis terisi sesuai tagihan.
+                      </p>
+                      <span className="rcpt-scan-counter-tag">Status Aktif • Telah dipindai {qrisScanCount} kali</span>
+                    </div>
+                  </div>
+
+                  <div className="rcpt-dashed-line"></div>
+
+                  {/* High Contrast Footer */}
+                  <div className="rcpt-footer-notes">
+                    <p className="rcpt-guarantee">GARANSI TUNTAS • SIAGA 24 JAM NONSTOP</p>
+                    <p>Simpan struk ini sebagai tanda bukti pemesanan &amp; pembayaran sah.</p>
+                    <p>Petugas armada resmi siap di lokasi sesuai jadwal pemesanan.</p>
+                    <p className="rcpt-closing">*** TERIMA KASIH ATAS KEPERCAYAAN ANDA ***</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Bottom Actions */}
+            <div className="qris-preview-modal-footer">
+              <button
+                type="button"
+                className="qris-preview-action-print"
+                onClick={handleExecutePrintQrisOnly}
+              >
+                <i className="fas fa-print"></i>
+                <span>Cetak Struk Sekarang (Print / PDF)</span>
+              </button>
+
+              <button
+                type="button"
+                className="qris-preview-action-wa"
+                onClick={handleConfirmQrisWa}
+              >
+                <i className="fab fa-whatsapp"></i>
+                <span>Kirim Bukti ke WhatsApp CS</span>
+              </button>
+
+              <button
+                type="button"
+                className="qris-preview-action-copy"
+                onClick={handleCopyQrisReceiptText}
+              >
+                <i className="fas fa-copy"></i>
+                <span>Salin Teks Struk</span>
+              </button>
+
+              <button
+                type="button"
+                className="qris-preview-action-close"
+                onClick={() => setIsQrisReceiptPreviewOpen(false)}
+              >
+                <span>Tutup</span>
+              </button>
             </div>
           </div>
         </div>
