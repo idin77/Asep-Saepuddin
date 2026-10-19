@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import QRCode from 'qrcode';
+import html2canvas from 'html2canvas';
 import articleImg1 from './assets/images/septic_tank_signs_1791232849125.jpg';
 import articleImg2 from './assets/images/septic_vacuum_truck_1791232864840.jpg';
 import articleImg3 from './assets/images/clogged_drain_cleaning_1791232881201.jpg';
@@ -533,7 +534,7 @@ export interface NewsletterSubscriber {
   id: string;
   email: string;
   name?: string;
-  category: 'warga' | 'rt_rw' | 'bisnis' | 'umum';
+  category: 'korporat' | 'gedung' | 'hotel_fnb' | 'faskes';
   categoryLabel: string;
   status: 'active' | 'unsubscribed';
   subscribedAt: string;
@@ -543,63 +544,63 @@ export interface NewsletterSubscriber {
 export const DEFAULT_SUBSCRIBERS: NewsletterSubscriber[] = [
   {
     id: 'sub-1',
-    email: 'budi.santoso.bogor@gmail.com',
-    name: 'Budi Santoso',
-    category: 'warga',
-    categoryLabel: 'Rumah Tangga / Warga',
+    email: 'pt.sentul.megah.ga@sentulindustrial.co.id',
+    name: 'PT Sentul Megah Industrial (GA Dept)',
+    category: 'korporat',
+    categoryLabel: 'Pabrik & Kawasan Industri',
     status: 'active',
     subscribedAt: '16 Okt 2026, 09:15 WIB',
-    source: 'Buletin Website'
+    source: 'Portal B2B Mitra Bersih'
   },
   {
     id: 'sub-2',
-    email: 'rt03.baranangsiang@gmail.com',
-    name: 'Pengurus RT 03 Baranangsiang',
-    category: 'rt_rw',
-    categoryLabel: 'Pengurus RT/RW',
+    email: 'eng.hse@hotelgrandpajajaran.com',
+    name: 'Hotel Grand Pajajaran (HSE Division)',
+    category: 'hotel_fnb',
+    categoryLabel: 'Hotel & Resto Chain (F&B)',
     status: 'active',
     subscribedAt: '15 Okt 2026, 14:30 WIB',
-    source: 'Form Edukasi Sanitasi'
+    source: 'Form Kemitraan STP/Grease Trap'
   },
   {
     id: 'sub-3',
-    email: 'siti.aminah.sentul@yahoo.com',
-    name: 'Ibu Siti Aminah',
-    category: 'warga',
-    categoryLabel: 'Rumah Tangga / Warga',
+    email: 'procurement@pabrikcileungsi.co.id',
+    name: 'PT Manufaktur Cileungsi (Procurement)',
+    category: 'korporat',
+    categoryLabel: 'Pabrik & Kawasan Industri',
     status: 'active',
     subscribedAt: '14 Okt 2026, 11:45 WIB',
-    source: 'Buletin Website'
+    source: 'Permintaan SPH & Faktur Pajak'
   },
   {
     id: 'sub-4',
-    email: 'restoran.pajajaran.bogor@gmail.com',
-    name: 'Resto Pajajaran Kuliner',
-    category: 'bisnis',
-    categoryLabel: 'Bisnis / Ruko / Resto',
+    email: 'building.mgnt@menarasukahati.com',
+    name: 'Menara Graha Sukahati (Building Mgmt)',
+    category: 'gedung',
+    categoryLabel: 'Pengelola Gedung & Office Tower',
     status: 'active',
     subscribedAt: '12 Okt 2026, 16:20 WIB',
-    source: 'Limbah Domestik STP'
+    source: 'Kontrak Maintenance Berkala'
   },
   {
     id: 'sub-5',
-    email: 'dian.yasmin.residence@gmail.com',
-    name: 'Dian Permana',
-    category: 'warga',
-    categoryLabel: 'Rumah Tangga / Warga',
+    email: 'facility@rsbogormedika.co.id',
+    name: 'RS Medika Bogor (Facility Dept)',
+    category: 'faskes',
+    categoryLabel: 'Rumah Sakit & Fasilitas Medis',
     status: 'active',
     subscribedAt: '10 Okt 2026, 10:05 WIB',
-    source: 'Buletin Website'
+    source: 'Portal B2B Mitra Bersih'
   },
   {
     id: 'sub-6',
-    email: 'kantor.cibinong.sukahati@gmail.com',
-    name: 'Pengelola Ruko Sukahati',
-    category: 'bisnis',
-    categoryLabel: 'Bisnis / Ruko / Resto',
+    email: 'operasional@restorantamanbogor.co.id',
+    name: 'Restoran Taman Pajajaran (Operations)',
+    category: 'hotel_fnb',
+    categoryLabel: 'Hotel & Resto Chain (F&B)',
     status: 'active',
     subscribedAt: '08 Okt 2026, 13:10 WIB',
-    source: 'Kemitraan Pemeliharaan'
+    source: 'Pengurasan Grease Trap Rutin'
   }
 ];
 
@@ -615,31 +616,31 @@ export interface MarketingCampaignTemplate {
 
 export const MARKETING_CAMPAIGN_TEMPLATES: MarketingCampaignTemplate[] = [
   {
-    id: 'rainy_season',
-    title: 'Waspada Musim Hujan: Panduan Cegah Kloset & Saluran Meluap di Bogor',
-    subject: '🌧️ [Edisi Khusus Bogor] 5 Langkah Antisipasi Septic Tank Meluap Saat Musim Hujan Tiba',
-    previewSnippet: 'Peningkatan muka air tanah di kawasan Bogor dapat mempercepat kejenuhan resapan septic tank...',
-    badge: 'Tips Sanitasi',
-    category: 'Musim Hujan',
-    content: 'Musim hujan dengan curah tinggi di wilayah Kota dan Kabupaten Bogor seringkali memicu luapan air tanah ke dalam tangki resapan septic tank. Tim teknisi PT MITRA BERSIH 24 JAM menyarankan pemeriksaan berkala pipa pernapasan (ventilasi), pembersihan kotoran sedimen, dan penjadwalan kuras sedot tinja sebelum masa puncak hujan agar kloset tidak tersumbat secara tiba-tiba.'
+    id: 'amdal_compliance',
+    title: 'Kepatuhan Regulasi Lingkungan & Dokumen Manifes IPLT Resmi Bogor',
+    subject: '📑 [Pemberitahuan B2B] Standar Manifes Pengolahan Limbah Domestik & Audit AMDAL / ISO 14001',
+    previewSnippet: 'Pastikan limbah cair domestik perusahaan Anda memiliki dokumen manifes legal ke IPLT resmi...',
+    badge: 'Kepatuhan Regulasi',
+    category: 'Audit Lingkungan',
+    content: 'Setiap kegiatan usaha pabrik, hotel, rumah sakit, dan gedung perkantoran wajib menyalurkan limbah cair domestik ke Instalasi Pengolahan Lumpur Tinja (IPLT) resmi berizin. PT MITRA BERSIH 24 JAM siap menyediakan dokumen Berita Acara Serah Terima (BAST), Manifes Resmi IPLT Kota/Kabupaten Bogor, serta Faktur Pajak PPN 11% untuk kelengkapan pelaporan berkala UKL-UPL dan audit lingkungan hidup.'
   },
   {
-    id: 'collective_promo',
-    title: 'Promo Komunitas RT/RW: Kuras Septic Tank Kolektif Hemat hingga 15%',
-    subject: '🏷️ Program Lingkungan Bersih RT/RW Bogor: Subsidi Sedot WC Kolektif 24 Jam',
-    previewSnippet: 'Dapatkan efisiensi biaya layanan bersama tetangga satu blok atau lingkungan RT/RW...',
-    badge: 'Program Komunitas',
-    category: 'Diskon RT/RW',
-    content: 'Program Sanitasi Sehat Bersama PT MITRA BERSIH 24 JAM menghadirkan layanan kuras septic tank kolektif untuk warga satu RT/RW atau kompleks perumahan di Bogor. Penjadwalan serentak armada truk tangki memangkas biaya operasional dan memberikan diskon hingga 15% serta pembersihan gratis saluran pipa pembuangan utama.'
+    id: 'b2b_contract_promo',
+    title: 'Program MoU Maintenance Rutin B2B: Kuras Grease Trap & STP Berkala',
+    subject: '🤝 Solusi Kontrak Kerja Sama (MoU B2B) Pengelolaan Limbah Gedung & Pabrik 24 Jam',
+    previewSnippet: 'Dapatkan diskon biaya pemeliharaan berkala hingga 20% dan SLA penanganan darurat 30 menit...',
+    badge: 'Kemitraan B2B',
+    category: 'MoU Maintenance',
+    content: 'Program Kemitraan Korporat PT MITRA BERSIH 24 JAM memberikan fasilitas inspeksi berkala gratis, pengurasan tangki IPAL/STP dan grease trap terjadwal di luar jam kerja (shift malam/weekend), fasilitas Term of Payment (TOP 14-30 hari kalender), serta prioritas panggilan darurat 24 jam nonstop dengan armada truk tangki industri kapasitas besar.'
   },
   {
     id: 'legal_kbli',
-    title: 'Legalitas & Kepastian Layanan: Izin Resmi KBLI 37001 & Pembuangan IPLT',
-    subject: '📑 Standar Resmi Pengolahan Limbah Domestik: Legalitas NIB & IPLT PT MITRA BERSIH 24 JAM',
-    previewSnippet: 'Pastikan limbah sanitasi Anda dikelola secara legal dan dibuang ke IPLT resmi Pemda Bogor...',
-    badge: 'Resmi & Higienis',
-    category: 'Legalitas Perusahaan',
-    content: 'Sebagai badan usaha berbadan hukum PT MITRA BERSIH 24 JAM dengan NIB 2605260095769, NPWP 3215261111840004, dan sertifikasi KBLI 37001 (Pengumpulan Air Limbah), seluruh limbah tinja dan domestik disalurkan secara aman ke Instalasi Pengolahan Lumpur Tinja (IPLT) resmi tanpa mencemari sungai atau lingkungan hidup warga Bogor.'
+    title: 'Legalitas Badan Usaha PT: Izin Resmi KBLI 37001, NIB BKPM & NPWP',
+    subject: '🏛️ Legalitas & Kesiapan Administrasi PT MITRA BERSIH 24 JAM untuk Klien Korporat',
+    previewSnippet: 'Badan usaha resmi pengumpulan air limbah berizin KBLI 37001 dan kepatuhan K3...',
+    badge: 'Resmi & Berbadan Hukum',
+    category: 'Legalitas PT',
+    content: 'Sebagai badan usaha berbadan hukum PT MITRA BERSIH 24 JAM dengan NIB 2605260095769, NPWP 3215261111840004, dan sertifikasi KBLI 37001 (Pengumpulan Air Limbah), seluruh personel teknisi kami dilengkapi APD berstandar K3, mesin vacuum blower modern, dan jaminan pembuangan legal ke IPLT resmi tanpa risiko sanksi pencemaran lingkungan.'
   }
 ];
 
@@ -662,79 +663,79 @@ export const KALKULATOR_TARIF_LIST: KalkulatorTarifItem[] = [
     id: 'black-water-non-manifest',
     category: 'black-water',
     categoryLabel: 'Limbah Black Water (Tinja)',
-    name: 'Limbah Black Water (Tinja) – Non Manifes',
-    description: 'Penyedotan tinja kloset & kuras septic tank hunian rumah tinggal pribadi tanpa dokumen manifes IPLT.',
+    name: 'Limbah Black Water (Tinja) – Standar Ruko & Kantor Cabang',
+    description: 'Penyedotan limbah toilet & kuras septic tank untuk ruko, kantor cabang perbankan, dan unit usaha tanpa kewajiban audit manifes IPLT.',
     isManifest: false,
     manifestLabel: 'Non Manifes',
     pricePerM3: 700000,
     icon: 'fa-toilet',
-    tag: 'Paling Terjangkau',
-    targetProperty: 'Rumah Tinggal Pribadi / Cluster'
+    tag: 'Ruko & Kantor Cabang',
+    targetProperty: 'Kantor Cabang, Ruko & Usaha Mandiri'
   },
   {
     id: 'black-water-manifest',
     category: 'black-water',
     categoryLabel: 'Limbah Black Water (Tinja)',
-    name: 'Limbah Black Water (Tinja) – Manifes Resmi',
-    description: 'Penyedotan tinja kloset & kuras septic tank dengan dokumen resmi manifes pembuangan IPLT (izin KBLI 37001).',
+    name: 'Limbah Black Water (Tinja) – Manifes Resmi B2B',
+    description: 'Penyedotan septic tank volume besar dengan dokumen resmi berita acara (BAST) & manifes pembuangan IPLT (izin KBLI 37001) untuk audit AMDAL perusahaan.',
     isManifest: true,
     manifestLabel: 'Manifes Resmi',
     pricePerM3: 1100000,
     icon: 'fa-file-signature',
-    tag: 'Legalitas IPLT Resmi',
-    targetProperty: 'Ruko, Kantor, Yayasan, Restoran'
+    tag: 'Standar Korporat & AMDAL',
+    targetProperty: 'Gedung Kantor, Kawasan Industri, Hotel, Resto & Pabrik'
   },
   {
     id: 'grey-water-non-manifest',
     category: 'grey-water',
     categoryLabel: 'Limbah Grey Water (Lumpur & Lemak)',
-    name: 'Limbah Grey Water (Lumpur, Lemak) – Non Manifes',
-    description: 'Pengurasan bak kontrol, grease trap dapur, dan endapan lumpur domestik tanpa dokumen manifes.',
+    name: 'Limbah Grey Water (Lumpur, Lemak) – Usaha F&B Komersial',
+    description: 'Pengurasan bak kontrol, grease trap dapur restoran/kafe, dan endapan lumpur domestik non-manifes dengan pompa vakum bersih.',
     isManifest: false,
     manifestLabel: 'Non Manifes',
     pricePerM3: 1100000,
     icon: 'fa-oil-can',
-    tag: 'Resto & Kafe',
-    targetProperty: 'Kafe, Warung Makan, Usaha Mandiri'
+    tag: 'Resto & Food Chain',
+    targetProperty: 'Restoran, Kafe, Food Court & Rumah Makan'
   },
   {
     id: 'grey-water-manifest',
     category: 'grey-water',
     categoryLabel: 'Limbah Grey Water (Lumpur & Lemak)',
-    name: 'Limbah Grey Water (Lumpur, Lemak) – Manifes Resmi',
-    description: 'Pengurasan limbah lemak & lumpur dengan sertifikat berita acara dan manifes resmi pembuangan limbah cair.',
+    name: 'Limbah Grey Water (Lumpur, Lemak) – Manifes Industri B2B',
+    description: 'Pengurasan limbah lemak & lumpur industri dengan sertifikat BAST dan manifes resmi pembuangan limbah cair untuk kepatuhan UKL-UPL dan audit ISO 14001.',
     isManifest: true,
     manifestLabel: 'Manifes Resmi',
     pricePerM3: 1500000,
     icon: 'fa-certificate',
-    tag: 'Standar Industri & Komersial',
-    targetProperty: 'Hotel, Mall, Rumah Sakit, Pabrik'
+    tag: 'Standar Industri & Pabrik',
+    targetProperty: 'Pabrik Manufaktur, Hotel Bintang, Mall & Rumah Sakit'
   },
   {
     id: 'cleaning-blower-non-manifest',
     category: 'cleaning-blower',
     categoryLabel: 'Cleaning / Blower Lumpur',
-    name: 'Cleaning / Blower Lumpur – Non Manifes',
-    description: 'Tembak tekanan tinggi (blower/jetting) dan pengurasan kerak lumpur mengeras di saluran tanpa manifes.',
+    name: 'Cleaning / Blower Lumpur – Saluran Usaha Komersial',
+    description: 'Tembak tekanan tinggi (blower/jetting) dan pengurasan kerak lumpur membatu di saluran pipa pembuangan fasilitas komersial tanpa manifes.',
     isManifest: false,
     manifestLabel: 'Non Manifes',
     pricePerM3: 1100000,
     icon: 'fa-wind',
-    tag: 'Kerak Saluran Membatu',
-    targetProperty: 'Hunian & Saluran Kompleks Parah'
+    tag: 'Saluran Gedung Buntu',
+    targetProperty: 'Gedung Usaha, Ruko & Kompleks Komersial'
   },
   {
     id: 'cleaning-blower-manifest',
     category: 'cleaning-blower',
     categoryLabel: 'Cleaning / Blower Lumpur',
-    name: 'Cleaning / Blower Lumpur – Manifes Resmi',
-    description: 'Pembersihan blower tekanan tinggi lumpur dengan bukti manifes pembuangan resmi instansi & gedung komersial.',
+    name: 'Cleaning / Blower Lumpur – Manifes Resmi Korporat',
+    description: 'Pembersihan blower tekanan tinggi lumpur dengan bukti manifes pembuangan resmi instansi, pabrik, & gedung korporat se-Bogor.',
     isManifest: true,
     manifestLabel: 'Manifes Resmi',
     pricePerM3: 1500000,
     icon: 'fa-stamp',
     tag: 'Sertifikasi KBLI 37001',
-    targetProperty: 'Gedung Instansi, Kawasan Bisnis'
+    targetProperty: 'Gedung Korporat, Kawasan Industri Sentul/Cileungsi/Bogor'
   }
 ];
 
@@ -1021,8 +1022,8 @@ const ARTICLES_DATA: ArticleItem[] = [
   },
   {
     id: 2,
-    title: 'Berapa Tahun Sekali Waktu Ideal Kuras Septic Tank Rumah Tangga?',
-    category: 'Tips Perawatan',
+    title: 'Berapa Periode Waktu Ideal Kuras Septic Tank & IPAL Gedung / Perusahaan?',
+    category: 'Manajemen Sanitasi Gedung',
     readTime: '3 Menit Baca',
     date: '28 Sep 2026',
     image: articleImg2,
@@ -1121,8 +1122,8 @@ const ARTICLES_DATA: ArticleItem[] = [
   },
   {
     id: 5,
-    title: 'Tips Perawatan Berkala Pipa PVC Rumah Tangga Agar Bebas Kerak Lemak & Awet Puluhan Tahun',
-    category: 'Tips Perawatan',
+    title: 'Tips Perawatan Berkala Pipa Limbah Fasilitas Komersial Agar Bebas Kerak Lemak & Bebas Luapan',
+    category: 'Pemeliharaan Fasilitas',
     readTime: '4 Menit Baca',
     date: '02 Okt 2026',
     image: articleImg2,
@@ -1551,8 +1552,8 @@ export const ARCHIVED_ARTICLES_DATA: ArticleItem[] = [
   },
   {
     id: 110,
-    title: 'Tips Sanitasi Toilet Bersih Menjelang Mudik & Meninggalkan Rumah Kosong Berhari-hari',
-    category: 'Tips Rumah Tangga',
+    title: 'Standar Sanitasi Toilet & Fasilitas Kantor Menjelang Libur Panjang Perusahaan',
+    category: 'Manajemen Sanitasi Gedung',
     readTime: '3 Menit Baca',
     date: '25 Mei 2026',
     month: 'Mei 2026',
@@ -1635,41 +1636,41 @@ interface ReviewItem {
 const INITIAL_REVIEWS: ReviewItem[] = [
   {
     id: 'rev-1',
-    name: 'Budi Santoso',
+    name: 'Ir. Budi Santoso (GA Manager)',
     rating: 5,
-    location: 'Bogor Barat',
-    serviceType: 'Sedot WC Rumah Tangga',
-    comment: 'Pelayanannya sangat cepat dan profesional! Saya telepon malam jam 21.00, kurang dari 30 menit langsung datang. WC mampet langsung beres tuntas tanpa bau.',
+    location: 'Kawasan Industri Sentul',
+    serviceType: 'Sedot WC & IPAL Perusahaan',
+    comment: 'Pelayanan sangat profesional! Penanganan tangki limbah pabrik kami di Sentul dikerjakan rapi, tepat waktu, dan BAST serta Faktur Pajak sangat lengkap.',
     date: '04 Okt 2026',
     verified: true
   },
   {
     id: 'rev-2',
-    name: 'Hj. Siti Rahayu',
+    name: 'Hj. Siti Rahayu (Operasional)',
     rating: 5,
     location: 'Tanah Sareal',
-    serviceType: 'Kuras Total Lumpur Septic Tank',
-    comment: 'Harga transparan, tidak menaikkan harga di tengah pekerjaan. Petugasnya ramah dan bersih. Septic tank penuh yang mengeras langsung disedot bersih total.',
+    serviceType: 'Kuras Total Lumpur IPAL / STP',
+    comment: 'Harga transparan, tidak menaikkan harga di tengah pekerjaan. Petugas ber-APD lengkap dan bersih. Endapan lumpur STP kantor kami bersih total.',
     date: '02 Okt 2026',
     verified: true
   },
   {
     id: 'rev-3',
-    name: 'Ahmad Hidayat',
+    name: 'Ahmad Hidayat (Building Mgmt)',
     rating: 5,
     location: 'Cibinong',
-    serviceType: 'Sedot Limbah STP Restoran',
-    comment: 'Sudah langganan untuk ruko cafe kami di Cibinong. Selalu tepat waktu, armada bersih, selang panjang tanpa merusak fasilitas toko.',
+    serviceType: 'Sedot Limbah STP Gedung & Hotel',
+    comment: 'Sudah langganan untuk gedung komersial kami di Cibinong. Selalu tepat waktu, armada tangki besar bersih, selang panjang tanpa mengganggu operasional tenant.',
     date: '28 Sep 2026',
     verified: true
   },
   {
     id: 'rev-4',
-    name: 'Hendra Kusuma',
+    name: 'Hendra Kusuma (Facility Lead)',
     rating: 5,
     location: 'Sentul City, Babakan Madang',
-    serviceType: 'Sedot WC Rumah Tangga',
-    comment: 'Luar biasa responnya. Kloset anak mampet terisi mainan, diatasi dengan mesin spiral tanpa bongkar keramik lantai sama sekali. Sangat rekomen untuk warga Bogor!',
+    serviceType: 'Pelancaran Saluran Mampet Komersial',
+    comment: 'Luar biasa responnya. Saluran pipa limbah central kitchen lancar kembali menggunakan drain cleaner bertekanan tinggi tanpa merusak keramik sama sekali.',
     date: '25 Sep 2026',
     verified: true
   },
@@ -2539,66 +2540,66 @@ export interface ServiceCardItem {
 export const SERVICE_CONSULTATION_CARDS: ServiceCardItem[] = [
   {
     id: 'sedot-wc',
-    title: 'Sedot WC & Septic Tank',
-    shortType: 'Sedot WC',
-    badge: 'Layanan 24 Jam Nonstop',
+    title: 'Sedot WC & Septic Tank Korporat',
+    shortType: 'Sedot WC B2B',
+    badge: 'Kapasitas Besar • 24 Jam Nonstop',
     icon: 'fas fa-truck-loading',
     delayClass: '',
-    description: 'Layanan kuras septic tank & sedot tinja Bogor untuk rumah, ruko, dan kantor. Mengatasi septic tank penuh atau meluap. Tarif sedot wc Bogor murah, harga per tangki transparan tanpa biaya tambahan.',
-    defaultProblem: 'Septic tank sudah penuh / meluap dan kloset tidak bisa disiram',
+    description: 'Layanan kuras septic tank & sedot limbah domestik kapasitas besar untuk gedung perkantoran, pabrik, kawasan industri, dan hotel di Bogor. Didukung legalitas PT resmi, manifes IPLT, dan Faktur Pajak PPN.',
+    defaultProblem: 'Septic tank kapasitas besar gedung perkantoran / pabrik penuh dan butuh penanganan segera',
     problems: [
-      { id: 'wc-penuh', label: 'Septic Tank Penuh / Meluap', problemDesc: 'Septic tank sudah penuh / meluap dan kloset tidak bisa disiram' },
-      { id: 'wc-mampet', label: 'Kloset Mampet Total', problemDesc: 'Kloset duduk/jongkok mampet & air tergenang tidak kunjung surut' },
-      { id: 'wc-kuras-rutin', label: 'Kuras Septic Tank Rutin', problemDesc: 'Perawatan rutin pengurasan septic tank 1-2 tahunan rumah tangga' },
-      { id: 'wc-bau', label: 'WC Berbau & Rembes Pipa', problemDesc: 'Kloset berbau menyengat & ada indikasi rembesan pipa pembuangan' }
+      { id: 'wc-penuh', label: 'Septic Tank Gedung / Pabrik Penuh', problemDesc: 'Septic tank kapasitas besar gedung/pabrik meluap dan butuh penanganan segera' },
+      { id: 'wc-mampet', label: 'Toilet Kantor / Karyawan Mampet', problemDesc: 'Saluran toilet karyawan & fasilitas umum kantor mampet total' },
+      { id: 'wc-kuras-rutin', label: 'Kontrak Berkala Maintenance B2B', problemDesc: 'Pemeliharaan rutin terjadwal (MoU B2B) septic tank gedung & kawasan industri' },
+      { id: 'wc-bau', label: 'Bau Saluran di Area Kerja Perusahaan', problemDesc: 'Toilet & saluran berbau menyengat mengganggu kenyamanan operasional gedung' }
     ],
     buildWaText: (problem, areaName, hubLabel) =>
-      `Halo CS Mitra Bersih, saya ingin berkonsultasi mengenai layanan *Sedot WC & Septic Tank Bogor*.\n\n` +
-      `*Kendala Spesifik:* ${problem}\n` +
-      `*Lokasi Saya:* ${areaName}${hubLabel ? ` (${hubLabel})` : ''}\n\n` +
-      `Mohon info estimasi tarif sedot per tangki dan kesiapan armada terdekat untuk meluncur ke lokasi saya. Terima kasih!`
+      `Halo CS PT MITRA BERSIH 24 JAM, kami dari perusahaan ingin berkonsultasi mengenai layanan *Sedot WC & Septic Tank Korporat Bogor*.\n\n` +
+      `*Kebutuhan:* ${problem}\n` +
+      `*Lokasi Fasilitas:* ${areaName}${hubLabel ? ` (${hubLabel})` : ''}\n\n` +
+      `Mohon info ketersediaan armada kapasitas besar, penawaran harga resmi (SPH), dan prosedur administrasi (Faktur Pajak/PO). Terima kasih!`
   },
   {
     id: 'pelancaran',
-    title: 'Pelancaran Saluran Mampet',
-    shortType: 'Pelancaran',
-    badge: 'Tanpa Bongkar Keramik',
+    title: 'Pelancaran Saluran Mampet Komersial',
+    shortType: 'Pelancaran B2B',
+    badge: 'Tanpa Bongkar Keramik & Konstruksi',
     icon: 'fas fa-faucet',
     delayClass: 'fade-in-delay-1',
-    description: 'Jasa wc mampet Bogor dan saluran mampet bogor (wastafel, kamar mandi, got). Mengatasi wc bau dan sedot kamar mandi tanpa bongkar, hemat biaya. Tukang sedot wc terdekat Bogor datang cepat.',
-    defaultProblem: 'Wastafel / bak cuci piring mampet total akibat kerak lemak sisa makanan',
+    description: 'Jasa pelancaran pipa limbah, grease trap, got & drainase industri tanpa bongkar konstruksi. Menggunakan drain cleaner spiral mekanikal & water jetting tekanan tinggi untuk pabrik, mall, resto, dan kantor di Bogor.',
+    defaultProblem: 'Pipa pembuangan limbah utama fasilitas komersial tersumbat kerak lemak dan endapan padat',
     problems: [
-      { id: 'saluran-benda', label: 'Tersumbat Benda Asing', problemDesc: 'Kloset tersumbat benda padat / tisu / pembalut / mainan' },
-      { id: 'saluran-wastafel', label: 'Wastafel / Bak Cuci Piring', problemDesc: 'Wastafel / bak cuci piring mampet total akibat kerak lemak sisa makanan' },
-      { id: 'saluran-kamar-mandi', label: 'Floor Drain Kamar Mandi', problemDesc: 'Saluran pembuangan air kamar mandi meluap dan tergenang tidak kunjung surut' },
-      { id: 'saluran-got', label: 'Pipa Got / Talang Buntu', problemDesc: 'Pipa got pembuangan air kotor buntu & butuh mesin drain cleaner tanpa bongkar' }
+      { id: 'saluran-benda', label: 'Saluran Utama Gedung Tersumbat', problemDesc: 'Pipa pembuangan limbah utama fasilitas komersial tersumbat kerak lemak dan endapan padat' },
+      { id: 'saluran-wastafel', label: 'Wastafel Central Kitchen / Kantin', problemDesc: 'Wastafel kitchen restoran / kantin pabrik mampet total akibat akumulasi lemak' },
+      { id: 'saluran-kamar-mandi', label: 'Floor Drain Toilet Fasilitas Umum', problemDesc: 'Saluran pembuangan air toilet kantor/pabrik meluap dan tergenang' },
+      { id: 'saluran-got', label: 'Drainase & Saluran Pembuangan Pabrik', problemDesc: 'Pipa drainase limbah cair industri buntu & butuh mesin jetting bertekanan tinggi' }
     ],
     buildWaText: (problem, areaName, hubLabel) =>
-      `Halo CS Mitra Bersih, saya ingin berkonsultasi mengenai layanan *Pelancaran Saluran Mampet Tanpa Bongkar Bogor*.\n\n` +
-      `*Kendala Spesifik:* ${problem}\n` +
-      `*Lokasi Saya:* ${areaName}${hubLabel ? ` (${hubLabel})` : ''}\n\n` +
-      `Mohon info metode pengerjaan (spiral baja drain cleaner), estimasi biaya, dan garansi layanannya. Terima kasih!`
+      `Halo CS PT MITRA BERSIH 24 JAM, kami ingin berkonsultasi mengenai *Pelancaran Saluran Mampet Komersial Tanpa Bongkar Bogor*.\n\n` +
+      `*Kendala:* ${problem}\n` +
+      `*Lokasi Perusahaan:* ${areaName}${hubLabel ? ` (${hubLabel})` : ''}\n\n` +
+      `Mohon info estimasi biaya pengerjaan, metode peralatan water jetting/spiral, dan garansi tuntas. Terima kasih!`
   },
   {
     id: 'limbah',
-    title: 'Sedot Limbah & Ipal',
-    shortType: 'Limbah',
-    badge: 'Armada Tangki Besar Berizin',
+    title: 'Sedot Limbah STP, IPAL & Grease Trap Industri',
+    shortType: 'Limbah Industri',
+    badge: 'Armada Tangki Industri Berizin KBLI 37001',
     icon: 'fas fa-industry',
     delayClass: 'fade-in-delay-2',
-    description: 'Sedot grease trap Bogor, sedot ipal Bogor, dan sedot limbah Bogor untuk pabrik/industri. Penanganan profesional dengan standar lingkungan tinggi. Booking sedot wc Bogor hari ini via WA.',
-    defaultProblem: 'Pengurasan bak grease trap penyaring lemak dapur resto / cafe / rumah makan',
+    description: 'Pengurasan berkala bak grease trap lemak resto/hotel, pengolahan STP perkantoran, dan lumpur IPAL non-B3 industri pabrik dengan sertifikasi KBLI 37001 dan berita acara pembuangan resmi (BAST).',
+    defaultProblem: 'Penyedotan rutin bak grease trap restoran / food court dan tangki STP gedung perkantoran',
     problems: [
-      { id: 'limbah-grease', label: 'Grease Trap Lemak Resto', problemDesc: 'Pengurasan bak grease trap penyaring lemak dapur resto / cafe / rumah makan' },
-      { id: 'limbah-stp', label: 'Limbah STP Gedung / Ruko', problemDesc: 'Penyedotan rutin tangki STP gedung perkantoran, ruko, hotel, atau klinik' },
-      { id: 'limbah-ipal', label: 'Limbah Lumpur IPAL Pabrik', problemDesc: 'Pembersihan endapan limbah cair & lumpur IPAL industri pabrik' },
-      { id: 'limbah-kontrol', label: 'Bak Kontrol & Lemak Beku', problemDesc: 'Penyedotan kerak lemak beku pada bak kontrol & pembuangan resmi berizin' }
+      { id: 'limbah-grease', label: 'Grease Trap Resto Chain & Hotel', problemDesc: 'Penyedotan berkala bak penyaring lemak grease trap restoran, food court, dan hotel' },
+      { id: 'limbah-stp', label: 'STP Gedung Perkantoran & Mall', problemDesc: 'Penyedotan rutin tangki STP (Sewage Treatment Plant) gedung komersial' },
+      { id: 'limbah-ipal', label: 'Endapan Lumpur IPAL Pabrik Manufaktur', problemDesc: 'Pembersihan endapan limbah cair & lumpur IPAL industri pabrik di kawasan Bogor' },
+      { id: 'limbah-kontrol', label: 'Bak Kontrol & Lemak Mengkristal', problemDesc: 'Pengurasan kerak lumpur membatu pada bak kontrol limbah industri dengan blower vakum' }
     ],
     buildWaText: (problem, areaName, hubLabel) =>
-      `Halo CS Mitra Bersih, saya ingin berkonsultasi mengenai layanan *Sedot Limbah STP & IPAL / Grease Trap Bogor*.\n\n` +
-      `*Kendala Spesifik:* ${problem}\n` +
-      `*Lokasi Saya:* ${areaName}${hubLabel ? ` (${hubLabel})` : ''}\n\n` +
-      `Mohon info ketersediaan armada truk tangki, jadwal penanganan, dan penawaran biayanya. Terima kasih!`
+      `Halo CS PT MITRA BERSIH 24 JAM, kami dari manajemen perusahaan ingin memesan penanganan *Sedot Limbah STP & IPAL / Grease Trap Industri Bogor*.\n\n` +
+      `*Kategori:* ${problem}\n` +
+      `*Lokasi Pabrik/Gedung:* ${areaName}${hubLabel ? ` (${hubLabel})` : ''}\n\n` +
+      `Mohon info kesiapan armada truk tangki industri, penjadwalan pengerjaan, serta kelengkapan dokumen BAST dan Manifes IPLT. Terima kasih!`
   }
 ];
 
@@ -2836,13 +2837,28 @@ export default function App() {
   const [faqModalNotes, setFaqModalNotes] = useState('');
   const [faqModalError, setFaqModalError] = useState<string | null>(null);
 
+  // IPLT Manifest Document Interface for Corporate Environmental Compliance
+  interface IpltManifestDoc {
+    fileName: string;
+    fileSizeFormatted: string;
+    fileSizeBytes: number;
+    uploadTimestamp: string;
+    pdfDataUrl: string;
+    docNumber: string;
+    destinationIplt: string;
+    issuedBy: string;
+    transportDate: string;
+    notes?: string;
+    complianceStandard: string;
+  }
+
   // Kalkulator Cepat Tarif Sedot Limbah State & Handlers
   const [calcSelectedId, setCalcSelectedId] = useState<string>('black-water-non-manifest');
   const [calcVolume, setCalcVolume] = useState<number>(3);
   const [calcCategoryFilter, setCalcCategoryFilter] = useState<'all' | 'black-water' | 'grey-water' | 'cleaning-blower'>('all');
   const [calcManifestFilter, setCalcManifestFilter] = useState<'all' | 'non-manifest' | 'manifest'>('all');
   const [calcLocation, setCalcLocation] = useState<string>('');
-  const [calcProperty, setCalcProperty] = useState<string>('Rumah Tinggal Pribadi');
+  const [calcProperty, setCalcProperty] = useState<string>('Pabrik / Kawasan Industri');
   const [calcName, setCalcName] = useState<string>('');
   const [calcPhone, setCalcPhone] = useState<string>('');
   const [calcDate, setCalcDate] = useState<string>('');
@@ -2851,9 +2867,23 @@ export default function App() {
   const [calcSuccess, setCalcSuccess] = useState<string | null>(null);
   const [calcError, setCalcError] = useState<string | null>(null);
 
+  // IPLT Manifest PDF Attachment & Corporate Compliance State
+  const [manifestPdfFile, setManifestPdfFile] = useState<IpltManifestDoc | null>(null);
+  const [isUploadingManifest, setIsUploadingManifest] = useState<boolean>(false);
+  const [manifestUploadError, setManifestUploadError] = useState<string | null>(null);
+  const [isCalcDetailModalOpen, setIsCalcDetailModalOpen] = useState<boolean>(false);
+  const [isManifestPreviewModalOpen, setIsManifestPreviewModalOpen] = useState<boolean>(false);
+  const [manifestDocNumber, setManifestDocNumber] = useState<string>(() => `MNF-IPLT/BGR/${new Date().getFullYear()}/${Math.floor(1000 + Math.random() * 9000)}`);
+  const [manifestDestination, setManifestDestination] = useState<string>('IPLT Kayumanis (Dinas Perumahan & Kawasan Permukiman Kota Bogor)');
+  const [calcIncludePpn, setCalcIncludePpn] = useState<boolean>(false);
+  const [calcNpwp, setCalcNpwp] = useState<string>('');
+  const [calcCorporatePo, setCalcCorporatePo] = useState<string>('');
+  const [manifestActiveTab, setManifestActiveTab] = useState<'detail' | 'manifest'>('manifest');
+
   // QRIS Payment Modal State
   const [isQrisModalOpen, setIsQrisModalOpen] = useState<boolean>(false);
   const [isQrisReceiptPreviewOpen, setIsQrisReceiptPreviewOpen] = useState<boolean>(false);
+  const [isExportingQr, setIsExportingQr] = useState<boolean>(false);
   const [qrisQrUrl, setQrisQrUrl] = useState<string>('');
   const [qrisReceiptTimestamp, setQrisReceiptTimestamp] = useState<string>('');
   const [qrisReceiptRefNo, setQrisReceiptRefNo] = useState<string>('');
@@ -2965,11 +2995,14 @@ export default function App() {
       `Layanan: ${selectedCalcItem.name}\n` +
       `Kategori: ${selectedCalcItem.categoryLabel}\n` +
       `Dokumen: ${selectedCalcItem.manifestLabel}\n` +
+      (manifestPdfFile ? `Manifes IPLT PDF: TERLAMPIR (${manifestPdfFile.fileName} - No: ${manifestPdfFile.docNumber})\nCompliance: Resmi IPLT Kota/Kab. Bogor (DLH)\n` : '') +
       `Volume Pekerjaan: ${calcVolume} m³ (Kubik)\n` +
       `Tarif Satuan: ${formatRupiah(selectedCalcItem.pricePerM3)} / m³\n` +
       `Total Estimasi: *${formatRupiah(calcTotalBiaya)}*\n` +
+      (calcIncludePpn ? `PPN 11% (Faktur Pajak): Termasuk (Total: ${formatRupiah(Math.round(calcTotalBiaya * 1.11))})\n` : '') +
       (calcLocation ? `Wilayah: ${calcLocation}, Bogor\n` : '') +
       (calcProperty ? `Jenis Properti: ${calcProperty}\n` : '') +
+      (calcCorporatePo ? `No. PO / SPK: ${calcCorporatePo}\n` : '') +
       `Biaya Tambahan: Rp 0 (Transparan, Tanpa Biaya Tersembunyi)\n` +
       `Garansi: 100% Tuntas & Legalitas KBLI 37001 (IPLT Resmi)\n` +
       `Kontak CS: 0857-1565-4183 (24 Jam Standby)\n` +
@@ -2977,6 +3010,176 @@ export default function App() {
 
     navigator.clipboard.writeText(summary);
     setCalcToast('Rincian estimasi biaya berhasil disalin ke clipboard!');
+  };
+
+  // Generate sample official IPLT manifest PDF as data URL (valid standard PDF format)
+  const generateSampleIpltManifestPdf = (): string => {
+    const docNo = manifestDocNumber || `MNF-IPLT/BGR/${new Date().getFullYear()}/${Math.floor(1000 + Math.random() * 9000)}`;
+    const dateStr = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+    const content = `%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 580 >>
+stream
+BT
+/F1 16 Tf
+50 730 Td
+(PT MITRA BERSIH 24 JAM - MANIFES PEMBUANGAN IPLT RESMI) Tj
+/F1 10 Tf
+0 -24 Td
+(LEGALITAS OPERASIONAL: NIB 2605260095769 | KBLI 37001 | DLH KOTA & KAB. BOGOR) Tj
+0 -24 Td
+(------------------------------------------------------------------------------------------) Tj
+0 -20 Td
+(No. Registrasi Manifes : ${docNo}) Tj
+0 -18 Td
+(Tanggal Pengangkutan   : ${dateStr}) Tj
+0 -18 Td
+(Layanan Pengangkutan   : ${selectedCalcItem.name}) Tj
+0 -18 Td
+(Kategori Limbah        : ${selectedCalcItem.categoryLabel}) Tj
+0 -18 Td
+(Volume Terukur         : ${calcVolume} m3 [Kubikasi Riil]) Tj
+0 -18 Td
+(Lokasi Pengambilan     : ${calcLocation || 'Wilayah Bogor'} - ${calcProperty}) Tj
+0 -18 Td
+(Instalasi Tujuan (IPLT): ${manifestDestination}) Tj
+0 -18 Td
+(Status Kepatuhan Audit : TERVERIFIKASI COMPLIANCE UKL-UPL / AMDAL / ISO 14001) Tj
+0 -24 Td
+(------------------------------------------------------------------------------------------) Tj
+0 -20 Td
+(Dokumen ini diterbitkan sah oleh PT Mitra Bersih 24 Jam sebagai bukti disposal legal.) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000010 00000 n 
+0000000060 00000 n 
+0000000117 00000 n 
+0000000236 00000 n 
+0000000867 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+938
+%%EOF`;
+    return `data:application/pdf;base64,${btoa(unescape(encodeURIComponent(content)))}`;
+  };
+
+  const handleAttachSampleManifest = () => {
+    setIsUploadingManifest(true);
+    setManifestUploadError(null);
+    setTimeout(() => {
+      const now = new Date();
+      const timeStr = now.toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+      }) + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+      const samplePdfUrl = generateSampleIpltManifestPdf();
+      const assignedDocNumber = manifestDocNumber || `MNF-IPLT/BGR/${now.getFullYear()}/${Math.floor(1000 + Math.random() * 9000)}`;
+
+      setManifestPdfFile({
+        fileName: `MANIFES_IPLT_RESMI_PT_MITRA_BERSIH_${now.getFullYear()}_${calcVolume}M3.pdf`,
+        fileSizeFormatted: '48.5 KB',
+        fileSizeBytes: 49664,
+        uploadTimestamp: timeStr,
+        pdfDataUrl: samplePdfUrl,
+        docNumber: assignedDocNumber,
+        destinationIplt: manifestDestination,
+        issuedBy: 'PT MITRA BERSIH 24 JAM',
+        transportDate: calcDate || now.toISOString().split('T')[0],
+        notes: 'Manifes resmi pembuangan limbah ke IPLT Pemerintah Daerah. Memenuhi standar kepatuhan DLH & audit ISO 14001.',
+        complianceStandard: 'KBLI 37001 • AMDAL / UKL-UPL'
+      });
+      setIsUploadingManifest(false);
+      setCalcToast('Contoh Manifes IPLT Resmi (Format PDF) berhasil dilampirkan!');
+    }, 350);
+  };
+
+  const handleManifestFileUpload = (file: File) => {
+    setManifestUploadError(null);
+    if (!file) return;
+
+    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    if (!isPdf) {
+      setManifestUploadError('File harus berupa dokumen PDF (.pdf). Format lain tidak diperbolehkan untuk audit kepatuhan IPLT.');
+      return;
+    }
+
+    if (file.size > 20 * 1024 * 1024) {
+      setManifestUploadError('Ukuran file PDF maksimal 20 MB.');
+      return;
+    }
+
+    setIsUploadingManifest(true);
+    const reader = new FileReader();
+    reader.onerror = () => {
+      setIsUploadingManifest(false);
+      setManifestUploadError('Gagal membaca file PDF. Silakan coba unggah kembali.');
+    };
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string;
+      const now = new Date();
+      const timeStr = now.toLocaleDateString('id-ID', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+      }) + ' ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ' WIB';
+      const sizeFormatted = file.size > 1024 * 1024
+        ? `${(file.size / (1024 * 1024)).toFixed(2)} MB`
+        : `${(file.size / 1024).toFixed(1)} KB`;
+
+      const assignedDocNumber = manifestDocNumber || `MNF-IPLT/BGR/${now.getFullYear()}/${Math.floor(1000 + Math.random() * 9000)}`;
+
+      setManifestPdfFile({
+        fileName: file.name,
+        fileSizeFormatted: sizeFormatted,
+        fileSizeBytes: file.size,
+        uploadTimestamp: timeStr,
+        pdfDataUrl: dataUrl,
+        docNumber: assignedDocNumber,
+        destinationIplt: manifestDestination,
+        issuedBy: 'PT MITRA BERSIH 24 JAM',
+        transportDate: calcDate || now.toISOString().split('T')[0],
+        notes: 'File Manifes IPLT asli dilampirkan untuk pendokumentasian compliance korporat.',
+        complianceStandard: 'KBLI 37001 • AMDAL / UKL-UPL'
+      });
+      setIsUploadingManifest(false);
+      setCalcToast(`File Manifes IPLT "${file.name}" berhasil dilampirkan!`);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDownloadManifestPdf = () => {
+    if (!manifestPdfFile?.pdfDataUrl) return;
+    const downloadLink = document.createElement('a');
+    downloadLink.href = manifestPdfFile.pdfDataUrl;
+    downloadLink.download = manifestPdfFile.fileName;
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+    setCalcToast(`Mengunduh dokumen manifes: ${manifestPdfFile.fileName}`);
+  };
+
+  const handleRemoveManifestPdf = () => {
+    setManifestPdfFile(null);
+    setManifestUploadError(null);
+    setCalcToast('Lampiran file Manifes IPLT telah dihapus.');
   };
 
   const getEstimatedDuration = (volume: number, category: string) => {
@@ -3097,15 +3300,77 @@ export default function App() {
       `• *Layanan:* ${selectedCalcItem.name}\n` +
       `• *Volume:* ${calcVolume} m³ (Kubik)\n` +
       `• *Status Dokumen:* ${selectedCalcItem.manifestLabel}\n` +
+      (manifestPdfFile ? `• *Dokumen Manifes IPLT (PDF):* TERLAMPIR (${manifestPdfFile.fileName} - No: ${manifestPdfFile.docNumber})\n• *Kepatuhan Lingkungan:* Berizin IPLT Resmi Kota/Kab. Bogor (DLH/KLHK)\n` : '') +
       `• *Estimasi Durasi:* ${getEstimatedDuration(calcVolume, selectedCalcItem.category)}\n` +
       `• *Total Pembayaran QRIS:* *${formatRupiah(calcTotalBiaya)}*\n` +
-      (calcName ? `• *Nama Pemesan / PIC:* ${calcName}\n` : '') +
+      (calcName ? `• *Nama Perusahaan / PIC:* ${calcName}\n` : '') +
       (calcPhone ? `• *No. WhatsApp:* ${calcPhone}\n` : '') +
       (calcLocation ? `• *Wilayah Bogor:* ${calcLocation}\n` : '') +
       (calcProperty ? `• *Jenis Properti:* ${calcProperty}\n` : '') +
+      (calcCorporatePo ? `• *No. PO / SPK:* ${calcCorporatePo}\n` : '') +
       `\nBerikut saya lampirkan bukti transaksi QRIS saya. Mohon dicek dan dikonfirmasi jadwal kedatangan armada truk tangki. Terima kasih!`;
 
     window.open(`https://wa.me/6285715654183?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
+  };
+
+  // Export dynamic QRIS code as high-resolution PNG image using html2canvas & qrisQrUrl
+  const handleExportQrAsImage = async () => {
+    if (!qrisQrUrl) {
+      setCalcToast('Kode QRIS dinamis belum siap. Mohon tunggu...');
+      return;
+    }
+    setIsExportingQr(true);
+    setCalcToast('Sedang memproses unduhan gambar QRIS PNG...');
+
+    try {
+      // Find the official QR frame or card element to capture
+      const targetElement =
+        (document.querySelector('.qris-qr-frame') as HTMLElement) ||
+        (document.querySelector('.rcpt-qr-img-frame') as HTMLElement) ||
+        (document.querySelector('.qris-official-card') as HTMLElement);
+
+      if (targetElement && typeof html2canvas === 'function') {
+        const canvas = await html2canvas(targetElement, {
+          scale: 3,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#FFFFFF',
+          logging: false
+        });
+        const pngUrl = canvas.toDataURL('image/png');
+        const downloadLink = document.createElement('a');
+        downloadLink.href = pngUrl;
+        downloadLink.download = `QRIS-PT-MITRA-BERSIH-${calcVolume}m3-${Date.now().toString().slice(-6)}.png`;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        setCalcToast('QRIS Dinamis berhasil diekspor sebagai file gambar PNG!');
+      } else {
+        // Direct download fallback using qrisQrUrl
+        const downloadLink = document.createElement('a');
+        downloadLink.href = qrisQrUrl;
+        downloadLink.download = `QRIS-PT-MITRA-BERSIH-${calcVolume}m3-${Date.now().toString().slice(-6)}.png`;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        setCalcToast('QRIS Dinamis berhasil diekspor sebagai file gambar PNG!');
+      }
+    } catch (err) {
+      console.warn('html2canvas capture error, falling back to direct qrisQrUrl:', err);
+      try {
+        const downloadLink = document.createElement('a');
+        downloadLink.href = qrisQrUrl;
+        downloadLink.download = `QRIS-PT-MITRA-BERSIH-${calcVolume}m3-${Date.now().toString().slice(-6)}.png`;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        setCalcToast('QRIS Dinamis berhasil diekspor sebagai file gambar PNG!');
+      } catch (fallbackErr) {
+        setCalcToast('Gagal mengunduh gambar QRIS. Silakan simpan PDF atau cetak struk.');
+      }
+    } finally {
+      setIsExportingQr(false);
+    }
   };
 
   const handleCalcOrderWa = (e?: React.FormEvent) => {
@@ -3118,16 +3383,20 @@ export default function App() {
       `• *Layanan:* ${selectedCalcItem.name}\n` +
       `• *Kategori:* ${selectedCalcItem.categoryLabel}\n` +
       `• *Status Dokumen:* ${selectedCalcItem.manifestLabel}\n` +
+      (manifestPdfFile ? `• *Dokumen Manifes IPLT (PDF):* TERLAMPIR (${manifestPdfFile.fileName} - No: ${manifestPdfFile.docNumber})\n• *Kepatuhan Lingkungan:* Berizin IPLT Resmi Kota/Kab. Bogor (DLH/KLHK)\n` : '') +
       `• *Volume Estimasi:* ${calcVolume} m³ (Kubik)\n` +
       `• *Tarif Satuan:* ${formatRupiah(selectedCalcItem.pricePerM3)} / m³\n` +
       `• *Total Estimasi:* *${formatRupiah(calcTotalBiaya)}*\n` +
-      (calcLocation ? `• *Wilayah / Kecamatan:* ${calcLocation}, Bogor\n` : '') +
-      (calcProperty ? `• *Jenis Properti:* ${calcProperty}\n` : '') +
-      (calcName.trim() ? `• *Nama Pemesan:* ${calcName.trim()}\n` : '') +
+      (calcIncludePpn ? `• *Faktur Pajak (PPN 11%):* Ya (Total: ${formatRupiah(Math.round(calcTotalBiaya * 1.11))})\n` : '') +
+      (calcNpwp ? `• *NPWP Perusahaan:* ${calcNpwp}\n` : '') +
+      (calcCorporatePo ? `• *No. PO / SPK:* ${calcCorporatePo}\n` : '') +
+      (calcLocation ? `• *Wilayah / Kawasan:* ${calcLocation}, Bogor\n` : '') +
+      (calcProperty ? `• *Jenis Properti / Fasilitas:* ${calcProperty}\n` : '') +
+      (calcName.trim() ? `• *Nama Perusahaan / PIC:* ${calcName.trim()}\n` : '') +
       (calcPhone.trim() ? `• *No. WhatsApp / HP:* ${calcPhone.trim()}\n` : '') +
       (calcDate ? `• *Rencana Tanggal:* ${calcDate}\n` : '') +
       (calcNotes.trim() ? `• *Catatan / Kondisi Saluran:* ${calcNotes.trim()}\n` : '') +
-      `\nMohon konfirmasi ketersediaan armada truk tangki dan teknisi untuk jadwal pengerjaan ini. Terima kasih!`;
+      `\nMohon konfirmasi ketersediaan armada truk tangki dan penerbitan SPK untuk jadwal pengerjaan ini. Terima kasih!`;
 
     window.open(`https://wa.me/6285715654183?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
     setCalcSuccess(`Estimasi pesanan ${selectedCalcItem.name} (${calcVolume} m³) sedang diteruskan ke WhatsApp CS kami.`);
@@ -3554,7 +3823,7 @@ export default function App() {
 
   const [subscribersMeta, setSubscribersMeta] = useState<Record<string, {
     name?: string;
-    category: 'warga' | 'rt_rw' | 'bisnis' | 'umum';
+    category: 'korporat' | 'gedung' | 'hotel_fnb' | 'faskes' | 'warga' | 'rt_rw' | 'bisnis' | 'umum';
     date: string;
     status: 'active' | 'unsubscribed';
     source: string;
@@ -3583,7 +3852,7 @@ export default function App() {
 
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterName, setNewsletterName] = useState('');
-  const [newsletterCategory, setNewsletterCategory] = useState<'warga' | 'rt_rw' | 'bisnis' | 'umum'>('warga');
+  const [newsletterCategory, setNewsletterCategory] = useState<'korporat' | 'gedung' | 'hotel_fnb' | 'faskes'>('korporat');
   const [newsletterSuccess, setNewsletterSuccess] = useState<string | null>(null);
   const [newsletterError, setNewsletterError] = useState<string | null>(null);
 
@@ -3591,16 +3860,16 @@ export default function App() {
   const [isMarketingModalOpen, setIsMarketingModalOpen] = useState(false);
   const [marketingTab, setMarketingTab] = useState<'list' | 'broadcast'>('list');
   const [marketingSearch, setMarketingSearch] = useState('');
-  const [marketingCategoryFilter, setMarketingCategoryFilter] = useState<'all' | 'warga' | 'rt_rw' | 'bisnis'>('all');
+  const [marketingCategoryFilter, setMarketingCategoryFilter] = useState<'all' | 'korporat' | 'gedung' | 'hotel_fnb' | 'faskes'>('all');
   const [isAddingManualContact, setIsAddingManualContact] = useState(false);
   const [manualEmail, setManualEmail] = useState('');
   const [manualName, setManualName] = useState('');
-  const [manualCategory, setManualCategory] = useState<'warga' | 'rt_rw' | 'bisnis' | 'umum'>('warga');
+  const [manualCategory, setManualCategory] = useState<'korporat' | 'gedung' | 'hotel_fnb' | 'faskes'>('korporat');
   const [manualError, setManualError] = useState<string | null>(null);
   const [marketingToast, setMarketingToast] = useState<string | null>(null);
 
   // Campaign Broadcast Simulator States
-  const [selectedCampaignId, setSelectedCampaignId] = useState('rainy_season');
+  const [selectedCampaignId, setSelectedCampaignId] = useState('amdal_compliance');
   const [customCampaignSubject, setCustomCampaignSubject] = useState('');
   const [customCampaignContent, setCustomCampaignContent] = useState('');
   const [isBroadcasting, setIsBroadcasting] = useState(false);
@@ -3735,7 +4004,7 @@ export default function App() {
   const [formRating, setFormRating] = useState(5);
   const [formHoverRating, setFormHoverRating] = useState(0);
   const [formLocation, setFormLocation] = useState('Bogor Barat');
-  const [formService, setFormService] = useState('Sedot WC Rumah Tangga');
+  const [formService, setFormService] = useState('Sedot WC & IPAL Perusahaan');
   const [formComment, setFormComment] = useState('');
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
 
@@ -4465,35 +4734,35 @@ export default function App() {
           <div className="hero-content fade-in">
             <div className="hero-badge">
               <span className="dot"></span>
-              Badan Usaha Resmi: PT MITRA BERSIH 24 JAM · NIB: 2605260095769
+              Badan Usaha Resmi B2B: PT MITRA BERSIH 24 JAM · NIB: 2605260095769 · KBLI 37001
             </div>
             <h1>
-              SEDOT WC BOGOR<br />PT MITRA BERSIH 24 JAM
+              SEDOT WC &amp; PENGELOLAAN LIMBAH KORPORAT BOGOR<br />PT MITRA BERSIH 24 JAM
               <span className="highlight">
-                Perusahaan resmi pengumpulan air limbah (KBLI 37001) &amp; jasa sedot WC Bogor 24 jam. Kuras septic tank cepat, wc mampet beres tanpa bongkar dengan garansi tuntas dan legalitas lengkap!
+                Mitra resmi B2B &amp; industri untuk pengurasan septic tank kapasitas besar, IPAL/STP gedung komersial, grease trap restoran &amp; hotel, serta penanganan limbah pabrik se-Bogor. Dilengkapi legalitas PT resmi, Manifes IPLT, Faktur Pajak PPN, dan armada vakum industri bertekanan tinggi!
               </span>
             </h1>
             <a
-              href="https://wa.me/6285715654183?text=Halo%20PT%20MITRA%20BERSIH%2024%20JAM,%20saya%20ingin%20booking%20layanan%20sedot%20wc%20Bogor%20sekarang"
+              href="https://wa.me/6285715654183?text=Halo%20PT%20MITRA%20BERSIH%2024%20JAM,%20kami%20dari%20perusahaan%20ingin%20konsultasi%20layanan%20pengelolaan%20limbah%20korporat%20Bogor"
               className="hero-cta"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <i className="fas fa-phone-alt"></i>
-              PANGGIL SEKARANG · +62 857-1565-4183
+              <i className="fas fa-file-contract"></i>
+              HUBUNGI TIM B2B · +62 857-1565-4183
             </a>
             <div className="hero-stats">
               <div className="stat">
                 <strong>24/7</strong>
-                <span>Layanan Siaga</span>
+                <span>SLA Respon Cepat B2B</span>
               </div>
               <div className="stat">
                 <strong>KBLI 37001</strong>
                 <span>Pengumpulan Air Limbah</span>
               </div>
               <div className="stat">
-                <strong>NIB &amp; NPWP</strong>
-                <span>Legalitas Resmi PT</span>
+                <strong>Faktur Pajak &amp; PT</strong>
+                <span>Legalitas Resmi B2B</span>
               </div>
             </div>
           </div>
@@ -5145,25 +5414,25 @@ export default function App() {
       <section className="trust">
         <div className="container">
           <div className="section-header fade-in">
-            <span className="section-badge">TESTIMONI</span>
-            <h2 className="section-title">Kepercayaan Pelanggan</h2>
+            <span className="section-badge">TESTIMONI B2B &amp; KORPORAT</span>
+            <h2 className="section-title">Kepercayaan Klien Korporat &amp; Industri</h2>
             <p className="section-subtitle">
-              Ribuan pelanggan telah mempercayai layanan sedot wc Bogor murah kami. Berikut adalah beberapa testimoni dari mereka.
+              Puluhan pabrik manufaktur, pengelola gedung komersial, hotel bintang, dan kawasan industri di Bogor mempercayakan pengolahan air limbah kepada PT MITRA BERSIH 24 JAM.
             </p>
           </div>
 
           <div className="badges-row fade-in">
             <div className="badge-pill">
               <i className="fas fa-star"></i>
-              <span>98% Kepuasan</span>
+              <span>99.2% Kepatuhan SLA</span>
             </div>
             <div className="badge-pill">
-              <i className="fas fa-bolt"></i>
-              <span>Respon Cepat</span>
+              <i className="fas fa-file-invoice"></i>
+              <span>Faktur Pajak &amp; BAST Resmi</span>
             </div>
             <div className="badge-pill">
               <i className="fas fa-shield-alt"></i>
-              <span>Layanan Terjamin</span>
+              <span>Standar K3 &amp; AMDAL</span>
             </div>
           </div>
 
@@ -5174,13 +5443,13 @@ export default function App() {
                 <i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i>
               </div>
               <p className="testimonial-text">
-                &ldquo;Pelayanannya sangat cepat dan profesional. Saya telepon malam, kurang dari 30 menit langsung datang. WC mampet saya langsung beres. Sedot wc Bogor terdekat yang pernah saya pakai!&rdquo;
+                &ldquo;Pelayanan PT MITRA BERSIH 24 JAM sangat memuaskan untuk pabrik kami di Sentul. Pengurasan tangki IPAL 15 m³ dikerjakan rapi, tepat waktu, serta kelengkapan dokumen manifes pembuangan resmi IPLT dan Faktur Pajak sangat lengkap untuk audit kepatuhan lingkungan.&rdquo;
               </p>
               <div className="testimonial-author">
-                <div className="author-avatar">B</div>
+                <div className="author-avatar">H</div>
                 <div className="author-info">
-                  <strong>Budi Santoso</strong>
-                  <span>Bogor Barat</span>
+                  <strong>Ir. Hendra Kusuma</strong>
+                  <span>Facility &amp; GA Manager · Kawasan Industri Sentul</span>
                 </div>
               </div>
             </div>
@@ -5191,13 +5460,13 @@ export default function App() {
                 <i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i>
               </div>
               <p className="testimonial-text">
-                &ldquo;Harga transparan, tidak menaikkan harga di tengah pekerjaan. Petugasnya ramah dan bersih. Septic tank penuh langsung teratasi. Terima kasih jasa kuras wc Bogor Mitra Bersih!&rdquo;
+                &ldquo;Kami mempercayakan pengurasan grease trap dapur dan STP hotel kepada Mitra Bersih. Tim teknis berstandar K3, mesin vacuum blower modern tidak menimbulkan kebisingan tamu, dan proses administrasi BAST sangat tertib.&rdquo;
               </p>
               <div className="testimonial-author">
-                <div className="author-avatar">S</div>
+                <div className="author-avatar">D</div>
                 <div className="author-info">
-                  <strong>Siti Rahayu</strong>
-                  <span>Tanah Sareal</span>
+                  <strong>Dewi Sartika, S.E.</strong>
+                  <span>Operations &amp; HSE Coordinator · Hotel Bintang Bogor</span>
                 </div>
               </div>
             </div>
@@ -5208,13 +5477,13 @@ export default function App() {
                 <i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i>
               </div>
               <p className="testimonial-text">
-                &ldquo;Sudah langganan untuk sedot limbah STP di ruko saya. Selalu tepat waktu, armada bersih, dan pelayanan ramah. Sangat membantu kelancaran usaha saya di Cibinong.&rdquo;
+                &ldquo;Sangat terbantu dengan kesiagaan armada 24 jam nonstop saat terjadi luapan saluran gedung perkantoran. Respon kilat dalam 30 menit tiba, pengerjaan tuntas tanpa bongkar, dan invoice berstempel resmi terbit seketika.&rdquo;
               </p>
               <div className="testimonial-author">
-                <div className="author-avatar">A</div>
+                <div className="author-avatar">B</div>
                 <div className="author-info">
-                  <strong>Ahmad Hidayat</strong>
-                  <span>Cibinong</span>
+                  <strong>Bambang Pratama</strong>
+                  <span>Building Manager · Menara Komersial Cibinong</span>
                 </div>
               </div>
             </div>
@@ -6213,27 +6482,35 @@ export default function App() {
                 <div className="newsletter-category-select-group">
                   <button
                     type="button"
-                    onClick={() => setNewsletterCategory('warga')}
-                    className={`newsletter-cat-pill ${newsletterCategory === 'warga' ? 'active' : ''}`}
+                    onClick={() => setNewsletterCategory('korporat')}
+                    className={`newsletter-cat-pill ${newsletterCategory === 'korporat' ? 'active' : ''}`}
                   >
-                    <i className="fas fa-home"></i>
-                    <span>Rumah Tangga / Warga</span>
+                    <i className="fas fa-industry"></i>
+                    <span>Pabrik &amp; Industri</span>
                   </button>
                   <button
                     type="button"
-                    onClick={() => setNewsletterCategory('rt_rw')}
-                    className={`newsletter-cat-pill ${newsletterCategory === 'rt_rw' ? 'active' : ''}`}
+                    onClick={() => setNewsletterCategory('gedung')}
+                    className={`newsletter-cat-pill ${newsletterCategory === 'gedung' ? 'active' : ''}`}
                   >
-                    <i className="fas fa-users"></i>
-                    <span>Pengurus RT / RW</span>
+                    <i className="fas fa-building"></i>
+                    <span>Pengelola Gedung</span>
                   </button>
                   <button
                     type="button"
-                    onClick={() => setNewsletterCategory('bisnis')}
-                    className={`newsletter-cat-pill ${newsletterCategory === 'bisnis' ? 'active' : ''}`}
+                    onClick={() => setNewsletterCategory('hotel_fnb')}
+                    className={`newsletter-cat-pill ${newsletterCategory === 'hotel_fnb' ? 'active' : ''}`}
                   >
-                    <i className="fas fa-store"></i>
-                    <span>Bisnis / Ruko / Resto</span>
+                    <i className="fas fa-utensils"></i>
+                    <span>Hotel &amp; Resto (F&amp;B)</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setNewsletterCategory('faskes')}
+                    className={`newsletter-cat-pill ${newsletterCategory === 'faskes' ? 'active' : ''}`}
+                  >
+                    <i className="fas fa-hospital"></i>
+                    <span>RS &amp; Fasilitas Medis</span>
                   </button>
                 </div>
 
@@ -6242,13 +6519,13 @@ export default function App() {
                   <input
                     type="email"
                     className={`newsletter-input ${newsletterError ? 'input-error' : ''}`}
-                    placeholder="Masukkan alamat email Anda (contoh: warga.bogor@gmail.com)..."
+                    placeholder="Masukkan email PIC / Perusahaan (contoh: procurement@perusahaan.co.id)..."
                     value={newsletterEmail}
                     onChange={(e) => {
                       setNewsletterEmail(e.target.value);
                       if (newsletterError) setNewsletterError(null);
                     }}
-                    aria-label="Alamat email untuk berlangganan berita lingkungan"
+                    aria-label="Alamat email untuk berlangganan berita lingkungan korporat"
                   />
                   <button type="submit" className="newsletter-submit-btn">
                     <i className="fas fa-paper-plane"></i>
@@ -6655,11 +6932,12 @@ export default function App() {
                       value={formService}
                       onChange={(e) => setFormService(e.target.value)}
                     >
-                      <option value="Sedot WC Rumah Tangga">Sedot WC Rumah Tangga</option>
-                      <option value="Pelancaran Saluran Mampet">Pelancaran Saluran Mampet</option>
-                      <option value="Kuras Total Lumpur Septic Tank">Kuras Total Lumpur Septic Tank</option>
-                      <option value="Sedot Limbah STP Restoran">Sedot Limbah STP Restoran</option>
-                      <option value="Sedot Lemak / Grease Trap">Sedot Lemak / Grease Trap</option>
+                      <option value="Sedot WC &amp; IPAL Perusahaan">Sedot WC &amp; IPAL Perusahaan / Pabrik</option>
+                      <option value="Pelancaran Saluran Mampet Komersial">Pelancaran Saluran Mampet Komersial</option>
+                      <option value="Kuras Total Lumpur IPAL / STP">Kuras Total Lumpur IPAL / STP Industri</option>
+                      <option value="Sedot Limbah STP Gedung &amp; Hotel">Sedot Limbah STP Gedung &amp; Hotel</option>
+                      <option value="Sedot Lemak / Grease Trap Resto">Sedot Lemak / Grease Trap Resto &amp; Food Court</option>
+                      <option value="Kontrak Maintenance Rutin B2B">Kontrak Maintenance Rutin B2B</option>
                     </select>
                   </div>
                 </div>
@@ -7349,23 +7627,23 @@ export default function App() {
 
                   {/* Quick Preset Buttons */}
                   <div className="calc-quick-presets">
-                    <span className="calc-preset-label">Pilihan Cepat:</span>
+                    <span className="calc-preset-label">Pilihan Cepat Volume B2B:</span>
                     <div className="calc-preset-chips">
-                      {[1, 2, 3, 4, 5, 6, 8, 10].map((v) => (
+                      {[2, 4, 6, 8, 10, 12, 15, 20].map((v) => (
                         <button
                           key={v}
                           type="button"
                           className={`calc-preset-chip ${calcVolume === v ? 'active' : ''}`}
                           onClick={() => handleQuickVolumeSelect(v)}
                         >
-                          {v} m³ {v === 4 ? '(Standar Truk)' : ''}
+                          {v} m³ {v === 4 ? '(Standar Truk)' : v >= 10 ? '(Tangki Besar)' : ''}
                         </button>
                       ))}
                     </div>
                   </div>
 
                   <p className="calc-volume-hint">
-                    <i className="fas fa-info-circle"></i> <strong>Panduan Kapasitas:</strong> Rumah tinggal umumnya 2–4 m³; Kafe/Restoran 3–5 m³; Gedung Kantor/Pabrik 6–10+ m³.
+                    <i className="fas fa-info-circle"></i> <strong>Panduan Kapasitas B2B:</strong> Ruko / Kantor Cabang 2–4 m³; Restoran / Hotel 4–8 m³; Pabrik &amp; Kawasan Industri 8–20+ m³ (Didukung armada tangki ganda &amp; vacuum pump industri).
                   </p>
                 </div>
 
@@ -7374,7 +7652,7 @@ export default function App() {
                   <div className="calc-form-grid">
                     <div className="form-group">
                       <label htmlFor="calc-location-select">
-                        Wilayah / Kecamatan di Bogor <span className="req">*</span>
+                        Wilayah / Kawasan di Bogor <span className="req">*</span>
                       </label>
                       <div className="input-with-icon">
                         <i className="fas fa-map-marker-alt"></i>
@@ -7383,7 +7661,7 @@ export default function App() {
                           value={calcLocation}
                           onChange={(e) => setCalcLocation(e.target.value)}
                         >
-                          <option value="">-- Pilih Kecamatan di Bogor --</option>
+                          <option value="">-- Pilih Wilayah / Kawasan Industri Bogor --</option>
                           {BOGOR_AREAS.map((area, idx) => (
                             <option key={idx} value={area}>{area}</option>
                           ))}
@@ -7392,7 +7670,7 @@ export default function App() {
                     </div>
 
                     <div className="form-group">
-                      <label htmlFor="calc-property-select">Jenis Properti</label>
+                      <label htmlFor="calc-property-select">Jenis Properti / Fasilitas Komersial</label>
                       <div className="input-with-icon">
                         <i className="fas fa-building"></i>
                         <select
@@ -7400,25 +7678,27 @@ export default function App() {
                           value={calcProperty}
                           onChange={(e) => setCalcProperty(e.target.value)}
                         >
-                          <option value="Rumah Tinggal Pribadi">Rumah Tinggal Pribadi / Cluster</option>
-                          <option value="Resto / Cafe / Kuliner">Restoran / Kafe / Warung Makan</option>
-                          <option value="Ruko / Kantor / Tempat Usaha">Ruko / Kantor / Perbankan</option>
-                          <option value="Kos-kosan / Kontrakan">Kos-kosan / Kontrakan</option>
-                          <option value="Hotel / Villa / Penginapan">Hotel / Villa / Penginapan</option>
-                          <option value="Pabrik / Kawasan Industri">Pabrik / Kawasan Industri</option>
-                          <option value="Rumah Sakit / Klinik">Rumah Sakit / Klinik Medis</option>
+                          <option value="Pabrik / Kawasan Industri">Pabrik &amp; Kawasan Industri (Sentul, Citeureup, Cileungsi, Gunung Putri, dll)</option>
+                          <option value="Gedung Perkantoran / Corporate Tower">Gedung Perkantoran &amp; Corporate Center</option>
+                          <option value="Hotel Bintang / Resort / Villa">Hotel Bintang, Resort &amp; Villa Komersial</option>
+                          <option value="Mall / Plaza / Pusat Belanja">Mall, Plaza &amp; Pusat Perbelanjaan</option>
+                          <option value="Resto Chain / Central Kitchen / Food Court">Restoran Chain / Central Kitchen / Food Court (Grease Trap)</option>
+                          <option value="Rumah Sakit / Fasilitas Medis">Rumah Sakit, Klinik &amp; Fasilitas Kesehatan</option>
+                          <option value="Gudang Logistik & Depo Distribusi">Gudang Logistik, Pergudangan &amp; Depo Distribusi</option>
+                          <option value="Ruko / Perbankan / Kantor Cabang">Ruko Komersial, Bank &amp; Kantor Cabang</option>
+                          <option value="Instansi Pemerintah / Kampus">Instansi Pemerintah, Universitas &amp; Sekolah</option>
                         </select>
                       </div>
                     </div>
 
                     <div className="form-group">
-                      <label htmlFor="calc-cust-name">Nama Pemesan / PIC (Opsional)</label>
+                      <label htmlFor="calc-cust-name">Nama Perusahaan / PIC Procurement (Opsional)</label>
                       <div className="input-with-icon">
-                        <i className="fas fa-user"></i>
+                        <i className="fas fa-user-tie"></i>
                         <input
                           id="calc-cust-name"
                           type="text"
-                          placeholder="Nama Anda / PIC Properti"
+                          placeholder="PT / Nama Instansi / PIC"
                           value={calcName}
                           onChange={(e) => setCalcName(e.target.value)}
                         />
@@ -7426,7 +7706,7 @@ export default function App() {
                     </div>
 
                     <div className="form-group">
-                      <label htmlFor="calc-cust-phone">No. WhatsApp / HP (Opsional)</label>
+                      <label htmlFor="calc-cust-phone">No. WhatsApp / HP PIC (Opsional)</label>
                       <div className="input-with-icon">
                         <i className="fab fa-whatsapp"></i>
                         <input
@@ -7440,13 +7720,13 @@ export default function App() {
                     </div>
 
                     <div className="form-group span-2">
-                      <label htmlFor="calc-cust-notes">Catatan Tambahan / Kondisi Saluran (Opsional)</label>
+                      <label htmlFor="calc-cust-notes">Catatan Kebutuhan Administrasi / Teknis (Opsional)</label>
                       <div className="input-with-icon">
-                        <i className="fas fa-comment-alt"></i>
+                        <i className="fas fa-clipboard-list"></i>
                         <input
                           id="calc-cust-notes"
                           type="text"
-                          placeholder="Contoh: Saluran kloset meluap, butuh selang panjang 40m, dll."
+                          placeholder="Contoh: Butuh Faktur Pajak PPN, Surat Penawaran Harga (SPH), PO/SPK, BAST, jadwal malam hari, dll."
                           value={calcNotes}
                           onChange={(e) => setCalcNotes(e.target.value)}
                         />
@@ -7496,6 +7776,32 @@ export default function App() {
                         <span className={`calc-manifest-pill ${selectedCalcItem.isManifest ? 'manifest' : 'non-manifest'}`}>
                           {selectedCalcItem.manifestLabel}
                         </span>
+                        {manifestPdfFile ? (
+                          <span
+                            className="calc-receipt-manifest-tag"
+                            onClick={() => {
+                              setManifestActiveTab('manifest');
+                              setIsCalcDetailModalOpen(true);
+                            }}
+                            role="button"
+                            title="Klik untuk melihat dokumen manifes IPLT yang dilampirkan"
+                          >
+                            <i className="fas fa-file-pdf"></i> {manifestPdfFile.fileName.length > 20 ? `${manifestPdfFile.fileName.slice(0, 18)}...` : manifestPdfFile.fileName} (Terlampir)
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            className="calc-receipt-manifest-tag"
+                            onClick={() => {
+                              setManifestActiveTab('manifest');
+                              setIsCalcDetailModalOpen(true);
+                            }}
+                            style={{ background: '#EFF6FF', color: '#0284C7', border: '1px solid #93C5FD', cursor: 'pointer' }}
+                            title="Lampirkan Manifes IPLT PDF untuk Compliance Korporat"
+                          >
+                            <i className="fas fa-plus-circle"></i> + Lampirkan PDF
+                          </button>
+                        )}
                       </span>
                     </div>
 
@@ -7549,6 +7855,27 @@ export default function App() {
                       *Estimasi biaya akurat sesuai volume kubik riil, garansi tuntas &amp; legalitas IPLT resmi.
                     </span>
                   </div>
+
+                  {/* Button to Open Modal Rincian Kalkulator & Manifes IPLT PDF */}
+                  <button
+                    type="button"
+                    className="calc-detail-manifest-btn"
+                    onClick={() => {
+                      setManifestActiveTab('manifest');
+                      setIsCalcDetailModalOpen(true);
+                    }}
+                    title="Buka Modal Rincian Kalkulator & Lampirkan File Manifes IPLT (PDF)"
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <i className="fas fa-file-contract" style={{ color: '#38BDF8', fontSize: '15px' }}></i>
+                      <span>Rincian Kalkulator &amp; Manifes IPLT (PDF)</span>
+                    </div>
+                    {manifestPdfFile ? (
+                      <span className="manifest-attached-pill"><i className="fas fa-check-circle"></i> PDF Terlampir</span>
+                    ) : (
+                      <span className="manifest-required-pill"><i className="fas fa-shield-alt"></i> Compliance B2B</span>
+                    )}
+                  </button>
 
                   {/* CETAK PDF, CETAK STRUK QRIS & ESTIMASI DURASI PENGERJAAN */}
                   <div className="calc-pdf-duration-strip">
@@ -7609,6 +7936,20 @@ export default function App() {
                     </button>
 
                     <div className="calc-sub-actions-row">
+                      <button
+                        type="button"
+                        className="calc-copy-btn"
+                        onClick={() => {
+                          setManifestActiveTab('detail');
+                          setIsCalcDetailModalOpen(true);
+                        }}
+                        style={{ background: '#0F172A', color: '#FFFFFF', border: '1px solid #334155' }}
+                        title="Buka Modal Rincian Lengkap & Administrasi B2B"
+                      >
+                        <i className="fas fa-list-alt" style={{ color: '#38BDF8' }}></i>
+                        <span>Modal Rincian</span>
+                      </button>
+
                       <button
                         type="button"
                         className="calc-copy-btn"
@@ -7865,6 +8206,28 @@ export default function App() {
                 <li>Seluruh limbah cair disalurkan ke Instalasi Pengolahan Lumpur Tinja (IPLT) berizin resmi Kementerian Lingkungan Hidup &amp; PUPR.</li>
               </ol>
             </div>
+
+            {/* Lampiran Dokumen Manifes IPLT Resmi (Jika Dilampirkan) */}
+            {manifestPdfFile && (
+              <div className="print-manifest-compliance-box">
+                <div className="print-manifest-compliance-header">
+                  <span className="print-manifest-badge-tag">
+                    <i className="fas fa-file-contract"></i> LAMPIRAN DOKUMEN MANIFES RESMI IPLT
+                  </span>
+                  <span className="print-manifest-compliance-status">
+                    COMPLIANCE TERVERIFIKASI (DLH KOTA &amp; KAB. BOGOR)
+                  </span>
+                </div>
+                <div className="print-manifest-grid">
+                  <div><strong>Nomor Manifes:</strong> {manifestPdfFile.docNumber}</div>
+                  <div><strong>Nama Berkas:</strong> {manifestPdfFile.fileName} ({manifestPdfFile.fileSizeFormatted})</div>
+                  <div><strong>Instalasi Pengolahan Tujuan:</strong> {manifestPdfFile.destinationIplt}</div>
+                  <div><strong>Waktu Verifikasi Berkas:</strong> {manifestPdfFile.uploadTimestamp}</div>
+                  <div><strong>Standar Kepatuhan:</strong> {manifestPdfFile.complianceStandard}</div>
+                  <div><strong>Status Audit:</strong> Dokumen Sah Sesuai Regulasi Pembuangan Limbah DLH / KLHK</div>
+                </div>
+              </div>
+            )}
 
             <div className="print-payment-qr-strip">
               <div className="print-qris-card">
@@ -10307,10 +10670,10 @@ export default function App() {
                           value={manualCategory}
                           onChange={(e: any) => setManualCategory(e.target.value)}
                         >
-                          <option value="warga">Rumah Tangga / Warga</option>
-                          <option value="rt_rw">Pengurus RT / RW</option>
-                          <option value="bisnis">Bisnis / Ruko / Resto</option>
-                          <option value="umum">Umum</option>
+                          <option value="korporat">Pabrik &amp; Industri</option>
+                          <option value="gedung">Pengelola Gedung &amp; Office</option>
+                          <option value="hotel_fnb">Hotel &amp; Resto (F&amp;B)</option>
+                          <option value="faskes">Rumah Sakit &amp; Faskes</option>
                         </select>
                         <button type="submit" className="marketing-tool-btn primary">
                           <i className="fas fa-save"></i>
@@ -10660,6 +11023,20 @@ export default function App() {
                       )}
                     </div>
 
+                    {/* Action to Export QR as Image */}
+                    <div className="qris-export-qr-substrip">
+                      <button
+                        type="button"
+                        className="qris-export-png-direct-btn"
+                        onClick={handleExportQrAsImage}
+                        disabled={isExportingQr || !qrisQrUrl}
+                        title="Unduh QRIS ini sebagai file gambar PNG beresolusi tinggi"
+                      >
+                        <i className={isExportingQr ? "fas fa-spinner fa-spin" : "fas fa-file-image"}></i>
+                        <span>{isExportingQr ? 'Memproses Ekspor PNG...' : 'Ekspor QR sebagai Gambar'}</span>
+                      </button>
+                    </div>
+
                     {/* Scan Guide */}
                     <div className="qris-scan-guide">
                       <div className="qris-guide-icon">
@@ -10740,6 +11117,46 @@ export default function App() {
                         <span className="lbl">Dokumen Manifes:</span>
                         <span className="val">{selectedCalcItem.manifestLabel}</span>
                       </div>
+                      <div className="qris-summary-item">
+                        <span className="lbl">Manifes IPLT PDF:</span>
+                        <span className="val">
+                          {manifestPdfFile ? (
+                            <span
+                              style={{ color: '#15803D', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                              onClick={() => {
+                                setIsQrisModalOpen(false);
+                                setManifestActiveTab('manifest');
+                                setIsCalcDetailModalOpen(true);
+                              }}
+                              title="Klik untuk melihat dokumen manifes IPLT yang dilampirkan"
+                            >
+                              <i className="fas fa-file-pdf" style={{ color: '#DC2626' }}></i>
+                              <span>Terlampir ({manifestPdfFile.fileName.length > 16 ? `${manifestPdfFile.fileName.slice(0, 14)}...` : manifestPdfFile.fileName})</span>
+                            </span>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setIsQrisModalOpen(false);
+                                setManifestActiveTab('manifest');
+                                setIsCalcDetailModalOpen(true);
+                              }}
+                              style={{
+                                background: '#EFF6FF',
+                                color: '#0284C7',
+                                border: '1px solid #93C5FD',
+                                padding: '2px 8px',
+                                borderRadius: '6px',
+                                fontSize: '11px',
+                                fontWeight: 700,
+                                cursor: 'pointer'
+                              }}
+                            >
+                              <i className="fas fa-paperclip"></i> + Lampirkan PDF
+                            </button>
+                          )}
+                        </span>
+                      </div>
                       {calcLocation && (
                         <div className="qris-summary-item">
                           <span className="lbl">Lokasi Properti:</span>
@@ -10786,6 +11203,17 @@ export default function App() {
                     >
                       <i className="fas fa-receipt"></i>
                       <span>Cetak Struk QRIS (High-Contrast)</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      className="qris-action-export-btn"
+                      onClick={handleExportQrAsImage}
+                      disabled={isExportingQr || !qrisQrUrl}
+                      title="Unduh kode QRIS sebagai file gambar PNG"
+                    >
+                      <i className={isExportingQr ? "fas fa-spinner fa-spin" : "fas fa-file-image"}></i>
+                      <span>{isExportingQr ? 'Memproses Ekspor PNG...' : 'Ekspor QR sebagai Gambar'}</span>
                     </button>
 
                     <button
@@ -11013,6 +11441,17 @@ export default function App() {
               >
                 <i className="fas fa-copy"></i>
                 <span>Salin Teks Struk</span>
+              </button>
+
+              <button
+                type="button"
+                className="qris-preview-action-export"
+                onClick={handleExportQrAsImage}
+                disabled={isExportingQr || !qrisQrUrl}
+                title="Unduh QRIS sebagai file gambar PNG"
+              >
+                <i className={isExportingQr ? "fas fa-spinner fa-spin" : "fas fa-file-image"}></i>
+                <span>{isExportingQr ? 'Memproses Ekspor PNG...' : 'Ekspor QR sebagai Gambar'}</span>
               </button>
 
               <button

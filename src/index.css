@@ -15333,6 +15333,106 @@ footer::before {
     color: #38BDF8;
 }
 
+.qris-export-qr-substrip {
+    margin: 8px 0 10px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.qris-export-png-direct-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: #F1F5F9;
+    color: #0F172A;
+    border: 1.5px solid #CBD5E1;
+    border-radius: 9px;
+    padding: 8px 14px;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.qris-export-png-direct-btn i {
+    color: #0284C7;
+    font-size: 13px;
+}
+
+.qris-export-png-direct-btn:hover:not(:disabled) {
+    background: #E2E8F0;
+    border-color: #0284C7;
+    color: #0284C7;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(2, 132, 199, 0.18);
+}
+
+.qris-export-png-direct-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.qris-action-export-btn {
+    width: 100%;
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-size: 13.5px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%);
+    color: #FFFFFF;
+    border: 1.5px solid #38BDF8;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+}
+
+.qris-action-export-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #0369A1 0%, #075985 100%);
+    border-color: #BAE6FD;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.45);
+}
+
+.qris-action-export-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.qris-action-export-btn i {
+    color: #E0F2FE;
+}
+
+.qris-preview-action-export {
+    background: #0284C7;
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.qris-preview-action-export:hover:not(:disabled) {
+    background: #0369A1;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+}
+
+.qris-preview-action-export:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 @media (max-width: 600px) {
     .qris-preview-modal-footer {
         flex-direction: column;
@@ -15341,11 +15441,861 @@ footer::before {
     .qris-preview-action-print,
     .qris-preview-action-wa,
     .qris-preview-action-copy,
+    .qris-preview-action-export,
     .qris-preview-action-close {
         width: 100%;
         justify-content: center;
     }
 }
+
+/* ==========================================================================
+   MODAL RINCIAN KALKULATOR & LAMPIRAN MANIFES IPLT (PDF) COMPLIANCE
+   ========================================================================== */
+.calc-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.78);
+    backdrop-filter: blur(8px);
+    z-index: 99998;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    overflow-y: auto;
+}
+
+.calc-modal-container {
+    background: #FFFFFF;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 920px;
+    max-height: 92vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 60px -15px rgba(15, 23, 42, 0.4), 0 0 0 1px rgba(15, 23, 42, 0.08);
+    overflow: hidden;
+    animation: modalPopIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.calc-modal-header {
+    background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+    color: #FFFFFF;
+    padding: 20px 24px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    border-bottom: 2px solid #0284C7;
+}
+
+.calc-modal-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.calc-modal-badge-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.calc-modal-tag-b2b {
+    background: #0284C7;
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 3px 8px;
+    border-radius: 6px;
+}
+
+.calc-modal-tag-kbli {
+    background: rgba(255, 255, 255, 0.12);
+    color: #94A3B8;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+}
+
+.calc-modal-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 800;
+    color: #F8FAFC;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.calc-modal-subtitle {
+    margin: 0;
+    font-size: 13px;
+    color: #94A3B8;
+    line-height: 1.4;
+}
+
+.calc-modal-close-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: #CBD5E1;
+    border: none;
+    border-radius: 10px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.calc-modal-close-btn:hover {
+    background: rgba(255, 255, 255, 0.22);
+    color: #FFFFFF;
+}
+
+/* Tabs */
+.calc-modal-tabs {
+    display: flex;
+    background: #F1F5F9;
+    border-bottom: 1px solid #E2E8F0;
+    padding: 6px 16px 0 16px;
+    gap: 8px;
+}
+
+.calc-modal-tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #64748B;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 8px 8px 0 0;
+}
+
+.calc-modal-tab-btn:hover {
+    color: #0F172A;
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.calc-modal-tab-btn.active {
+    color: #0284C7;
+    background: #FFFFFF;
+    border-bottom-color: #0284C7;
+}
+
+.calc-tab-badge {
+    background: #E0F2FE;
+    color: #0369A1;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 999px;
+}
+
+.calc-tab-badge.success {
+    background: #DCFCE7;
+    color: #15803D;
+}
+
+/* Modal Body */
+.calc-modal-body {
+    padding: 22px 24px;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* Grid & Info Rows */
+.calc-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+}
+
+.calc-detail-cell {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.calc-detail-cell .label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748B;
+}
+
+.calc-detail-cell .value {
+    font-size: 14.5px;
+    font-weight: 800;
+    color: #0F172A;
+}
+
+.calc-detail-cell .value.highlight {
+    color: #0284C7;
+}
+
+/* Corporate Billing Box with PPN toggle */
+.calc-corporate-tax-card {
+    background: #F0FDF4;
+    border: 1.5px solid #86EFAC;
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.calc-tax-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.calc-tax-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #14532D;
+    cursor: pointer;
+}
+
+.calc-tax-checkbox-label input {
+    width: 18px;
+    height: 18px;
+    accent-color: #16A34A;
+    cursor: pointer;
+}
+
+.calc-tax-inputs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.calc-tax-field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: #166534;
+    margin-bottom: 4px;
+}
+
+.calc-tax-field input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #86EFAC;
+    border-radius: 8px;
+    font-size: 13px;
+    background: #FFFFFF;
+    color: #0F172A;
+    outline: none;
+}
+
+/* IPLT Manifest Section */
+.manifest-section-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.manifest-info-banner {
+    background: #EFF6FF;
+    border-left: 4px solid #0284C7;
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.manifest-info-banner i {
+    color: #0284C7;
+    font-size: 18px;
+    margin-top: 2px;
+}
+
+.manifest-info-banner-content h5 {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    font-weight: 800;
+    color: #1E3A8A;
+}
+
+.manifest-info-banner-content p {
+    margin: 0;
+    font-size: 12.5px;
+    color: #1E40AF;
+    line-height: 1.5;
+}
+
+/* Dropzone */
+.manifest-upload-dropzone {
+    border: 2px dashed #93C5FD;
+    background: #F8FAFC;
+    border-radius: 16px;
+    padding: 30px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.manifest-upload-dropzone:hover {
+    border-color: #0284C7;
+    background: #F0F9FF;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.12);
+}
+
+.manifest-dropzone-icon {
+    width: 58px;
+    height: 58px;
+    background: #E0F2FE;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0284C7;
+    font-size: 26px;
+    margin-bottom: 4px;
+}
+
+.manifest-dropzone-title {
+    font-size: 15px;
+    font-weight: 800;
+    color: #0F172A;
+    margin: 0;
+}
+
+.manifest-dropzone-subtitle {
+    font-size: 13px;
+    color: #64748B;
+    margin: 0;
+}
+
+.manifest-dropzone-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #E2E8F0;
+    color: #334155;
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    margin-top: 4px;
+}
+
+.manifest-dropzone-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.manifest-choose-file-btn {
+    background: #0284C7;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 9px;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.manifest-choose-file-btn:hover {
+    background: #0369A1;
+}
+
+.manifest-sample-btn {
+    background: #FFFFFF;
+    color: #0284C7;
+    border: 1.5px solid #0284C7;
+    border-radius: 9px;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.manifest-sample-btn:hover {
+    background: #E0F2FE;
+}
+
+/* Attached Manifest Card */
+.manifest-attached-card {
+    background: #FFFFFF;
+    border: 1.5px solid #10B981;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.manifest-attached-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid #E2E8F0;
+    padding-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.manifest-attached-file-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.manifest-pdf-icon-box {
+    width: 48px;
+    height: 48px;
+    background: #FEE2E2;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #DC2626;
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.manifest-file-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: #0F172A;
+    word-break: break-all;
+}
+
+.manifest-file-meta {
+    font-size: 12px;
+    color: #64748B;
+    margin-top: 2px;
+}
+
+.manifest-verified-badge {
+    background: #DCFCE7;
+    color: #15803D;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 5px 12px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid #86EFAC;
+}
+
+/* Fields Grid for attached manifest */
+.manifest-meta-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    background: #F8FAFC;
+    padding: 14px;
+    border-radius: 12px;
+}
+
+.manifest-meta-field label {
+    display: block;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #64748B;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.manifest-meta-field input,
+.manifest-meta-field select {
+    width: 100%;
+    padding: 7px 10px;
+    border: 1px solid #CBD5E1;
+    border-radius: 7px;
+    font-size: 12.5px;
+    color: #0F172A;
+    background: #FFFFFF;
+}
+
+/* Action Buttons inside Card */
+.manifest-card-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.manifest-act-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.manifest-act-preview {
+    background: #0284C7;
+    color: #FFFFFF;
+}
+
+.manifest-act-preview:hover {
+    background: #0369A1;
+}
+
+.manifest-act-download {
+    background: #F1F5F9;
+    color: #0F172A;
+    border: 1px solid #CBD5E1;
+}
+
+.manifest-act-download:hover {
+    background: #E2E8F0;
+}
+
+.manifest-act-replace {
+    background: #F1F5F9;
+    color: #0284C7;
+    border: 1px solid #93C5FD;
+}
+
+.manifest-act-replace:hover {
+    background: #E0F2FE;
+}
+
+.manifest-act-delete {
+    background: #FEF2F2;
+    color: #DC2626;
+    border: 1px solid #FECACA;
+}
+
+.manifest-act-delete:hover {
+    background: #FEE2E2;
+}
+
+/* Modal Footer */
+.calc-modal-footer {
+    background: #F8FAFC;
+    border-top: 1px solid #E2E8F0;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.calc-modal-footer-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #64748B;
+}
+
+.calc-modal-footer-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.calc-modal-btn-close {
+    background: #FFFFFF;
+    color: #475569;
+    border: 1.5px solid #CBD5E1;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.calc-modal-btn-close:hover {
+    background: #F1F5F9;
+    color: #0F172A;
+}
+
+.calc-modal-btn-pdf {
+    background: #DC2626;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.calc-modal-btn-pdf:hover {
+    background: #B91C1C;
+}
+
+.calc-modal-btn-qris {
+    background: #0284C7;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.calc-modal-btn-qris:hover {
+    background: #0369A1;
+}
+
+.calc-modal-btn-wa {
+    background: #16A34A;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.calc-modal-btn-wa:hover {
+    background: #15803D;
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+/* Button in calculator receipt card */
+.calc-detail-manifest-btn {
+    width: 100%;
+    margin-top: 10px;
+    background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+    color: #FFFFFF;
+    border: 1.5px solid #38BDF8;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.35);
+}
+
+.calc-detail-manifest-btn:hover {
+    background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+    border-color: #7DD3FC;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(56, 189, 248, 0.3);
+}
+
+.manifest-attached-pill {
+    background: #10B981;
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.manifest-required-pill {
+    background: rgba(56, 189, 248, 0.18);
+    color: #7DD3FC;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+}
+
+.calc-receipt-manifest-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    background: #DCFCE7;
+    color: #15803D;
+    padding: 2px 7px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-left: 6px;
+    border: 1px solid #86EFAC;
+    transition: all 0.2s ease;
+}
+
+.calc-receipt-manifest-tag:hover {
+    background: #BBF7D0;
+}
+
+/* PDF Preview Modal */
+.manifest-preview-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.manifest-preview-modal-container {
+    background: #FFFFFF;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 860px;
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+}
+
+.manifest-preview-header {
+    background: #0F172A;
+    color: #FFFFFF;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.manifest-preview-body {
+    flex: 1;
+    background: #E2E8F0;
+    position: relative;
+}
+
+.manifest-pdf-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Print compliance box */
+.print-manifest-compliance-box {
+    margin: 16px 0;
+    border: 1.5px solid #059669;
+    background: #F0FDF4;
+    border-radius: 8px;
+    padding: 12px 14px;
+}
+
+.print-manifest-compliance-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    border-bottom: 1px dashed #86EFAC;
+    padding-bottom: 6px;
+}
+
+.print-manifest-badge-tag {
+    font-size: 11.5px;
+    font-weight: 800;
+    color: #065F46;
+}
+
+.print-manifest-compliance-status {
+    font-size: 10.5px;
+    font-weight: 800;
+    color: #047857;
+    background: #DCFCE7;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.print-manifest-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 16px;
+    font-size: 11px;
+    color: #0F172A;
+}
+
+@media (max-width: 768px) {
+    .calc-modal-tabs {
+        flex-direction: column;
+        padding: 6px 12px;
+    }
+    .calc-modal-tab-btn {
+        border-bottom: none;
+        border-left: 3px solid transparent;
+        border-radius: 6px;
+    }
+    .calc-modal-tab-btn.active {
+        border-left-color: #0284C7;
+        border-bottom-color: transparent;
+    }
+    .calc-tax-inputs-grid {
+        grid-template-columns: 1fr;
+    }
+    .print-manifest-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 
 
 
