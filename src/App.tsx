@@ -622,7 +622,7 @@ export const MARKETING_CAMPAIGN_TEMPLATES: MarketingCampaignTemplate[] = [
     previewSnippet: 'Pastikan limbah cair domestik perusahaan Anda memiliki dokumen manifes legal ke IPLT resmi...',
     badge: 'Kepatuhan Regulasi',
     category: 'Audit Lingkungan',
-    content: 'Setiap kegiatan usaha pabrik, hotel, rumah sakit, dan gedung perkantoran wajib menyalurkan limbah cair domestik ke Instalasi Pengolahan Lumpur Tinja (IPLT) resmi berizin. PT MITRA BERSIH 24 JAM siap menyediakan dokumen Berita Acara Serah Terima (BAST), Manifes Resmi IPLT Kota/Kabupaten Bogor, serta Faktur Pajak PPN 11% untuk kelengkapan pelaporan berkala UKL-UPL dan audit lingkungan hidup.'
+    content: 'Setiap kegiatan usaha pabrik, hotel, rumah sakit, dan gedung perkantoran wajib menyalurkan limbah cair domestik ke Instalasi Pengolahan Lumpur Tinja (IPLT) resmi berizin. PT MITRA BERSIH 24 JAM siap menyediakan dokumen Berita Acara Serah Terima (BAST), Manifes Resmi IPLT Kota/Kabupaten Bogor, serta dokumen invoice resmi untuk kelengkapan pelaporan berkala UKL-UPL dan audit lingkungan hidup.'
   },
   {
     id: 'b2b_contract_promo',
@@ -652,6 +652,7 @@ export interface KalkulatorTarifItem {
   description: string;
   isManifest: boolean;
   manifestLabel: 'Non Manifes' | 'Manifes Resmi';
+  isB2BCorporate: boolean;
   pricePerM3: number;
   icon: string;
   tag: string;
@@ -667,6 +668,7 @@ export const KALKULATOR_TARIF_LIST: KalkulatorTarifItem[] = [
     description: 'Penyedotan limbah toilet & kuras septic tank untuk ruko, kantor cabang perbankan, dan unit usaha tanpa kewajiban audit manifes IPLT.',
     isManifest: false,
     manifestLabel: 'Non Manifes',
+    isB2BCorporate: false,
     pricePerM3: 700000,
     icon: 'fa-toilet',
     tag: 'Ruko & Kantor Cabang',
@@ -680,6 +682,7 @@ export const KALKULATOR_TARIF_LIST: KalkulatorTarifItem[] = [
     description: 'Penyedotan septic tank volume besar dengan dokumen resmi berita acara (BAST) & manifes pembuangan IPLT (izin KBLI 37001) untuk audit AMDAL perusahaan.',
     isManifest: true,
     manifestLabel: 'Manifes Resmi',
+    isB2BCorporate: true,
     pricePerM3: 1100000,
     icon: 'fa-file-signature',
     tag: 'Standar Korporat & AMDAL',
@@ -693,6 +696,7 @@ export const KALKULATOR_TARIF_LIST: KalkulatorTarifItem[] = [
     description: 'Pengurasan bak kontrol, grease trap dapur restoran/kafe, dan endapan lumpur domestik non-manifes dengan pompa vakum bersih.',
     isManifest: false,
     manifestLabel: 'Non Manifes',
+    isB2BCorporate: false,
     pricePerM3: 1100000,
     icon: 'fa-oil-can',
     tag: 'Resto & Food Chain',
@@ -706,6 +710,7 @@ export const KALKULATOR_TARIF_LIST: KalkulatorTarifItem[] = [
     description: 'Pengurasan limbah lemak & lumpur industri dengan sertifikat BAST dan manifes resmi pembuangan limbah cair untuk kepatuhan UKL-UPL dan audit ISO 14001.',
     isManifest: true,
     manifestLabel: 'Manifes Resmi',
+    isB2BCorporate: true,
     pricePerM3: 1500000,
     icon: 'fa-certificate',
     tag: 'Standar Industri & Pabrik',
@@ -719,6 +724,7 @@ export const KALKULATOR_TARIF_LIST: KalkulatorTarifItem[] = [
     description: 'Tembak tekanan tinggi (blower/jetting) dan pengurasan kerak lumpur membatu di saluran pipa pembuangan fasilitas komersial tanpa manifes.',
     isManifest: false,
     manifestLabel: 'Non Manifes',
+    isB2BCorporate: false,
     pricePerM3: 1100000,
     icon: 'fa-wind',
     tag: 'Saluran Gedung Buntu',
@@ -732,6 +738,7 @@ export const KALKULATOR_TARIF_LIST: KalkulatorTarifItem[] = [
     description: 'Pembersihan blower tekanan tinggi lumpur dengan bukti manifes pembuangan resmi instansi, pabrik, & gedung korporat se-Bogor.',
     isManifest: true,
     manifestLabel: 'Manifes Resmi',
+    isB2BCorporate: true,
     pricePerM3: 1500000,
     icon: 'fa-stamp',
     tag: 'Sertifikasi KBLI 37001',
@@ -2545,7 +2552,7 @@ export const SERVICE_CONSULTATION_CARDS: ServiceCardItem[] = [
     badge: 'Kapasitas Besar • 24 Jam Nonstop',
     icon: 'fas fa-truck-loading',
     delayClass: '',
-    description: 'Layanan kuras septic tank & sedot limbah domestik kapasitas besar untuk gedung perkantoran, pabrik, kawasan industri, dan hotel di Bogor. Didukung legalitas PT resmi, manifes IPLT, dan Faktur Pajak PPN.',
+    description: 'Layanan kuras septic tank & sedot limbah domestik kapasitas besar untuk gedung perkantoran, pabrik, kawasan industri, dan hotel di Bogor. Didukung legalitas PT resmi dan manifes IPLT.',
     defaultProblem: 'Septic tank kapasitas besar gedung perkantoran / pabrik penuh dan butuh penanganan segera',
     problems: [
       { id: 'wc-penuh', label: 'Septic Tank Gedung / Pabrik Penuh', problemDesc: 'Septic tank kapasitas besar gedung/pabrik meluap dan butuh penanganan segera' },
@@ -2853,10 +2860,11 @@ export default function App() {
   }
 
   // Kalkulator Cepat Tarif Sedot Limbah State & Handlers
-  const [calcSelectedId, setCalcSelectedId] = useState<string>('black-water-non-manifest');
+  const [calcSelectedId, setCalcSelectedId] = useState<string>('black-water-manifest');
   const [calcVolume, setCalcVolume] = useState<number>(3);
   const [calcCategoryFilter, setCalcCategoryFilter] = useState<'all' | 'black-water' | 'grey-water' | 'cleaning-blower'>('all');
   const [calcManifestFilter, setCalcManifestFilter] = useState<'all' | 'non-manifest' | 'manifest'>('all');
+  const [isB2BCorporateOnly, setIsB2BCorporateOnly] = useState<boolean>(false);
   const [calcLocation, setCalcLocation] = useState<string>('');
   const [calcProperty, setCalcProperty] = useState<string>('Pabrik / Kawasan Industri');
   const [calcName, setCalcName] = useState<string>('');
@@ -2879,6 +2887,153 @@ export default function App() {
   const [calcNpwp, setCalcNpwp] = useState<string>('');
   const [calcCorporatePo, setCalcCorporatePo] = useState<string>('');
   const [manifestActiveTab, setManifestActiveTab] = useState<'detail' | 'manifest'>('manifest');
+
+  // SPH (Surat Penawaran Harga) B2B Corporate Modal State
+  const [isSphModalOpen, setIsSphModalOpen] = useState<boolean>(false);
+  const [sphCompanyName, setSphCompanyName] = useState<string>('');
+  const [sphNpwp, setSphNpwp] = useState<string>('');
+  const [sphPoNumber, setSphPoNumber] = useState<string>('');
+  const [sphPicName, setSphPicName] = useState<string>('');
+  const [sphPicRole, setSphPicRole] = useState<string>('Procurement / Purchasing');
+  const [sphPhone, setSphPhone] = useState<string>('');
+  const [sphEmail, setSphEmail] = useState<string>('');
+  const [sphServiceId, setSphServiceId] = useState<string>('black-water-manifest');
+  const [sphVolume, setSphVolume] = useState<number>(6);
+  const [sphContractType, setSphContractType] = useState<string>('Pekerjaan Sekali Selesai (One-Off Project)');
+  const [sphLocation, setSphLocation] = useState<string>('Kawasan Industri Sentul');
+  const [sphAddress, setSphAddress] = useState<string>('');
+  const [sphTargetDate, setSphTargetDate] = useState<string>('');
+  const [sphSiteRequirements, setSphSiteRequirements] = useState<string[]>([
+    'Wajib Induksi K3 & APD Lengkap (Safety First)',
+    'Wajib Manifes Resmi Pembuangan IPLT (DLH)',
+    'Penerbitan Berita Acara BAST (Serah Terima Pekerjaan)'
+  ]);
+  const [sphNotes, setSphNotes] = useState<string>('');
+  const [sphSubmittedSuccess, setSphSubmittedSuccess] = useState<boolean>(false);
+
+  // B2B Corporate Quotation History Record Interface
+  interface B2BQuotationRecord {
+    id: string;
+    timestamp: string;
+    companyName: string;
+    npwp: string;
+    poNumber: string;
+    picName: string;
+    picRole: string;
+    phone: string;
+    email: string;
+    serviceId: string;
+    serviceName: string;
+    categoryLabel: string;
+    volumeM3: number;
+    unitPrice: number;
+    totalDpp: number;
+    ppn11: number;
+    grandTotal: number;
+    contractType: string;
+    location: string;
+    siteAddress: string;
+    siteRequirements: string;
+    complianceStatus: string;
+    status: 'Diajukan' | 'SPH Terbit' | 'Proses PO' | 'Selesai';
+  }
+
+  const DEFAULT_B2B_QUOTATION_HISTORY: B2BQuotationRecord[] = [
+    {
+      id: 'SPH-2026/B2B-041',
+      timestamp: '18/10/2026 14:20',
+      companyName: 'PT Sentul Surya Manufacturing',
+      npwp: '01.325.879.4-412.000',
+      poNumber: 'PO-SSM/2026/IX-088',
+      picName: 'Hendra Gunawan',
+      picRole: 'Procurement / Purchasing',
+      phone: '0812-9876-5432',
+      email: 'procurement@sentulsurya.co.id',
+      serviceId: 'black-water-manifest',
+      serviceName: 'Sedot WC Pabrik / Gedung (Manifes IPLT)',
+      categoryLabel: 'Black Water (Tinja)',
+      volumeM3: 15,
+      unitPrice: 1100000,
+      totalDpp: 16500000,
+      ppn11: 1815000,
+      grandTotal: 18315000,
+      contractType: 'Kontrak Kerja Sama Tahunan (MoU B2B)',
+      location: 'Kawasan Industri Sentul',
+      siteAddress: 'Jl. Olympic Raya Kav. 8, Sentul Industrial Estate',
+      siteRequirements: 'Wajib Induksi K3 & APD Lengkap, Wajib Manifes Resmi IPLT (DLH), Penerbitan Berita Acara BAST',
+      complianceStatus: 'AMDAL & KBLI 37001 Validated',
+      status: 'SPH Terbit'
+    },
+    {
+      id: 'SPH-2026/B2B-042',
+      timestamp: '19/10/2026 09:45',
+      companyName: 'PT Menara Boga Sentosa (Food Court & Resto)',
+      npwp: '02.451.776.8-412.000',
+      poNumber: 'PO-MBS/2026/10-019',
+      picName: 'Ratna Sulistiawati',
+      picRole: 'Facility / Maintenance Engineering',
+      phone: '0813-8890-1234',
+      email: 'engineering@menaraboga.com',
+      serviceId: 'grey-water-manifest',
+      serviceName: 'Kuras Lemak Grease Trap Resto & Food Factory (Manifes)',
+      categoryLabel: 'Grey Water (Lumpur/Lemak)',
+      volumeM3: 8,
+      unitPrice: 1500000,
+      totalDpp: 12000000,
+      ppn11: 1320000,
+      grandTotal: 13320000,
+      contractType: 'Perawatan Berkala Bulanan (Monthly Routine)',
+      location: 'Sentul City / Babakan Madang (Komersial & Hotel)',
+      siteAddress: 'Kawasan Sentul Nirwana Blok B, Sentul City',
+      siteRequirements: 'Wajib Manifes Resmi Pembuangan IPLT (DLH), Pengerjaan di Luar Jam Operasional / Shift Malam',
+      complianceStatus: 'IPLT Kayumanis DLH Bogor',
+      status: 'Proses PO'
+    },
+    {
+      id: 'SPH-2026/B2B-043',
+      timestamp: '19/10/2026 16:30',
+      companyName: 'PT Cileungsi Pratama Industrial',
+      npwp: '01.998.234.1-412.000',
+      poNumber: 'RFQ-CPI/B2B/2026-88',
+      picName: 'Bambang Irawan',
+      picRole: 'HSE / EHS (Kesehatan & Keselamatan Kerja)',
+      phone: '0856-7788-9900',
+      email: 'ehs@cileungsipratama.co.id',
+      serviceId: 'cleaning-blower-manifest',
+      serviceName: 'Blower Lumpur & Cleaning Tangki STP/IPAL (Manifes)',
+      categoryLabel: 'Cleaning / Blower',
+      volumeM3: 20,
+      unitPrice: 1500000,
+      totalDpp: 30000000,
+      ppn11: 3300000,
+      grandTotal: 33300000,
+      contractType: 'Pekerjaan Sekali Selesai (One-Off Project)',
+      location: 'Kawasan Industri Menara Permai Cileungsi',
+      siteAddress: 'Kawasan Industri Menara Permai Blok E-12, Cileungsi',
+      siteRequirements: 'Wajib Induksi K3 & APD Lengkap, Wajib Manifes Resmi Pembuangan IPLT (DLH), Panjang Selang Khusus (>50 Meter)',
+      complianceStatus: 'ISO 14001 Audit Ready',
+      status: 'Diajukan'
+    }
+  ];
+
+  // B2B Corporate Quotation History & Reporting State
+  const [b2bQuotationHistory, setB2bQuotationHistory] = useState<B2BQuotationRecord[]>(() => {
+    try {
+      const saved = localStorage.getItem('mitra_bersih_b2b_quotation_history');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {
+      // fallback
+    }
+    return DEFAULT_B2B_QUOTATION_HISTORY;
+  });
+
+  const [isB2bReportModalOpen, setIsB2bReportModalOpen] = useState<boolean>(false);
+  const [b2bReportActiveTab, setB2bReportActiveTab] = useState<'quotations' | 'services' | 'audit'>('quotations');
+  const [b2bHistorySearch, setB2bHistorySearch] = useState<string>('');
+  const [b2bHistoryStatusFilter, setB2bHistoryStatusFilter] = useState<string>('all');
 
   // QRIS Payment Modal State
   const [isQrisModalOpen, setIsQrisModalOpen] = useState<boolean>(false);
@@ -2989,6 +3144,385 @@ export default function App() {
     setCalcVolume(vol);
   };
 
+  const handleToggleB2BCorporateOnly = () => {
+    setIsB2BCorporateOnly((prev) => {
+      const next = !prev;
+      if (next) {
+        // If current selection is non-corporate, switch to the first corporate item
+        const currentItem = KALKULATOR_TARIF_LIST.find((it) => it.id === calcSelectedId);
+        if (!currentItem || !currentItem.isB2BCorporate) {
+          setCalcSelectedId('black-water-manifest');
+        }
+        setCalcToast('Mode Khusus B2B Corporate Aktif: Menampilkan layanan industri & gedung dengan Manifes Resmi IPLT.');
+      } else {
+        setCalcToast('Menampilkan seluruh layanan (Konsumer, UKM, & B2B Corporate).');
+      }
+      return next;
+    });
+  };
+
+  const handleToggleSiteRequirement = (req: string) => {
+    setSphSiteRequirements((prev) =>
+      prev.includes(req) ? prev.filter((r) => r !== req) : [...prev, req]
+    );
+  };
+
+  const handleOpenSphForService = (serviceId: string) => {
+    setSphServiceId(serviceId);
+    const serviceItem = KALKULATOR_TARIF_LIST.find((it) => it.id === serviceId);
+    if (serviceItem) {
+      setCalcSelectedId(serviceId);
+    }
+    setIsSphModalOpen(true);
+  };
+
+  const handleSendSphWa = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!sphCompanyName.trim()) {
+      setCalcToast('Mohon isi Nama Perusahaan terlebih dahulu.');
+      return;
+    }
+
+    const selectedService = KALKULATOR_TARIF_LIST.find((it) => it.id === sphServiceId) || KALKULATOR_TARIF_LIST[1];
+    const estimatedTotal = selectedService.pricePerM3 * sphVolume;
+
+    const message =
+      `*PERMINTAAN SURAT PENAWARAN HARGA (SPH) RESMI B2B*\n` +
+      `Kepada: Divisi Komersial & B2B PT MITRA BERSIH 24 JAM\n\n` +
+      `*1. INFORMASI PERUSAHAAN*\n` +
+      `• *Nama Perusahaan:* ${sphCompanyName.trim()}\n` +
+      (sphNpwp.trim() ? `• *NPWP Perusahaan:* ${sphNpwp.trim()}\n` : '') +
+      (sphPoNumber.trim() ? `• *No. PO / RFQ / Tender:* ${sphPoNumber.trim()}\n` : '') +
+      `• *Nama PIC:* ${sphPicName.trim() || '-'}\n` +
+      `• *Divisi / Jabatan:* ${sphPicRole}\n` +
+      `• *No. Telp / WA PIC:* ${sphPhone.trim() || '-'}\n` +
+      (sphEmail.trim() ? `• *Email Resmi:* ${sphEmail.trim()}\n` : '') +
+      `\n*2. KEBUTUHAN TEKNIS PEKERJAAN*\n` +
+      `• *Layanan:* ${selectedService.name}\n` +
+      `• *Kategori Limbah:* ${selectedService.categoryLabel}\n` +
+      `• *Estimasi Volume:* ${sphVolume} m³ (Kubik)\n` +
+      `• *Tipe Pengadaan:* ${sphContractType}\n` +
+      `• *Kawasan / Lokasi:* ${sphLocation}\n` +
+      (sphAddress.trim() ? `• *Alamat Pabrik / Fasilitas:* ${sphAddress.trim()}\n` : '') +
+      (sphTargetDate ? `• *Target Pelaksanaan:* ${sphTargetDate}\n` : '') +
+      `• *Estimasi Nilai Dasar:* ${formatRupiah(estimatedTotal)} (Eksklusif PPN 11%)\n` +
+      `\n*3. SITE REQUIREMENTS & COMPLIANCE KHUSUS*\n` +
+      (sphSiteRequirements.length > 0
+        ? sphSiteRequirements.map((req) => `  ✓ ${req}`).join('\n') + '\n'
+        : '  (Standar Operasional Normal)\n') +
+      (sphNotes.trim() ? `\n*Catatan Khusus Site:*\n"${sphNotes.trim()}"\n` : '') +
+      `\nMohon dapat diterbitkan Surat Penawaran Harga (SPH) Resmi berkop surat PT MITRA BERSIH 24 JAM lengkap dengan lampiran NIB KBLI 37001 dan legalitas IPLT. Terima kasih.`;
+
+    window.open(`https://wa.me/6285715654183?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
+    setSphSubmittedSuccess(true);
+
+    // Save quotation record to history and localStorage
+    const now = new Date();
+    const formattedDate = `${now.toLocaleDateString('id-ID')} ${now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}`;
+    const newRecordId = `SPH-${now.getFullYear()}/B2B-${String(b2bQuotationHistory.length + 45).padStart(3, '0')}`;
+    const newRecord: B2BQuotationRecord = {
+      id: newRecordId,
+      timestamp: formattedDate,
+      companyName: sphCompanyName.trim(),
+      npwp: sphNpwp.trim(),
+      poNumber: sphPoNumber.trim(),
+      picName: sphPicName.trim(),
+      picRole: sphPicRole,
+      phone: sphPhone.trim(),
+      email: sphEmail.trim(),
+      serviceId: selectedService.id,
+      serviceName: selectedService.name,
+      categoryLabel: selectedService.categoryLabel,
+      volumeM3: sphVolume,
+      unitPrice: selectedService.pricePerM3,
+      totalDpp: estimatedTotal,
+      ppn11: Math.round(estimatedTotal * 0.11),
+      grandTotal: Math.round(estimatedTotal * 1.11),
+      contractType: sphContractType,
+      location: sphLocation,
+      siteAddress: sphAddress.trim(),
+      siteRequirements: sphSiteRequirements.join(', ') || 'Standar K3 Normal',
+      complianceStatus: 'Manifes IPLT Kayumanis & KBLI 37001',
+      status: 'Diajukan'
+    };
+
+    setB2bQuotationHistory((prev) => {
+      const updated = [newRecord, ...prev];
+      try {
+        localStorage.setItem('mitra_bersih_b2b_quotation_history', JSON.stringify(updated));
+      } catch {
+        // ignore
+      }
+      return updated;
+    });
+
+    setCalcToast(`Permintaan SPH Resmi ${newRecordId} berhasil dicatat & diteruskan ke WhatsApp B2B.`);
+  };
+
+  const handleCopySphDraft = () => {
+    if (!sphCompanyName.trim()) {
+      setCalcToast('Mohon isi Nama Perusahaan terlebih dahulu sebelum menyalin.');
+      return;
+    }
+
+    const selectedService = KALKULATOR_TARIF_LIST.find((it) => it.id === sphServiceId) || KALKULATOR_TARIF_LIST[1];
+    const estimatedTotal = selectedService.pricePerM3 * sphVolume;
+
+    const draft =
+      `============================================================\n` +
+      `  SURAT PERMINTAAN PENAWARAN HARGA RESMI (SPH B2B / CORPORATE)\n` +
+      `============================================================\n\n` +
+      `Kepada Yth,\n` +
+      `PT MITRA BERSIH 24 JAM (Pengelolaan Limbah KBLI 37001)\n` +
+      `Bogor, Jawa Barat\n\n` +
+      `Dengan hormat,\n` +
+      `Sehubungan dengan kebutuhan pengelolaan limbah cair dan perawatan sanitasi berkala di fasilitas operasional kami, bersama ini kami mengajukan permohonan penerbitan Surat Penawaran Harga (SPH) resmi dengan rincian sebagai berikut:\n\n` +
+      `A. IDENTITAS PERUSAHAAN:\n` +
+      `- Nama Badan Usaha  : ${sphCompanyName.trim()}\n` +
+      `- NPWP Perusahaan   : ${sphNpwp.trim() || 'Sesuai SPK / PO'}\n` +
+      `- Referensi PO/RFQ  : ${sphPoNumber.trim() || '-'}\n` +
+      `- Nama PIC / Kontak : ${sphPicName.trim() || '-'} (${sphPicRole})\n` +
+      `- Kontak Telepon/WA : ${sphPhone.trim() || '-'}\n` +
+      `- Email Perusahaan  : ${sphEmail.trim() || '-'}\n\n` +
+      `B. LINGKUP PEKERJAAN & LOKASI:\n` +
+      `- Jenis Pekerjaan   : ${selectedService.name}\n` +
+      `- Volume Estimasi   : ${sphVolume} m3 (Kubik)\n` +
+      `- Tipe Kontrak      : ${sphContractType}\n` +
+      `- Lokasi / Kawasan  : ${sphLocation}\n` +
+      `- Alamat Fasilitas  : ${sphAddress.trim() || '-'}\n` +
+      `- Target Jadwal     : ${sphTargetDate || 'Menyesuaikan Ketersediaan Armada'}\n` +
+      `- Estimasi Anggaran : ${formatRupiah(estimatedTotal)} (Sebelum Pajak)\n\n` +
+      `C. PERSYARATAN KHUSUS SITE (COMPLIANCE):\n` +
+      (sphSiteRequirements.length > 0
+        ? sphSiteRequirements.map((r) => `- ${r}`).join('\n') + '\n'
+        : '- Mengikuti Standar Operasional K3\n') +
+      (sphNotes.trim() ? `\nCatatan Tambahan: "${sphNotes.trim()}"\n` : '') +
+      `\nDemikian permohonan ini kami sampaikan. Atas kerja samanya kami ucapkan terima kasih.\n\n` +
+      `Hormat kami,\n` +
+      `${sphPicName.trim() || 'Tim Procurement'}\n` +
+      `${sphCompanyName.trim()}`;
+
+    navigator.clipboard.writeText(draft);
+    setCalcToast('Draft dokumen SPH berhasil disalin ke clipboard!');
+  };
+
+  // Helper to export tabular data to CSV with UTF-8 Byte Order Mark (BOM) for Excel
+  const exportToCsv = (filename: string, headers: string[], rows: (string | number)[][]) => {
+    const sanitizeCell = (val: string | number | undefined | null) => {
+      if (val === undefined || val === null) return '""';
+      const str = String(val).replace(/"/g, '""');
+      return `"${str}"`;
+    };
+
+    const csvContent =
+      '\uFEFF' +
+      [
+        headers.map(sanitizeCell).join(','),
+        ...rows.map((row) => row.map(sanitizeCell).join(','))
+      ].join('\r\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  // 1. Export Filtered B2B Service List to CSV
+  const handleExportB2bServicesCsv = () => {
+    const b2bItems = KALKULATOR_TARIF_LIST.filter((item) => {
+      if (isB2BCorporateOnly && !item.isB2BCorporate) return false;
+      if (calcCategoryFilter !== 'all' && item.category !== calcCategoryFilter) return false;
+      if (calcManifestFilter === 'non-manifest' && item.isManifest) return false;
+      if (calcManifestFilter === 'manifest' && !item.isManifest) return false;
+      return true;
+    });
+
+    const headers = [
+      'No',
+      'ID Layanan',
+      'Nama Layanan B2B',
+      'Kategori Limbah',
+      'Status Dokumen Manifes',
+      'Legalitas & Sertifikasi',
+      'Tarif Dasar Satuan (Rp/m3)',
+      'Tarif Format Rupiah',
+      'Target Properti / Fasilitas',
+      'Lokasi Pembuangan Resmi',
+      'Standar Compliance Audit',
+      'Spesifikasi Teknis Layanan'
+    ];
+
+    const rows = b2bItems.map((item, idx) => [
+      idx + 1,
+      item.id,
+      item.name,
+      item.categoryLabel,
+      item.isManifest ? 'Wajib Manifes Resmi IPLT' : 'Non Manifes',
+      'KBLI 37001 (Pengumpulan Air Limbah)',
+      item.pricePerM3,
+      `Rp ${item.pricePerM3.toLocaleString('id-ID')}`,
+      item.targetProperty,
+      'IPLT Kayumanis Kota Bogor (DLH)',
+      'AMDAL / UKL-UPL / ISO 14001 Compliant',
+      item.description
+    ]);
+
+    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    exportToCsv(`Layanan_B2B_Mitra_Bersih_${dateStr}.csv`, headers, rows);
+    setCalcToast(`Berhasil mengekspor ${b2bItems.length} katalog layanan B2B ke CSV / Excel.`);
+  };
+
+  // 2. Export Quotation Request History to CSV
+  const handleExportQuotationHistoryCsv = () => {
+    const headers = [
+      'No',
+      'No. Registrasi SPH',
+      'Tanggal & Waktu Pengajuan',
+      'Nama Perusahaan (Klien)',
+      'NPWP Perusahaan',
+      'No. PO / RFQ Internal',
+      'Nama PIC',
+      'Divisi / Jabatan',
+      'No. Telepon / WA PIC',
+      'Email Resmi Perusahaan',
+      'Jenis Layanan B2B',
+      'Kategori Limbah',
+      'Estimasi Volume (m3)',
+      'Tarif Satuan DPP (Rp)',
+      'Subtotal DPP (Rp)',
+      'PPN 11% (Rp)',
+      'Grand Total Penawaran (Rp)',
+      'Tipe Kontrak Pengadaan',
+      'Kawasan / Area Site',
+      'Alamat Fasilitas',
+      'Site Requirements & K3',
+      'Standar Legalitas & Compliance',
+      'Status Dokumen SPH'
+    ];
+
+    const rows = b2bQuotationHistory.map((rec, idx) => [
+      idx + 1,
+      rec.id,
+      rec.timestamp,
+      rec.companyName,
+      rec.npwp || '-',
+      rec.poNumber || '-',
+      rec.picName || '-',
+      rec.picRole || '-',
+      rec.phone || '-',
+      rec.email || '-',
+      rec.serviceName,
+      rec.categoryLabel,
+      rec.volumeM3,
+      rec.unitPrice,
+      rec.totalDpp,
+      rec.ppn11,
+      rec.grandTotal,
+      rec.contractType,
+      rec.location,
+      rec.siteAddress || '-',
+      rec.siteRequirements,
+      rec.complianceStatus,
+      rec.status
+    ]);
+
+    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    exportToCsv(`Riwayat_Quotation_SPH_B2B_${dateStr}.csv`, headers, rows);
+    setCalcToast(`Berhasil mengekspor ${b2bQuotationHistory.length} data riwayat SPH ke CSV / Excel.`);
+  };
+
+  // 3. Export Comprehensive B2B Corporate Audit Report
+  const handleExportComprehensiveB2bAuditCsv = () => {
+    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const nowStr = new Date().toLocaleString('id-ID');
+    const totalVolume = b2bQuotationHistory.reduce((acc, it) => acc + it.volumeM3, 0);
+    const totalGrandValue = b2bQuotationHistory.reduce((acc, it) => acc + it.grandTotal, 0);
+
+    const headers = [
+      'LAPORAN EKSEKUTIF PENGELOLAAN LIMBAH & QUOTATION SPH B2B KORPORAT'
+    ];
+
+    const metaRows: (string | number)[][] = [
+      ['Diterbitkan Oleh', 'PT MITRA BERSIH 24 JAM'],
+      ['Nomor Induk Berusaha (NIB)', '2605260095769'],
+      ['NPWP Perusahaan', '3215261111840004'],
+      ['KBLI Utama', '37001 – Pengumpulan Air Limbah'],
+      ['Fasilitas Pembuangan Resmi', 'IPLT Kayumanis (Dinas Perumahan & Kawasan Permukiman Kota Bogor)'],
+      ['Waktu Ekspor Laporan', nowStr],
+      ['Total Dokumen SPH Terdata', `${b2bQuotationHistory.length} Dokumen`],
+      ['Total Kubikasi Limbah Terencana', `${totalVolume} m3`],
+      ['Total Estimasi Nilai Pengadaan', `Rp ${totalGrandValue.toLocaleString('id-ID')}`],
+      ['', ''],
+      ['=== BAGIAN 1: RIWAYAT PERMINTAAN QUOTATION (SPH) RESMI B2B ===', ''],
+      [
+        'No',
+        'No. SPH',
+        'Tanggal',
+        'Nama Perusahaan',
+        'NPWP',
+        'No. PO/RFQ',
+        'Nama PIC',
+        'Layanan B2B',
+        'Volume (m3)',
+        'Tarif Satuan (Rp)',
+        'Total DPP (Rp)',
+        'PPN 11% (Rp)',
+        'Grand Total (Rp)',
+        'Tipe Kontrak',
+        'Lokasi Kawasan',
+        'Status SPH'
+      ],
+      ...b2bQuotationHistory.map((rec, idx) => [
+        idx + 1,
+        rec.id,
+        rec.timestamp,
+        rec.companyName,
+        rec.npwp || '-',
+        rec.poNumber || '-',
+        rec.picName || '-',
+        rec.serviceName,
+        rec.volumeM3,
+        rec.unitPrice,
+        rec.totalDpp,
+        rec.ppn11,
+        rec.grandTotal,
+        rec.contractType,
+        rec.location,
+        rec.status
+      ]),
+      ['', ''],
+      ['=== BAGIAN 2: DAFTAR TARIF KATALOG LAYANAN B2B BERMANIFES RESMI ===', ''],
+      [
+        'No',
+        'ID Layanan',
+        'Nama Layanan B2B',
+        'Kategori',
+        'Status Manifes',
+        'Tarif Satuan DPP (Rp/m3)',
+        'Target Fasilitas',
+        'Standar Audit Lingkungan'
+      ],
+      ...KALKULATOR_TARIF_LIST.filter((i) => i.isB2BCorporate).map((item, idx) => [
+        idx + 1,
+        item.id,
+        item.name,
+        item.categoryLabel,
+        item.isManifest ? 'Manifes Resmi IPLT' : 'Non Manifes',
+        item.pricePerM3,
+        item.targetProperty,
+        'ISO 14001 / AMDAL / UKL-UPL'
+      ])
+    ];
+
+    exportToCsv(`Laporan_Audit_Compliance_B2B_${dateStr}.csv`, headers, metaRows);
+    setCalcToast('Berhasil mengunduh Laporan Rekap Komprehensif Audit Compliance ke CSV / Excel.');
+  };
+
   const handleCopyCalcSummary = () => {
     const summary =
       `*ESTIMASI BIAYA SEDOT LIMBAH – PT MITRA BERSIH 24 JAM*\n` +
@@ -2999,7 +3533,7 @@ export default function App() {
       `Volume Pekerjaan: ${calcVolume} m³ (Kubik)\n` +
       `Tarif Satuan: ${formatRupiah(selectedCalcItem.pricePerM3)} / m³\n` +
       `Total Estimasi: *${formatRupiah(calcTotalBiaya)}*\n` +
-      (calcIncludePpn ? `PPN 11% (Faktur Pajak): Termasuk (Total: ${formatRupiah(Math.round(calcTotalBiaya * 1.11))})\n` : '') +
+      (calcIncludePpn ? `PPN 11%: Termasuk (Total: ${formatRupiah(Math.round(calcTotalBiaya * 1.11))})\n` : '') +
       (calcLocation ? `Wilayah: ${calcLocation}, Bogor\n` : '') +
       (calcProperty ? `Jenis Properti: ${calcProperty}\n` : '') +
       (calcCorporatePo ? `No. PO / SPK: ${calcCorporatePo}\n` : '') +
@@ -3387,7 +3921,7 @@ startxref
       `• *Volume Estimasi:* ${calcVolume} m³ (Kubik)\n` +
       `• *Tarif Satuan:* ${formatRupiah(selectedCalcItem.pricePerM3)} / m³\n` +
       `• *Total Estimasi:* *${formatRupiah(calcTotalBiaya)}*\n` +
-      (calcIncludePpn ? `• *Faktur Pajak (PPN 11%):* Ya (Total: ${formatRupiah(Math.round(calcTotalBiaya * 1.11))})\n` : '') +
+      (calcIncludePpn ? `• *Termasuk PPN 11%:* Ya (Total: ${formatRupiah(Math.round(calcTotalBiaya * 1.11))})\n` : '') +
       (calcNpwp ? `• *NPWP Perusahaan:* ${calcNpwp}\n` : '') +
       (calcCorporatePo ? `• *No. PO / SPK:* ${calcCorporatePo}\n` : '') +
       (calcLocation ? `• *Wilayah / Kawasan:* ${calcLocation}, Bogor\n` : '') +
@@ -4737,9 +5271,9 @@ startxref
               Badan Usaha Resmi B2B: PT MITRA BERSIH 24 JAM · NIB: 2605260095769 · KBLI 37001
             </div>
             <h1>
-              SEDOT WC &amp; PENGELOLAAN LIMBAH KORPORAT BOGOR<br />PT MITRA BERSIH 24 JAM
+              SEDOT WC &amp; PENGELOLAAN LIMBAH TERPERCAYA<br />PT MITRA BERSIH 24 JAM
               <span className="highlight">
-                Mitra resmi B2B &amp; industri untuk pengurasan septic tank kapasitas besar, IPAL/STP gedung komersial, grease trap restoran &amp; hotel, serta penanganan limbah pabrik se-Bogor. Dilengkapi legalitas PT resmi, Manifes IPLT, Faktur Pajak PPN, dan armada vakum industri bertekanan tinggi!
+                Mitra resmi B2B &amp; industri untuk pengurasan septic tank kapasitas besar, IPAL/STP gedung komersial, grease trap restoran &amp; hotel, serta penanganan limbah pabrik se-Bogor. Dilengkapi legalitas PT resmi, Manifes IPLT, Berita Acara BAST, dan armada vakum industri bertekanan tinggi!
               </span>
             </h1>
             <a
@@ -4761,7 +5295,7 @@ startxref
                 <span>Pengumpulan Air Limbah</span>
               </div>
               <div className="stat">
-                <strong>Faktur Pajak &amp; PT</strong>
+                <strong>BAST &amp; PT Resmi</strong>
                 <span>Legalitas Resmi B2B</span>
               </div>
             </div>
@@ -5428,7 +5962,7 @@ startxref
             </div>
             <div className="badge-pill">
               <i className="fas fa-file-invoice"></i>
-              <span>Faktur Pajak &amp; BAST Resmi</span>
+              <span>Dokumentasi BAST Resmi</span>
             </div>
             <div className="badge-pill">
               <i className="fas fa-shield-alt"></i>
@@ -7408,8 +7942,44 @@ startxref
             </div>
           )}
 
-          {/* Filter Pills: Kategori Limbah & Dokumen Manifes */}
+          {/* Filter Pills: Kategori Limbah, Status Dokumen & Toggle B2B Corporate */}
           <div className="calc-filter-bar fade-in">
+            {/* Toggle B2B Corporate Filter */}
+            <div className="calc-b2b-toggle-wrapper">
+              <button
+                type="button"
+                className={`calc-b2b-toggle-btn ${isB2BCorporateOnly ? 'active' : ''}`}
+                onClick={handleToggleB2BCorporateOnly}
+                aria-pressed={isB2BCorporateOnly}
+                title="Saring khusus layanan B2B Corporate / Sembunyikan layanan konsumer"
+              >
+                <div className="calc-b2b-toggle-indicator">
+                  <span className="calc-b2b-switch-track">
+                    <span className="calc-b2b-switch-thumb"></span>
+                  </span>
+                </div>
+                <div className="calc-b2b-toggle-text">
+                  <span className="calc-b2b-toggle-title">
+                    <i className="fas fa-building"></i> Filter Khusus B2B Corporate
+                  </span>
+                  <span className="calc-b2b-toggle-desc">
+                    {isB2BCorporateOnly
+                      ? 'Menampilkan 3 Layanan Khusus Pabrik & Gedung (Konsumer Disembunyikan)'
+                      : 'Klik untuk memfilter khusus kebutuhan industri, pabrik, & gedung'}
+                  </span>
+                </div>
+                {isB2BCorporateOnly ? (
+                  <span className="calc-b2b-status-badge active">
+                    <i className="fas fa-check-circle"></i> B2B Corporate Aktif
+                  </span>
+                ) : (
+                  <span className="calc-b2b-status-badge">
+                    <i className="fas fa-filter"></i> Saring B2B Saja
+                  </span>
+                )}
+              </button>
+            </div>
+
             <div className="calc-filter-group">
               <span className="calc-filter-label"><i className="fas fa-filter"></i> Kategori Limbah:</span>
               <div className="calc-filter-buttons">
@@ -7418,7 +7988,7 @@ startxref
                   className={`calc-filter-btn ${calcCategoryFilter === 'all' ? 'active' : ''}`}
                   onClick={() => setCalcCategoryFilter('all')}
                 >
-                  Semua ({KALKULATOR_TARIF_LIST.length})
+                  Semua ({isB2BCorporateOnly ? KALKULATOR_TARIF_LIST.filter((i) => i.isB2BCorporate).length : KALKULATOR_TARIF_LIST.length})
                 </button>
                 <button
                   type="button"
@@ -7454,13 +8024,15 @@ startxref
                 >
                   Semua
                 </button>
-                <button
-                  type="button"
-                  className={`calc-filter-btn ${calcManifestFilter === 'non-manifest' ? 'active' : ''}`}
-                  onClick={() => setCalcManifestFilter('non-manifest')}
-                >
-                  <i className="fas fa-home"></i> Non Manifes
-                </button>
+                {!isB2BCorporateOnly && (
+                  <button
+                    type="button"
+                    className={`calc-filter-btn ${calcManifestFilter === 'non-manifest' ? 'active' : ''}`}
+                    onClick={() => setCalcManifestFilter('non-manifest')}
+                  >
+                    <i className="fas fa-home"></i> Non Manifes
+                  </button>
+                )}
                 <button
                   type="button"
                   className={`calc-filter-btn ${calcManifestFilter === 'manifest' ? 'active' : ''}`}
@@ -7472,10 +8044,59 @@ startxref
             </div>
           </div>
 
-          {/* 6 Services Grid Cards */}
+          {/* Active B2B Corporate Banner */}
+          {isB2BCorporateOnly && (
+            <div className="calc-b2b-active-banner fade-in">
+              <div className="calc-b2b-active-banner-left">
+                <span className="calc-b2b-active-pill">
+                  <i className="fas fa-shield-alt"></i> B2B Corporate
+                </span>
+                <span className="calc-b2b-active-banner-text">
+                  <strong>Mode Navigasi Korporat Aktif:</strong> Menyembunyikan layanan konsumer mandiri. Eksklusif menampilkan 3 paket limbah berlegalitas KBLI 37001 dengan <strong>Manifes Resmi Pembuangan IPLT</strong> untuk audit ISO 14001, PROPER LH &amp; UKL-UPL.
+                </span>
+              </div>
+              <div className="calc-b2b-active-banner-actions">
+                <button
+                  type="button"
+                  className="calc-b2b-sph-btn"
+                  onClick={() => handleOpenSphForService(calcSelectedId)}
+                  title="Ajukan Permohonan Surat Penawaran Harga (SPH) Resmi B2B"
+                >
+                  <i className="fas fa-file-invoice"></i> Minta SPH Resmi (Quotation)
+                </button>
+                <button
+                  type="button"
+                  className="calc-b2b-report-btn"
+                  onClick={() => setIsB2bReportModalOpen(true)}
+                  title="Buka Pusat Laporan B2B & Ekspor CSV/Excel"
+                >
+                  <i className="fas fa-file-excel"></i> Laporan &amp; Ekspor CSV ({b2bQuotationHistory.length})
+                </button>
+                <button
+                  type="button"
+                  className="calc-b2b-quick-csv-btn"
+                  onClick={handleExportB2bServicesCsv}
+                  title="Unduh langsung data layanan B2B terfilter ke format CSV / Excel"
+                >
+                  <i className="fas fa-download"></i> Ekspor Layanan (CSV)
+                </button>
+                <button
+                  type="button"
+                  className="calc-b2b-reset-btn"
+                  onClick={handleToggleB2BCorporateOnly}
+                  title="Tampilkan seluruh layanan termasuk konsumer"
+                >
+                  <i className="fas fa-times"></i> Tampilkan Semua
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Services Grid Cards */}
           <div className="calc-services-grid fade-in">
             {KALKULATOR_TARIF_LIST
               .filter((item) => {
+                if (isB2BCorporateOnly && !item.isB2BCorporate) return false;
                 if (calcCategoryFilter !== 'all' && item.category !== calcCategoryFilter) return false;
                 if (calcManifestFilter === 'non-manifest' && item.isManifest) return false;
                 if (calcManifestFilter === 'manifest' && !item.isManifest) return false;
@@ -7494,6 +8115,11 @@ startxref
                         <i className={`fas ${item.icon}`}></i>
                       </div>
                       <div className="calc-card-badges">
+                        {item.isB2BCorporate && (
+                          <span className="calc-card-b2b-badge">
+                            <i className="fas fa-building"></i> B2B Corporate
+                          </span>
+                        )}
                         <span className={`calc-manifest-badge ${item.isManifest ? 'manifest' : 'non-manifest'}`}>
                           {item.isManifest ? (
                             <>
@@ -7526,6 +8152,20 @@ startxref
                       <i className="fas fa-building"></i>
                       <span><strong>Target:</strong> {item.targetProperty}</span>
                     </div>
+
+                    {item.isB2BCorporate && (
+                      <button
+                        type="button"
+                        className="calc-card-sph-link"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenSphForService(item.id);
+                        }}
+                        title={`Minta penawaran resmi SPH untuk ${item.name}`}
+                      >
+                        <i className="fas fa-file-invoice"></i> Minta SPH Resmi (Quotation)
+                      </button>
+                    )}
 
                     <button
                       type="button"
@@ -7726,7 +8366,7 @@ startxref
                         <input
                           id="calc-cust-notes"
                           type="text"
-                          placeholder="Contoh: Butuh Faktur Pajak PPN, Surat Penawaran Harga (SPH), PO/SPK, BAST, jadwal malam hari, dll."
+                          placeholder="Contoh: Butuh Surat Penawaran Harga (SPH), PO/SPK, BAST, jadwal malam hari, dll."
                           value={calcNotes}
                           onChange={(e) => setCalcNotes(e.target.value)}
                         />
@@ -7926,6 +8566,18 @@ startxref
 
                   {/* Actions Buttons */}
                   <div className="calc-receipt-actions">
+                    {selectedCalcItem.isB2BCorporate && (
+                      <button
+                        type="button"
+                        className="calc-b2b-sph-btn"
+                        onClick={() => handleOpenSphForService(selectedCalcItem.id)}
+                        style={{ width: '100%', justifyContent: 'center', marginBottom: '8px' }}
+                        title="Ajukan Permintaan Surat Penawaran Harga (SPH) Resmi untuk Perusahaan"
+                      >
+                        <i className="fas fa-file-invoice"></i> Minta Surat Penawaran Harga (SPH) Resmi
+                      </button>
+                    )}
+
                     <button
                       type="button"
                       className="calc-main-wa-btn"
@@ -11461,6 +12113,1265 @@ startxref
               >
                 <span>Tutup</span>
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL RINCIAN KALKULATOR & LAMPIRAN MANIFES IPLT (PDF) COMPLIANCE */}
+      {isCalcDetailModalOpen && (
+        <div
+          className="calc-modal-overlay fade-in"
+          onClick={() => setIsCalcDetailModalOpen(false)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="calc-modal-container"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="calc-modal-header">
+              <div className="calc-modal-header-left">
+                <div className="calc-modal-badge-row">
+                  <span className="calc-modal-tag-b2b">Corporate &amp; B2B Compliance</span>
+                  <span className="calc-modal-tag-kbli">KBLI 37001 • NIB 2605260095769</span>
+                </div>
+                <h3 className="calc-modal-title">
+                  <i className="fas fa-file-invoice-dollar" style={{ color: '#38BDF8' }}></i>
+                  <span>Rincian Kalkulator &amp; Manifes IPLT Resmi</span>
+                </h3>
+                <p className="calc-modal-subtitle">
+                  Perhitungan Transparan Volume Limbah &amp; Pendokumentasian Berkas Kepatuhan Lingkungan (DLH Kota/Kab. Bogor &amp; KLHK)
+                </p>
+              </div>
+              <button
+                type="button"
+                className="calc-modal-close-btn"
+                onClick={() => setIsCalcDetailModalOpen(false)}
+                aria-label="Tutup Modal"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+
+            {/* Modal Navigation Tabs */}
+            <div className="calc-modal-tabs">
+              <button
+                type="button"
+                className={`calc-modal-tab-btn ${manifestActiveTab === 'manifest' ? 'active' : ''}`}
+                onClick={() => setManifestActiveTab('manifest')}
+              >
+                <i className="fas fa-file-contract"></i>
+                <span>Lampiran Manifes IPLT (PDF)</span>
+                {manifestPdfFile ? (
+                  <span className="calc-tab-badge success"><i className="fas fa-check"></i> Terlampir</span>
+                ) : (
+                  <span className="calc-tab-badge">Wajib Compliance</span>
+                )}
+              </button>
+              <button
+                type="button"
+                className={`calc-modal-tab-btn ${manifestActiveTab === 'detail' ? 'active' : ''}`}
+                onClick={() => setManifestActiveTab('detail')}
+              >
+                <i className="fas fa-calculator"></i>
+                <span>Rincian Lengkap Estimasi &amp; Administrasi B2B</span>
+                <span className="calc-tab-badge">{formatRupiah(calcIncludePpn ? Math.round(calcTotalBiaya * 1.11) : calcTotalBiaya)}</span>
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="calc-modal-body">
+              {manifestActiveTab === 'manifest' && (
+                <div className="manifest-section-container fade-in">
+                  {/* Info Banner for Environmental Compliance */}
+                  <div className="manifest-info-banner">
+                    <i className="fas fa-shield-alt"></i>
+                    <div className="manifest-info-banner-content">
+                      <h5>Legalitas Pembuangan Limbah ke IPLT Pemda Bogor Resmi</h5>
+                      <p>
+                        Setiap pengerjaan sedot limbah cair industri, komersial, dan gedung korporat wajib dilengkapi dengan <strong>Manifes Pembuangan Resmi IPLT</strong> (Instalasi Pengolahan Lumpur Tinja) berizin DLH Kabupaten/Kota Bogor. Dokumen ini merupakan bukti sah untuk kebutuhan audit kepatuhan lingkungan hidup (ISO 14001, PROPER LH, dan laporan UKL-UPL berkala).
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Upload Dropzone if no file attached yet */}
+                  {!manifestPdfFile ? (
+                    <div
+                      className="manifest-upload-dropzone"
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                          handleManifestFileUpload(e.dataTransfer.files[0]);
+                        }
+                      }}
+                    >
+                      <input
+                        type="file"
+                        id="manifest-pdf-input"
+                        accept="application/pdf,.pdf"
+                        style={{ display: 'none' }}
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files.length > 0) {
+                            handleManifestFileUpload(e.target.files[0]);
+                          }
+                        }}
+                      />
+                      <div className="manifest-dropzone-icon">
+                        <i className={isUploadingManifest ? "fas fa-spinner fa-spin" : "fas fa-file-pdf"}></i>
+                      </div>
+                      <h4 className="manifest-dropzone-title">
+                        {isUploadingManifest ? 'Sedang Memproses Dokumen PDF...' : 'Unggah / Lampirkan Berkas Manifes IPLT (Format PDF)'}
+                      </h4>
+                      <p className="manifest-dropzone-subtitle">
+                        Tarik &amp; letakkan file PDF manifes Anda di sini, atau klik tombol di bawah untuk memilih berkas dari komputer/smartphone
+                      </p>
+                      <div className="manifest-dropzone-badge">
+                        <i className="fas fa-check-circle text-green-600"></i> Hanya Dokumen PDF Resmi (.pdf) • Ukuran Maksimal 20 MB
+                      </div>
+
+                      {manifestUploadError && (
+                        <div style={{ color: '#DC2626', fontSize: '12.5px', fontWeight: 700, marginTop: '8px' }}>
+                          <i className="fas fa-exclamation-triangle"></i> {manifestUploadError}
+                        </div>
+                      )}
+
+                      <div className="manifest-dropzone-actions">
+                        <button
+                          type="button"
+                          className="manifest-choose-file-btn"
+                          onClick={() => document.getElementById('manifest-pdf-input')?.click()}
+                          disabled={isUploadingManifest}
+                        >
+                          <i className="fas fa-upload"></i>
+                          <span>Pilih File PDF Manifes</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          className="manifest-sample-btn"
+                          onClick={handleAttachSampleManifest}
+                          disabled={isUploadingManifest}
+                          title="Lampirkan Dokumen Contoh Manifes IPLT Resmi PT Mitra Bersih 24 Jam"
+                        >
+                          <i className="fas fa-magic"></i>
+                          <span>Lampirkan Contoh Manifes Resmi (Simulasi)</span>
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    /* Attached Manifest File Card */
+                    <div className="manifest-attached-card fade-in">
+                      <div className="manifest-attached-header">
+                        <div className="manifest-attached-file-info">
+                          <div className="manifest-pdf-icon-box">
+                            <i className="fas fa-file-pdf"></i>
+                          </div>
+                          <div>
+                            <div className="manifest-file-name">{manifestPdfFile.fileName}</div>
+                            <div className="manifest-file-meta">
+                              Ukuran: <strong>{manifestPdfFile.fileSizeFormatted}</strong> • Diunggah: <strong>{manifestPdfFile.uploadTimestamp}</strong>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="manifest-verified-badge">
+                          <i className="fas fa-check-circle"></i>
+                          <span>IPLT Compliance Terverifikasi</span>
+                        </div>
+                      </div>
+
+                      {/* Manifest Metadata Form */}
+                      <div className="manifest-meta-fields">
+                        <div className="manifest-meta-field">
+                          <label>Nomor Registrasi Manifes IPLT</label>
+                          <input
+                            type="text"
+                            value={manifestPdfFile.docNumber}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setManifestPdfFile((prev) => prev ? { ...prev, docNumber: val } : null);
+                              setManifestDocNumber(val);
+                            }}
+                            placeholder="Contoh: MNF-IPLT/BGR/2026/0488"
+                          />
+                        </div>
+
+                        <div className="manifest-meta-field">
+                          <label>Instalasi Pengolahan Lumpur Tinja (IPLT)</label>
+                          <select
+                            value={manifestPdfFile.destinationIplt}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setManifestPdfFile((prev) => prev ? { ...prev, destinationIplt: val } : null);
+                              setManifestDestination(val);
+                            }}
+                          >
+                            <option value="IPLT Kayumanis (Dinas Perumahan & Kawasan Permukiman Kota Bogor)">IPLT Kayumanis - Kota Bogor</option>
+                            <option value="IPLT Kalisuren (Dinas Lingkungan Hidup Kab. Bogor)">IPLT Kalisuren - Kab. Bogor</option>
+                            <option value="IPLT Cipayung (Depok / Perbatasan Cibinong)">IPLT Cipayung - Perbatasan Cibinong</option>
+                          </select>
+                        </div>
+
+                        <div className="manifest-meta-field">
+                          <label>Tanggal Pelaksanaan Pembuangan</label>
+                          <input
+                            type="date"
+                            value={manifestPdfFile.transportDate || new Date().toISOString().split('T')[0]}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setManifestPdfFile((prev) => prev ? { ...prev, transportDate: val } : null);
+                            }}
+                          />
+                        </div>
+
+                        <div className="manifest-meta-field">
+                          <label>Standar Audit Lingkungan</label>
+                          <input
+                            type="text"
+                            readOnly
+                            value="KBLI 37001 • AMDAL / UKL-UPL • ISO 14001"
+                            style={{ background: '#F1F5F9', color: '#475569' }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Action buttons on attached file */}
+                      <div className="manifest-card-actions">
+                        <button
+                          type="button"
+                          className="manifest-act-btn manifest-act-preview"
+                          onClick={() => setIsManifestPreviewModalOpen(true)}
+                          title="Buka pratinjau PDF dokumen manifes"
+                        >
+                          <i className="fas fa-eye"></i>
+                          <span>Pratinjau PDF</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          className="manifest-act-btn manifest-act-download"
+                          onClick={handleDownloadManifestPdf}
+                          title="Unduh kembali berkas PDF manifes ini"
+                        >
+                          <i className="fas fa-download"></i>
+                          <span>Unduh File PDF</span>
+                        </button>
+
+                        <label className="manifest-act-btn manifest-act-replace" style={{ cursor: 'pointer' }}>
+                          <i className="fas fa-sync-alt"></i>
+                          <span>Ganti File PDF</span>
+                          <input
+                            type="file"
+                            accept="application/pdf,.pdf"
+                            style={{ display: 'none' }}
+                            onChange={(e) => {
+                              if (e.target.files && e.target.files.length > 0) {
+                                handleManifestFileUpload(e.target.files[0]);
+                              }
+                            }}
+                          />
+                        </label>
+
+                        <button
+                          type="button"
+                          className="manifest-act-btn manifest-act-delete"
+                          onClick={handleRemoveManifestPdf}
+                          title="Hapus lampiran dokumen manifes"
+                        >
+                          <i className="fas fa-trash-alt"></i>
+                          <span>Hapus Lampiran</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Corporate Compliance Checklist */}
+                  <div style={{ background: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '12px', padding: '14px 18px' }}>
+                    <div style={{ fontWeight: 800, fontSize: '13px', color: '#0F172A', marginBottom: '8px' }}>
+                      <i className="fas fa-clipboard-check text-blue-600"></i> Standar Jaminan Kepatuhan Korporat PT Mitra Bersih 24 Jam:
+                    </div>
+                    <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '12.5px', color: '#475569', lineHeight: 1.6 }}>
+                      <li><strong>Legalitas KBLI 37001 &amp; NIB 2605260095769</strong> terdaftar resmi di sistem OSS Republik Indonesia.</li>
+                      <li><strong>Disposal Berizin:</strong> 100% limbah cair dialirkan langsung ke Instalasi Pengolahan Lumpur Tinja (IPLT) Pemda Bogor.</li>
+                      <li><strong>Berita Acara &amp; Dokumentasi:</strong> Dilengkapi Berita Acara Serah Terima (BAST) pekerjaan &amp; bukti timbang.</li>
+                      <li><strong>Administrasi Resmi:</strong> Menerbitkan invoice resmi dan kwitansi sah untuk administrasi perusahaan.</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              {manifestActiveTab === 'detail' && (
+                <div className="calc-detail-breakdown-tab fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {/* Technical Breakdown Grid */}
+                  <div className="calc-detail-grid">
+                    <div className="calc-detail-cell">
+                      <span className="label">Jenis Layanan</span>
+                      <span className="value">{selectedCalcItem.name}</span>
+                    </div>
+                    <div className="calc-detail-cell">
+                      <span className="label">Kategori Limbah</span>
+                      <span className="value">{selectedCalcItem.categoryLabel}</span>
+                    </div>
+                    <div className="calc-detail-cell">
+                      <span className="label">Volume Pekerjaan</span>
+                      <span className="value highlight">{calcVolume} m³ (Kubikasi Riil)</span>
+                    </div>
+                    <div className="calc-detail-cell">
+                      <span className="label">Tarif Satuan Jasa</span>
+                      <span className="value">{formatRupiah(selectedCalcItem.pricePerM3)} / m³</span>
+                    </div>
+                    <div className="calc-detail-cell">
+                      <span className="label">Wilayah Operasional</span>
+                      <span className="value">{calcLocation ? `${calcLocation}, Bogor` : 'Seluruh Bogor & Sekitarnya'}</span>
+                    </div>
+                    <div className="calc-detail-cell">
+                      <span className="label">Jenis Properti / Fasilitas</span>
+                      <span className="value">{calcProperty}</span>
+                    </div>
+                    <div className="calc-detail-cell">
+                      <span className="label">Estimasi Durasi Kerja</span>
+                      <span className="value" style={{ color: '#0284C7' }}>
+                        {getEstimatedDuration(calcVolume, selectedCalcItem.category)}
+                      </span>
+                    </div>
+                    <div className="calc-detail-cell">
+                      <span className="label">Dokumen Manifes IPLT</span>
+                      <span className="value" style={{ color: manifestPdfFile ? '#16A34A' : '#D97706' }}>
+                        {manifestPdfFile ? `✓ Terlampir (${manifestPdfFile.docNumber})` : 'Belum Dilampirkan'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Corporate Billing & Tax Box */}
+                  <div className="calc-corporate-tax-card">
+                    <div className="calc-tax-toggle-row">
+                      <label className="calc-tax-checkbox-label">
+                        <input
+                          type="checkbox"
+                          checked={calcIncludePpn}
+                          onChange={(e) => setCalcIncludePpn(e.target.checked)}
+                        />
+                        <span>Penyesuaian Pajak PPN 11% (Khusus Klien Korporat B2B)</span>
+                      </label>
+                      <span style={{ fontSize: '13px', fontWeight: 800, color: '#166534' }}>
+                        {calcIncludePpn ? `Total + PPN: ${formatRupiah(Math.round(calcTotalBiaya * 1.11))}` : `DPP Jasa: ${formatRupiah(calcTotalBiaya)}`}
+                      </span>
+                    </div>
+
+                    {calcIncludePpn && (
+                      <div className="calc-tax-inputs-grid fade-in">
+                        <div className="calc-tax-field">
+                          <label>Nomor Pokok Wajib Pajak (NPWP Perusahaan)</label>
+                          <input
+                            type="text"
+                            placeholder="Contoh: 01.234.567.8-412.000"
+                            value={calcNpwp}
+                            onChange={(e) => setCalcNpwp(e.target.value)}
+                          />
+                        </div>
+                        <div className="calc-tax-field">
+                          <label>No. Purchase Order (PO) / SPK Internal</label>
+                          <input
+                            type="text"
+                            placeholder="Contoh: PO-B2B/2026/MB-889"
+                            value={calcCorporatePo}
+                            onChange={(e) => setCalcCorporatePo(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer Actions */}
+            <div className="calc-modal-footer">
+              <div className="calc-modal-footer-left">
+                <i className="fas fa-lock text-green-600"></i>
+                <span>Data kalkulasi &amp; manifes terenkripsi aman</span>
+              </div>
+              <div className="calc-modal-footer-right">
+                <button
+                  type="button"
+                  className="calc-modal-btn-close"
+                  onClick={() => setIsCalcDetailModalOpen(false)}
+                >
+                  Tutup
+                </button>
+
+                <button
+                  type="button"
+                  className="calc-modal-btn-pdf"
+                  onClick={() => {
+                    setIsCalcDetailModalOpen(false);
+                    handleExecutePrint();
+                  }}
+                  title="Cetak Dokumen Resmi Estimasi & Manifes sebagai PDF"
+                >
+                  <i className="fas fa-file-pdf"></i>
+                  <span>Cetak PDF Resmi</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="calc-modal-btn-qris"
+                  onClick={() => {
+                    setIsCalcDetailModalOpen(false);
+                    setIsQrisModalOpen(true);
+                  }}
+                  title="Buka QRIS Pembayaran Resmi"
+                >
+                  <i className="fas fa-qrcode"></i>
+                  <span>Bayar QRIS Dinamis</span>
+                </button>
+
+                <button
+                  type="button"
+                  className="calc-modal-btn-wa"
+                  onClick={() => handleCalcOrderWa()}
+                  title="Kirim detail pesanan beserta nomor manifes ke WhatsApp CS"
+                >
+                  <i className="fab fa-whatsapp"></i>
+                  <span>Pesan via WhatsApp</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL PRATINJAU FILE MANIFES IPLT (PDF VIEWER) */}
+      {isManifestPreviewModalOpen && manifestPdfFile && (
+        <div
+          className="manifest-preview-modal-overlay fade-in"
+          onClick={() => setIsManifestPreviewModalOpen(false)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            className="manifest-preview-modal-container"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="manifest-preview-header">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <i className="fas fa-file-pdf" style={{ color: '#EF4444', fontSize: '18px' }}></i>
+                <div>
+                  <h4 style={{ margin: 0, fontSize: '15px', color: '#F8FAFC' }}>
+                    Pratinjau Manifes IPLT: {manifestPdfFile.fileName}
+                  </h4>
+                  <p style={{ margin: 0, fontSize: '12px', color: '#94A3B8' }}>
+                    No: {manifestPdfFile.docNumber} • Ukuran: {manifestPdfFile.fileSizeFormatted}
+                  </p>
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <button
+                  type="button"
+                  className="manifest-act-btn manifest-act-download"
+                  onClick={handleDownloadManifestPdf}
+                  style={{ background: '#0284C7', color: '#FFFFFF', border: 'none' }}
+                >
+                  <i className="fas fa-download"></i>
+                  <span>Unduh PDF</span>
+                </button>
+                <button
+                  type="button"
+                  className="calc-modal-close-btn"
+                  onClick={() => setIsManifestPreviewModalOpen(false)}
+                  aria-label="Tutup Pratinjau"
+                >
+                  <i className="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+
+            <div className="manifest-preview-body">
+              <iframe
+                src={manifestPdfFile.pdfDataUrl}
+                title="Pratinjau Dokumen Manifes IPLT PDF"
+                className="manifest-pdf-iframe"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL PERMINTAAN SURAT PENAWARAN HARGA (SPH) B2B CORPORATE */}
+      {isSphModalOpen && (
+        <div
+          className="sph-modal-overlay fade-in"
+          onClick={() => setIsSphModalOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="sph-modal-title"
+        >
+          <div
+            className="sph-modal-container"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="sph-modal-header">
+              <div className="sph-modal-header-left">
+                <span className="sph-modal-badge">
+                  <i className="fas fa-building"></i> Divisi B2B &amp; Corporate
+                </span>
+                <h3 id="sph-modal-title" className="sph-modal-title">
+                  <i className="fas fa-file-invoice text-sky-400"></i> Permohonan Surat Penawaran Harga (SPH) Resmi
+                </h3>
+                <p className="sph-modal-subtitle">
+                  Formulir pengajuan quotation resmi berkop surat <strong>PT MITRA BERSIH 24 JAM</strong> lengkap dengan legalitas KBLI 37001 dan bukti manifes IPLT.
+                </p>
+              </div>
+              <button
+                type="button"
+                className="calc-modal-close-btn"
+                onClick={() => setIsSphModalOpen(false)}
+                aria-label="Tutup Formulir SPH"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+
+            {/* Modal Body / Form */}
+            <form onSubmit={handleSendSphWa} className="sph-modal-body">
+              {/* Section 1: Informasi Legalitas & Profil Perusahaan */}
+              <div className="sph-form-section">
+                <h4 className="sph-section-title">
+                  <i className="fas fa-building"></i> 1. Profil &amp; Legalitas Perusahaan Klien
+                </h4>
+                <div className="sph-form-grid-2">
+                  <div className="sph-form-field">
+                    <label>
+                      Nama Perusahaan / PT / CV / Pabrik <span className="req">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="Contoh: PT Sumber Pangan Makmur"
+                      value={sphCompanyName}
+                      onChange={(e) => setSphCompanyName(e.target.value)}
+                    />
+                  </div>
+                  <div className="sph-form-field">
+                    <label>
+                      Nomor Pokok Wajib Pajak (NPWP Perusahaan)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Contoh: 01.234.567.8-412.000"
+                      value={sphNpwp}
+                      onChange={(e) => setSphNpwp(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="sph-form-grid-3">
+                  <div className="sph-form-field">
+                    <label>No. PO / Referensi RFQ / SPK</label>
+                    <input
+                      type="text"
+                      placeholder="Contoh: PO/2026/MB-901"
+                      value={sphPoNumber}
+                      onChange={(e) => setSphPoNumber(e.target.value)}
+                    />
+                  </div>
+                  <div className="sph-form-field">
+                    <label>Nama PIC (Person in Charge)</label>
+                    <input
+                      type="text"
+                      placeholder="Contoh: Bpk. Hendra Gunawan"
+                      value={sphPicName}
+                      onChange={(e) => setSphPicName(e.target.value)}
+                    />
+                  </div>
+                  <div className="sph-form-field">
+                    <label>Divisi / Jabatan PIC</label>
+                    <select
+                      value={sphPicRole}
+                      onChange={(e) => setSphPicRole(e.target.value)}
+                    >
+                      <option value="Procurement / Purchasing">Procurement / Purchasing</option>
+                      <option value="HSE / EHS (Kesehatan & Keselamatan Kerja)">HSE / EHS (Lingkungan Hidup)</option>
+                      <option value="General Affairs (GA)">General Affairs (GA)</option>
+                      <option value="Facility / Maintenance Engineering">Facility / Maintenance Engineering</option>
+                      <option value="Direksi / Manajemen Puncak">Direksi / Manajemen Puncak</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="sph-form-grid-2">
+                  <div className="sph-form-field">
+                    <label>No. Telepon / WhatsApp PIC</label>
+                    <input
+                      type="tel"
+                      placeholder="Contoh: 0812-9876-5432"
+                      value={sphPhone}
+                      onChange={(e) => setSphPhone(e.target.value)}
+                    />
+                  </div>
+                  <div className="sph-form-field">
+                    <label>Email Resmi Perusahaan</label>
+                    <input
+                      type="email"
+                      placeholder="procurement@perusahaan.co.id"
+                      value={sphEmail}
+                      onChange={(e) => setSphEmail(e.target.value)}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 2: Spesifikasi Pekerjaan & Lokasi Fasilitas */}
+              <div className="sph-form-section">
+                <h4 className="sph-section-title">
+                  <i className="fas fa-truck-moving"></i> 2. Lingkup Layanan, Volume &amp; Lokasi Site
+                </h4>
+                <div className="sph-form-grid-3">
+                  <div className="sph-form-field">
+                    <label>Pilihan Layanan B2B</label>
+                    <select
+                      value={sphServiceId}
+                      onChange={(e) => {
+                        setSphServiceId(e.target.value);
+                        setCalcSelectedId(e.target.value);
+                      }}
+                    >
+                      {KALKULATOR_TARIF_LIST.map((it) => (
+                        <option key={it.id} value={it.id}>
+                          {it.name} ({formatRupiah(it.pricePerM3)}/m³)
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="sph-form-field">
+                    <label>Estimasi Volume (m³ / Kubik)</label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={200}
+                      value={sphVolume}
+                      onChange={(e) => setSphVolume(Math.max(1, parseInt(e.target.value, 10) || 1))}
+                    />
+                  </div>
+                  <div className="sph-form-field">
+                    <label>Tipe Kontrak Pengadaan</label>
+                    <select
+                      value={sphContractType}
+                      onChange={(e) => setSphContractType(e.target.value)}
+                    >
+                      <option value="Pekerjaan Sekali Selesai (One-Off Project)">Pekerjaan Sekali Selesai (One-Off)</option>
+                      <option value="Perawatan Berkala Bulanan (Monthly Routine)">Perawatan Berkala Bulanan</option>
+                      <option value="Kontrak Kerja Sama Tahunan (MoU B2B)">Kontrak Tahunan (MoU B2B)</option>
+                      <option value="Pengadaan Tender Terbuka">Pengadaan Tender Terbuka</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="sph-form-grid-2">
+                  <div className="sph-form-field">
+                    <label>Kawasan / Area Operasional Bogor</label>
+                    <select
+                      value={sphLocation}
+                      onChange={(e) => setSphLocation(e.target.value)}
+                    >
+                      <option value="Kawasan Industri Sentul">Kawasan Industri Sentul (Babakan Madang)</option>
+                      <option value="Kawasan Industri Menara Permai Cileungsi">Kawasan Industri Menara Permai Cileungsi</option>
+                      <option value="Cibinong / Citeureup (Area Pabrik Semen & Kimia)">Cibinong / Citeureup (Area Pabrik)</option>
+                      <option value="Gunung Putri / Wanaherang">Gunung Putri / Wanaherang</option>
+                      <option value="Kawasan Industri Cicadas / Klapanunggal">Kawasan Cicadas / Klapanunggal</option>
+                      <option value="Sentul City / Babakan Madang (Komersial & Hotel)">Sentul City (Hotel / Komersial)</option>
+                      <option value="Kota Bogor (Pusat Bisnis & Rumah Sakit)">Kota Bogor (Pusat Bisnis / RS)</option>
+                      <option value="Kawasan Parung / Kemang">Kawasan Parung / Kemang</option>
+                      <option value="Lainnya di Bogor & Sekitarnya">Lainnya di Bogor &amp; Sekitarnya</option>
+                    </select>
+                  </div>
+                  <div className="sph-form-field">
+                    <label>Target Tanggal Pelaksanaan</label>
+                    <input
+                      type="date"
+                      value={sphTargetDate}
+                      onChange={(e) => setSphTargetDate(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="sph-form-field">
+                  <label>Alamat Lengkap Site / Pabrik / Fasilitas</label>
+                  <input
+                    type="text"
+                    placeholder="Contoh: Jl. Olympic Raya Kav. 8, Sentul Industrial Estate, Bogor"
+                    value={sphAddress}
+                    onChange={(e) => setSphAddress(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* Section 3: Persyaratan Khusus Site & Compliance (Checkboxes) */}
+              <div className="sph-form-section">
+                <h4 className="sph-section-title">
+                  <i className="fas fa-clipboard-check"></i> 3. Persyaratan Khusus Site &amp; Compliance Lingkungan
+                </h4>
+                <div className="sph-site-req-grid">
+                  {[
+                    'Wajib Induksi K3 & APD Lengkap (Safety First)',
+                    'Wajib Manifes Resmi Pembuangan IPLT (DLH)',
+                    'Penerbitan Berita Acara BAST (Serah Terima Pekerjaan)',
+                    'Surat Izin Masuk Kawasan Berikat / Kawasan Industri',
+                    'Pengerjaan di Luar Jam Operasional / Shift Malam',
+                    'Panjang Selang Khusus (>50 Meter Menuju Tangki)'
+                  ].map((req) => {
+                    const isChecked = sphSiteRequirements.includes(req);
+                    return (
+                      <label
+                        key={req}
+                        className={`sph-site-req-item ${isChecked ? 'active' : ''}`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => handleToggleSiteRequirement(req)}
+                        />
+                        <span>{req}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+
+                <div className="sph-form-field" style={{ marginTop: '6px' }}>
+                  <label>Catatan Khusus Site / Spesifikasi Tambahan</label>
+                  <textarea
+                    rows={2}
+                    placeholder="Contoh: Titik manhole berada di basement gedung B, parkir armada maksimal tinggi 2.8m, mohon siapkan selang spiral 70m..."
+                    value={sphNotes}
+                    onChange={(e) => setSphNotes(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              {/* Section 4: Estimasi Nilai Dasar */}
+              {(() => {
+                const sService = KALKULATOR_TARIF_LIST.find((it) => it.id === sphServiceId) || KALKULATOR_TARIF_LIST[1];
+                const estTotal = sService.pricePerM3 * sphVolume;
+                return (
+                  <div style={{ background: '#F0F9FF', border: '1px solid #BAE6FD', borderRadius: '12px', padding: '14px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+                    <div>
+                      <div style={{ fontSize: '12px', color: '#0369A1', fontWeight: 700 }}>
+                        Estimasi Dasar Jasa ({sphVolume} m³ x {formatRupiah(sService.pricePerM3)}/m³):
+                      </div>
+                      <div style={{ fontSize: '18px', fontWeight: 900, color: '#0C4A6E' }}>
+                        {formatRupiah(estTotal)} <span style={{ fontSize: '12px', fontWeight: 600, color: '#64748B' }}>(DPP Jasa Belum Termasuk PPN 11%)</span>
+                      </div>
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#0369A1', textAlign: 'right' }}>
+                      <i className="fas fa-check-circle text-green-600"></i> Diskon Khusus Kontrak Berkala &amp; Volume &gt; 15 m³
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Modal Footer Actions */}
+              <div className="sph-modal-footer">
+                <div className="sph-footer-guarantee">
+                  <i className="fas fa-shield-alt text-blue-600"></i>
+                  <span>Legalitas KBLI 37001 • NIB 2605260095769 • Garansi Resmi</span>
+                </div>
+                <div className="sph-footer-actions">
+                  <button
+                    type="button"
+                    className="b2b-btn-secondary"
+                    onClick={() => {
+                      setIsSphModalOpen(false);
+                      setIsB2bReportModalOpen(true);
+                    }}
+                    title="Buka Pusat Laporan & Riwayat SPH Korporat"
+                  >
+                    <i className="fas fa-history"></i>
+                    <span>Riwayat SPH ({b2bQuotationHistory.length})</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="sph-btn-copy"
+                    onClick={handleCopySphDraft}
+                    title="Salin draft SPH resmi ke clipboard"
+                  >
+                    <i className="fas fa-copy"></i>
+                    <span>Salin Format SPH</span>
+                  </button>
+                  <button
+                    type="submit"
+                    className="sph-btn-wa"
+                    title="Kirim permohonan SPH resmi ke Divisi B2B WhatsApp"
+                  >
+                    <i className="fab fa-whatsapp"></i>
+                    <span>Kirim Permintaan SPH ke Tim B2B</span>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL PUSAT LAPORAN B2B & RIWAYAT QUOTATION SPH (EXPORT CSV / EXCEL) */}
+      {isB2bReportModalOpen && (
+        <div
+          className="b2b-report-modal-overlay fade-in"
+          onClick={() => setIsB2bReportModalOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="b2b-report-title"
+        >
+          <div
+            className="b2b-report-modal-container"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="b2b-report-header">
+              <div className="b2b-report-header-left">
+                <span className="b2b-report-badge">
+                  <i className="fas fa-file-excel"></i> Corporate Reporting &amp; Audit Portal
+                </span>
+                <h3 id="b2b-report-title" className="b2b-report-title">
+                  <i className="fas fa-chart-line text-emerald-400"></i> Pusat Laporan B2B &amp; Riwayat Quotation SPH
+                </h3>
+                <p className="b2b-report-subtitle">
+                  Dokumentasi compliance audit lingkungan (ISO 14001 / AMDAL / UKL-UPL) PT MITRA BERSIH 24 JAM. Dilengkapi fitur ekspor data ke format CSV / Excel untuk pelaporan korporat &amp; procurement.
+                </p>
+              </div>
+              <button
+                type="button"
+                className="calc-modal-close-btn"
+                onClick={() => setIsB2bReportModalOpen(false)}
+                aria-label="Tutup Pusat Laporan B2B"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="b2b-report-body">
+              {/* Executive Metrics Overview */}
+              <div className="b2b-metrics-grid">
+                <div className="b2b-metric-card">
+                  <div className="b2b-metric-icon green">
+                    <i className="fas fa-file-invoice"></i>
+                  </div>
+                  <div className="b2b-metric-info">
+                    <span className="b2b-metric-label">Total Permintaan SPH</span>
+                    <strong className="b2b-metric-value">{b2bQuotationHistory.length} Berkas</strong>
+                  </div>
+                </div>
+
+                <div className="b2b-metric-card">
+                  <div className="b2b-metric-icon blue">
+                    <i className="fas fa-cubes"></i>
+                  </div>
+                  <div className="b2b-metric-info">
+                    <span className="b2b-metric-label">Estimasi Kubikasi (m³)</span>
+                    <strong className="b2b-metric-value">
+                      {b2bQuotationHistory.reduce((acc, it) => acc + it.volumeM3, 0)} m³
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="b2b-metric-card">
+                  <div className="b2b-metric-icon amber">
+                    <i className="fas fa-money-bill-wave"></i>
+                  </div>
+                  <div className="b2b-metric-info">
+                    <span className="b2b-metric-label">Nilai Pengadaan Terdata</span>
+                    <strong className="b2b-metric-value">
+                      {formatRupiah(b2bQuotationHistory.reduce((acc, it) => acc + it.grandTotal, 0))}
+                    </strong>
+                  </div>
+                </div>
+
+                <div className="b2b-metric-card">
+                  <div className="b2b-metric-icon purple">
+                    <i className="fas fa-shield-alt"></i>
+                  </div>
+                  <div className="b2b-metric-info">
+                    <span className="b2b-metric-label">Layanan B2B Aktif</span>
+                    <strong className="b2b-metric-value">
+                      {KALKULATOR_TARIF_LIST.filter((i) => i.isB2BCorporate).length} Layanan KBLI
+                    </strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Navigation Tabs */}
+              <div className="b2b-report-tabs">
+                <button
+                  type="button"
+                  className={`b2b-report-tab-btn ${b2bReportActiveTab === 'quotations' ? 'active' : ''}`}
+                  onClick={() => setB2bReportActiveTab('quotations')}
+                >
+                  <i className="fas fa-history"></i> Riwayat Permintaan SPH ({b2bQuotationHistory.length})
+                </button>
+                <button
+                  type="button"
+                  className={`b2b-report-tab-btn ${b2bReportActiveTab === 'services' ? 'active' : ''}`}
+                  onClick={() => setB2bReportActiveTab('services')}
+                >
+                  <i className="fas fa-list-check"></i> Katalog Layanan B2B Terfilter ({
+                    KALKULATOR_TARIF_LIST.filter((item) => {
+                      if (isB2BCorporateOnly && !item.isB2BCorporate) return false;
+                      if (calcCategoryFilter !== 'all' && item.category !== calcCategoryFilter) return false;
+                      if (calcManifestFilter === 'non-manifest' && item.isManifest) return false;
+                      if (calcManifestFilter === 'manifest' && !item.isManifest) return false;
+                      return true;
+                    }).length
+                  })
+                </button>
+                <button
+                  type="button"
+                  className={`b2b-report-tab-btn ${b2bReportActiveTab === 'audit' ? 'active' : ''}`}
+                  onClick={() => setB2bReportActiveTab('audit')}
+                >
+                  <i className="fas fa-certificate"></i> Ringkasan Audit &amp; Legalitas Lingkungan
+                </button>
+              </div>
+
+              {/* Tab 1: Riwayat Permintaan SPH */}
+              {b2bReportActiveTab === 'quotations' && (
+                <div className="b2b-tab-content fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  {/* Toolbar */}
+                  <div className="b2b-table-toolbar">
+                    <div className="b2b-search-wrap">
+                      <i className="fas fa-search"></i>
+                      <input
+                        type="text"
+                        className="b2b-search-input"
+                        placeholder="Cari PT, no PO, PIC, atau no SPH..."
+                        value={b2bHistorySearch}
+                        onChange={(e) => setB2bHistorySearch(e.target.value)}
+                      />
+                      {b2bHistorySearch && (
+                        <button
+                          type="button"
+                          onClick={() => setB2bHistorySearch('')}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94A3B8' }}
+                        >
+                          <i className="fas fa-times"></i>
+                        </button>
+                      )}
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <select
+                        className="b2b-filter-select"
+                        value={b2bHistoryStatusFilter}
+                        onChange={(e) => setB2bHistoryStatusFilter(e.target.value)}
+                      >
+                        <option value="all">Semua Status SPH</option>
+                        <option value="Diajukan">Status: Diajukan</option>
+                        <option value="SPH Terbit">Status: SPH Terbit</option>
+                        <option value="Proses PO">Status: Proses PO</option>
+                        <option value="Selesai">Status: Selesai</option>
+                      </select>
+                    </div>
+
+                    <div className="b2b-toolbar-actions">
+                      <button
+                        type="button"
+                        className="b2b-export-main-btn"
+                        onClick={handleExportQuotationHistoryCsv}
+                        title="Unduh seluruh riwayat permintaan SPH ke file CSV / Excel"
+                      >
+                        <i className="fas fa-file-excel"></i>
+                        <span>Ekspor Riwayat SPH (.CSV)</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        className="b2b-btn-secondary"
+                        onClick={() => {
+                          setIsB2bReportModalOpen(false);
+                          setIsSphModalOpen(true);
+                        }}
+                        title="Buat permohonan SPH baru"
+                      >
+                        <i className="fas fa-plus"></i>
+                        <span>Pengajuan SPH Baru</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Table */}
+                  <div className="b2b-table-responsive">
+                    <table className="b2b-data-table">
+                      <thead>
+                        <tr>
+                          <th>No. SPH &amp; Tanggal</th>
+                          <th>Nama Perusahaan</th>
+                          <th>No. PO / RFQ</th>
+                          <th>Layanan &amp; Volume</th>
+                          <th>Nilai Penawaran (IDR)</th>
+                          <th>Lokasi Kawasan</th>
+                          <th>Status</th>
+                          <th>Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {b2bQuotationHistory
+                          .filter((rec) => {
+                            if (b2bHistoryStatusFilter !== 'all' && rec.status !== b2bHistoryStatusFilter) return false;
+                            if (b2bHistorySearch.trim()) {
+                              const q = b2bHistorySearch.toLowerCase();
+                              return (
+                                rec.companyName.toLowerCase().includes(q) ||
+                                rec.id.toLowerCase().includes(q) ||
+                                rec.poNumber.toLowerCase().includes(q) ||
+                                rec.picName.toLowerCase().includes(q) ||
+                                rec.location.toLowerCase().includes(q)
+                              );
+                            }
+                            return true;
+                          })
+                          .map((rec) => {
+                            const statusClass =
+                              rec.status === 'SPH Terbit'
+                                ? 'terbit'
+                                : rec.status === 'Proses PO'
+                                ? 'proses'
+                                : rec.status === 'Selesai'
+                                ? 'selesai'
+                                : 'diajukan';
+
+                            return (
+                              <tr key={rec.id}>
+                                <td>
+                                  <strong style={{ color: '#0369A1' }}>{rec.id}</strong>
+                                  <div style={{ fontSize: '11px', color: '#64748B' }}>{rec.timestamp}</div>
+                                </td>
+                                <td>
+                                  <strong>{rec.companyName}</strong>
+                                  <div style={{ fontSize: '11px', color: '#64748B' }}>
+                                    PIC: {rec.picName || '-'} ({rec.picRole})
+                                  </div>
+                                  {rec.npwp && (
+                                    <div style={{ fontSize: '10.5px', color: '#0284C7' }}>NPWP: {rec.npwp}</div>
+                                  )}
+                                </td>
+                                <td>
+                                  <span style={{ fontFamily: 'monospace', fontWeight: 600, color: '#334155' }}>
+                                    {rec.poNumber || '-'}
+                                  </span>
+                                </td>
+                                <td>
+                                  <div>{rec.serviceName}</div>
+                                  <div style={{ fontSize: '11px', color: '#059669', fontWeight: 700 }}>
+                                    {rec.volumeM3} m³ • {rec.contractType}
+                                  </div>
+                                </td>
+                                <td>
+                                  <strong style={{ color: '#0F172A' }}>{formatRupiah(rec.grandTotal)}</strong>
+                                  <div style={{ fontSize: '10.5px', color: '#64748B' }}>
+                                    DPP: {formatRupiah(rec.totalDpp)} + PPN
+                                  </div>
+                                </td>
+                                <td>
+                                  <div style={{ fontSize: '12px' }}>{rec.location}</div>
+                                </td>
+                                <td>
+                                  <span className={`b2b-status-pill ${statusClass}`}>
+                                    <i className="fas fa-circle" style={{ fontSize: '6px' }}></i>
+                                    {rec.status}
+                                  </span>
+                                </td>
+                                <td>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const text = `*STATUS SPH ${rec.id} - PT MITRA BERSIH 24 JAM*\nPerusahaan: ${rec.companyName}\nLayanan: ${rec.serviceName} (${rec.volumeM3} m3)\nTotal: ${formatRupiah(rec.grandTotal)}\nStatus: ${rec.status}`;
+                                      navigator.clipboard.writeText(text);
+                                      setCalcToast(`Detail SPH ${rec.id} disalin ke clipboard!`);
+                                    }}
+                                    style={{
+                                      background: '#F1F5F9',
+                                      border: '1px solid #CBD5E1',
+                                      borderRadius: '6px',
+                                      padding: '4px 8px',
+                                      fontSize: '11px',
+                                      cursor: 'pointer',
+                                      fontWeight: 600
+                                    }}
+                                    title="Salin ringkasan SPH"
+                                  >
+                                    <i className="fas fa-copy"></i>
+                                  </button>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 2: Katalog Layanan B2B Terfilter */}
+              {b2bReportActiveTab === 'services' && (
+                <div className="b2b-tab-content fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  <div className="b2b-table-toolbar">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '13px', color: '#334155', fontWeight: 700 }}>
+                        <i className="fas fa-filter text-emerald-600"></i> Mode Filter Aktif:
+                      </span>
+                      <span className="b2b-status-pill terbit">
+                        {isB2BCorporateOnly ? 'Khusus B2B Corporate' : 'Seluruh Katalog Layanan'}
+                      </span>
+                      {calcCategoryFilter !== 'all' && (
+                        <span className="b2b-status-pill diajukan">Kategori: {calcCategoryFilter}</span>
+                      )}
+                    </div>
+
+                    <div className="b2b-toolbar-actions">
+                      <button
+                        type="button"
+                        className="b2b-export-main-btn"
+                        onClick={handleExportB2bServicesCsv}
+                        title="Ekspor seluruh data katalog layanan B2B ke CSV / Excel"
+                      >
+                        <i className="fas fa-file-excel"></i>
+                        <span>Ekspor Layanan B2B (.CSV)</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="b2b-table-responsive">
+                    <table className="b2b-data-table">
+                      <thead>
+                        <tr>
+                          <th>ID &amp; Layanan</th>
+                          <th>Kategori</th>
+                          <th>Dokumen Manifes</th>
+                          <th>Tarif Dasar DPP</th>
+                          <th>Target Properti</th>
+                          <th>Sertifikasi</th>
+                          <th>Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {KALKULATOR_TARIF_LIST
+                          .filter((item) => {
+                            if (isB2BCorporateOnly && !item.isB2BCorporate) return false;
+                            if (calcCategoryFilter !== 'all' && item.category !== calcCategoryFilter) return false;
+                            if (calcManifestFilter === 'non-manifest' && item.isManifest) return false;
+                            if (calcManifestFilter === 'manifest' && !item.isManifest) return false;
+                            return true;
+                          })
+                          .map((item) => (
+                            <tr key={item.id}>
+                              <td>
+                                <strong>{item.name}</strong>
+                                <div style={{ fontSize: '11px', color: '#64748B' }}>{item.description}</div>
+                              </td>
+                              <td>{item.categoryLabel}</td>
+                              <td>
+                                <span className={`calc-manifest-badge ${item.isManifest ? 'manifest' : 'non-manifest'}`}>
+                                  {item.isManifest ? '✓ Manifes IPLT Resmi' : 'Non Manifes'}
+                                </span>
+                              </td>
+                              <td>
+                                <strong style={{ color: '#0369A1', fontSize: '13px' }}>
+                                  {formatRupiah(item.pricePerM3)}
+                                </strong>
+                                <span style={{ fontSize: '11px', color: '#64748B' }}> / m³</span>
+                              </td>
+                              <td>{item.targetProperty}</td>
+                              <td>
+                                <span style={{ fontSize: '11px', background: '#F1F5F9', padding: '3px 7px', borderRadius: '4px', fontWeight: 700, color: '#334155' }}>
+                                  KBLI 37001
+                                </span>
+                              </td>
+                              <td>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setIsB2bReportModalOpen(false);
+                                    handleOpenSphForService(item.id);
+                                  }}
+                                  className="calc-card-sph-link"
+                                  style={{ margin: 0 }}
+                                  title="Ajukan SPH untuk layanan ini"
+                                >
+                                  <i className="fas fa-file-invoice"></i> Minta SPH
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 3: Ringkasan Audit & Legalitas Lingkungan */}
+              {b2bReportActiveTab === 'audit' && (
+                <div className="b2b-tab-content fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div className="b2b-audit-recap-box">
+                    <h4 className="b2b-audit-title">
+                      <i className="fas fa-shield-alt text-emerald-600"></i> Rekap Compliance Lingkungan Hidup &amp; Audit Korporat
+                    </h4>
+                    <p style={{ margin: 0, fontSize: '13px', color: '#166534', lineHeight: 1.5 }}>
+                      PT MITRA BERSIH 24 JAM memenuhi seluruh persyaratan legalitas pengelolaan air limbah domestik dan industri non-B3 untuk mendukung audit PROPER Kementerian Lingkungan Hidup, sertifikasi ISO 14001, serta pelaporan AMDAL / UKL-UPL berkala bagi perusahaan mitra.
+                    </p>
+                    <ul className="b2b-audit-list">
+                      <li><strong>Legalitas Badan Usaha:</strong> NIB 2605260095769 terdaftar resmi di Lembaga OSS RI dengan kode KBLI 37001 (Pengumpulan Air Limbah).</li>
+                      <li><strong>Disposal IPLT Resmi:</strong> Seluruh limbah cair dialirkan langsung ke Instalasi Pengolahan Lumpur Tinja (IPLT) Kayumanis Bogor di bawah pengawasan Dinas Lingkungan Hidup.</li>
+                      <li><strong>Dokumentasi Manifes Lengkap:</strong> Penerbitan Manifes Pembuangan IPLT berstempel resmi, Berita Acara Serah Terima (BAST), dan bukti timbang riil armada tangki vacuum.</li>
+                      <li><strong>Kepatuhan K3 &amp; Keselamatan Kerja:</strong> Seluruh personel dilengkapi APD lengkap (Safety Shoes, Rompi Reflektor, Masker Gas, Sarung Tangan Karet Nitril) dan bersertifikasi induksi pabrik.</li>
+                      <li><strong>Administrasi Keuangan Resmi:</strong> Menerbitkan invoice resmi dan kwitansi sah untuk kelengkapan audit keuangan korporat.</li>
+                    </ul>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                    <button
+                      type="button"
+                      className="b2b-export-main-btn"
+                      onClick={handleExportComprehensiveB2bAuditCsv}
+                      title="Unduh laporan lengkap compliance audit & SPH dalam satu berkas CSV / Excel"
+                    >
+                      <i className="fas fa-download"></i>
+                      <span>Unduh Laporan Audit Komprehensif (.CSV / Excel)</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="b2b-report-footer">
+              <div className="b2b-report-footer-left">
+                <i className="fas fa-check-double text-emerald-600"></i>
+                <span>Format CSV kompatibel langsung dengan Microsoft Excel, Google Sheets, &amp; LibreOffice Calc.</span>
+              </div>
+              <div className="b2b-report-footer-right">
+                <button
+                  type="button"
+                  className="b2b-btn-secondary"
+                  onClick={() => setIsB2bReportModalOpen(false)}
+                >
+                  Tutup Portal Laporan
+                </button>
+                <button
+                  type="button"
+                  className="b2b-export-main-btn"
+                  onClick={handleExportComprehensiveB2bAuditCsv}
+                  title="Unduh rekap gabungan data layanan dan riwayat SPH"
+                >
+                  <i className="fas fa-file-excel"></i>
+                  <span>Ekspor Laporan Lengkap (.CSV)</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
