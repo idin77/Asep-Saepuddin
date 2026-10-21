@@ -6,6 +6,13 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import QRCode from 'qrcode';
 import html2canvas from 'html2canvas';
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  Tooltip as RechartsTooltip,
+  YAxis
+} from 'recharts';
 import articleImg1 from './assets/images/septic_tank_signs_1791232849125.jpg';
 import articleImg2 from './assets/images/septic_vacuum_truck_1791232864840.jpg';
 import articleImg3 from './assets/images/clogged_drain_cleaning_1791232881201.jpg';
@@ -2936,6 +2943,18 @@ export default function App() {
     siteRequirements: string;
     complianceStatus: string;
     status: 'Diajukan' | 'SPH Terbit' | 'Proses PO' | 'Selesai';
+    statusHistory?: Array<{
+      time: string;
+      stage: 'Diajukan' | 'SPH Terbit' | 'Proses PO' | 'Selesai';
+      progressPercent: number;
+      note?: string;
+    }>;
+    stageComments?: Record<string, Array<{
+      id: string;
+      time: string;
+      text: string;
+      author?: string;
+    }>>;
   }
 
   const DEFAULT_B2B_QUOTATION_HISTORY: B2BQuotationRecord[] = [
@@ -2962,7 +2981,11 @@ export default function App() {
       siteAddress: 'Jl. Olympic Raya Kav. 8, Sentul Industrial Estate',
       siteRequirements: 'Wajib Induksi K3 & APD Lengkap, Wajib Manifes Resmi IPLT (DLH), Penerbitan Berita Acara BAST',
       complianceStatus: 'AMDAL & KBLI 37001 Validated',
-      status: 'SPH Terbit'
+      status: 'SPH Terbit',
+      statusHistory: [
+        { time: '18/10 14:20', stage: 'Diajukan', progressPercent: 25, note: 'Permintaan SPH diajukan via portal RFQ' },
+        { time: '18/10 17:35', stage: 'SPH Terbit', progressPercent: 50, note: 'Dokumen SPH resmi dikirimkan ke PIC Purchasing' }
+      ]
     },
     {
       id: 'SPH-2026/B2B-042',
@@ -2987,7 +3010,12 @@ export default function App() {
       siteAddress: 'Kawasan Sentul Nirwana Blok B, Sentul City',
       siteRequirements: 'Wajib Manifes Resmi Pembuangan IPLT (DLH), Pengerjaan di Luar Jam Operasional / Shift Malam',
       complianceStatus: 'IPLT Kayumanis DLH Bogor',
-      status: 'Proses PO'
+      status: 'Proses PO',
+      statusHistory: [
+        { time: '19/10 09:45', stage: 'Diajukan', progressPercent: 25, note: 'Permohonan kuras grease trap rutin' },
+        { time: '19/10 11:30', stage: 'SPH Terbit', progressPercent: 50, note: 'SPH resmi diterbitkan internal' },
+        { time: '19/10 15:20', stage: 'Proses PO', progressPercent: 75, note: 'PO No. PO-MBS/2026/10-019 diverifikasi' }
+      ]
     },
     {
       id: 'SPH-2026/B2B-043',
@@ -3012,7 +3040,41 @@ export default function App() {
       siteAddress: 'Kawasan Industri Menara Permai Blok E-12, Cileungsi',
       siteRequirements: 'Wajib Induksi K3 & APD Lengkap, Wajib Manifes Resmi Pembuangan IPLT (DLH), Panjang Selang Khusus (>50 Meter)',
       complianceStatus: 'ISO 14001 Audit Ready',
-      status: 'Diajukan'
+      status: 'Diajukan',
+      statusHistory: [
+        { time: '19/10 16:30', stage: 'Diajukan', progressPercent: 25, note: 'RFQ permohonan blower IPAL diterima sistem' }
+      ]
+    },
+    {
+      id: 'SPH-2026/B2B-040',
+      timestamp: '16/10/2026 10:15',
+      companyName: 'PT Wana Kencana Logistik Bogor',
+      npwp: '01.882.119.5-412.000',
+      poNumber: 'PO-WKL/B2B/2026-104',
+      picName: 'Dedi Kurniawan',
+      picRole: 'GA & Warehouse Manager',
+      phone: '0811-2233-4455',
+      email: 'ga@wanakencana.co.id',
+      serviceId: 'black-water-manifest',
+      serviceName: 'Sedot WC Pabrik / Gedung (Manifes IPLT)',
+      categoryLabel: 'Black Water (Tinja)',
+      volumeM3: 10,
+      unitPrice: 1100000,
+      totalDpp: 11000000,
+      ppn11: 1210000,
+      grandTotal: 12210000,
+      contractType: 'Perawatan Berkala Tiga Bulanan (Quarterly)',
+      location: 'Kawasan Pergudangan Citeureup Bogor',
+      siteAddress: 'Kawasan Pergudangan Citeureup Blok C-5, Bogor',
+      siteRequirements: 'Wajib Induksi K3 & APD Lengkap, Wajib Manifes Resmi Pembuangan IPLT (DLH), Penerbitan Berita Acara BAST',
+      complianceStatus: 'Tuntas & Terverifikasi IPLT',
+      status: 'Selesai',
+      statusHistory: [
+        { time: '16/10 10:15', stage: 'Diajukan', progressPercent: 25, note: 'RFQ permohonan sedot WC pergudangan' },
+        { time: '16/10 13:00', stage: 'SPH Terbit', progressPercent: 50, note: 'SPH resmi diterbitkan & dikirim ke GA' },
+        { time: '17/10 09:30', stage: 'Proses PO', progressPercent: 75, note: 'PO No. PO-WKL/B2B/2026-104 disetujui' },
+        { time: '18/10 11:45', stage: 'Selesai', progressPercent: 100, note: 'Pekerjaan tuntas, Manifes IPLT & BAST diserahterimakan' }
+      ]
     }
   ];
 
@@ -3034,6 +3096,420 @@ export default function App() {
   const [b2bReportActiveTab, setB2bReportActiveTab] = useState<'quotations' | 'services' | 'audit'>('quotations');
   const [b2bHistorySearch, setB2bHistorySearch] = useState<string>('');
   const [b2bHistoryStatusFilter, setB2bHistoryStatusFilter] = useState<string>('all');
+  const [expandedTrackingId, setExpandedTrackingId] = useState<string | null>(null);
+  const [editingTimelineStep, setEditingTimelineStep] = useState<{
+    quotationId: string;
+    stage: 'Diajukan' | 'SPH Terbit' | 'Proses PO' | 'Selesai';
+    text: string;
+  } | null>(null);
+  const [timelineFeedback, setTimelineFeedback] = useState<{
+    quotationId: string;
+    stage: string;
+    message: string;
+  } | null>(null);
+  const [stageCommentInputs, setStageCommentInputs] = useState<Record<string, string>>({});
+  const [timelineDateFilters, setTimelineDateFilters] = useState<Record<string, { startDate: string; endDate: string }>>({});
+  const [timelineSortOrders, setTimelineSortOrders] = useState<Record<string, 'asc' | 'desc'>>({});
+
+  const sphStatusCounts = useMemo(() => {
+    let diajukan = 0;
+    let terbit = 0;
+    let proses = 0;
+    let selesai = 0;
+
+    b2bQuotationHistory.forEach((q) => {
+      if (q.status === 'Diajukan') diajukan++;
+      else if (q.status === 'SPH Terbit') terbit++;
+      else if (q.status === 'Proses PO') proses++;
+      else if (q.status === 'Selesai') selesai++;
+    });
+
+    const inProgress = diajukan + terbit + proses;
+    const total = b2bQuotationHistory.length;
+
+    return {
+      total,
+      diajukan,
+      terbit,
+      proses,
+      selesai,
+      inProgress
+    };
+  }, [b2bQuotationHistory]);
+
+  const SPH_STATUS_STEPS = [
+    { key: 'Diajukan', label: 'Diajukan', sub: 'Permohonan Masuk', icon: 'fa-paper-plane' },
+    { key: 'SPH Terbit', label: 'SPH Terbit', sub: 'Quotation Resmi', icon: 'fa-file-invoice' },
+    { key: 'Proses PO', label: 'Proses PO', sub: 'Verifikasi PO/SPK', icon: 'fa-file-signature' },
+    { key: 'Selesai', label: 'Selesai', sub: 'Pekerjaan Tuntas', icon: 'fa-check-double' }
+  ];
+
+  const getStatusStepIndex = (status: string) => {
+    switch (status) {
+      case 'Diajukan': return 0;
+      case 'SPH Terbit': return 1;
+      case 'Proses PO': return 2;
+      case 'Selesai': return 3;
+      default: return 0;
+    }
+  };
+
+  const getQuotationSparklineData = (rec: B2BQuotationRecord) => {
+    const currIdx = getStatusStepIndex(rec.status);
+
+    if (rec.statusHistory && rec.statusHistory.length > 0) {
+      const originPoint = {
+        step: 'Mulai',
+        time: 'Start',
+        progress: 0,
+        isReached: true,
+        note: 'Penerimaan Permintaan SPH'
+      };
+      const points = rec.statusHistory.map((h) => ({
+        step: h.stage,
+        time: h.time,
+        progress: h.progressPercent,
+        isReached: true,
+        note: h.note || `Status: ${h.stage}`
+      }));
+      return [originPoint, ...points];
+    }
+
+    // Dynamic reconstruction fallback for legacy records
+    const rawTime = rec.timestamp.split(' ')[0] || rec.timestamp;
+    const stages = [
+      { step: 'Mulai', time: 'Start', progress: 0, isReached: true, note: 'Pengajuan Masuk' },
+      { step: 'Diajukan', time: rec.timestamp, progress: 25, isReached: true, note: 'Penerimaan RFQ & Spesifikasi' },
+      { step: 'SPH Terbit', time: `${rawTime} +1d`, progress: 50, isReached: currIdx >= 1, note: 'Penerbitan Dokumen SPH' },
+      { step: 'Proses PO', time: `${rawTime} +2d`, progress: 75, isReached: currIdx >= 2, note: 'Verifikasi PO & SPK' },
+      { step: 'Selesai', time: `${rawTime} +3d`, progress: 100, isReached: currIdx >= 3, note: 'Pelaksanaan & BAST Tuntas' }
+    ];
+
+    return stages.slice(0, currIdx + 2);
+  };
+
+  const parseTimelineStepDate = (dateStr: string, fallbackYear = 2026): Date | null => {
+    if (!dateStr || dateStr.toLowerCase().includes('menunggu')) return null;
+    const cleaned = dateStr.replace(/\(.*?\)/g, '').trim();
+
+    // Check for DD/MM/YYYY or DD/MM/YY with optional time
+    const dmyMatch = cleaned.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);
+    if (dmyMatch) {
+      const day = parseInt(dmyMatch[1], 10);
+      const month = parseInt(dmyMatch[2], 10) - 1;
+      let year = parseInt(dmyMatch[3], 10);
+      if (year < 100) year += 2000;
+      const timeMatch = cleaned.match(/(\d{1,2}):(\d{2})/);
+      const hours = timeMatch ? parseInt(timeMatch[1], 10) : 0;
+      const minutes = timeMatch ? parseInt(timeMatch[2], 10) : 0;
+      return new Date(year, month, day, hours, minutes);
+    }
+
+    // Check for DD/MM with optional time (e.g. "16/10 10:15")
+    const dmMatch = cleaned.match(/^(\d{1,2})\/(\d{1,2})/);
+    if (dmMatch) {
+      const day = parseInt(dmMatch[1], 10);
+      const month = parseInt(dmMatch[2], 10) - 1;
+      const timeMatch = cleaned.match(/(\d{1,2}):(\d{2})/);
+      const hours = timeMatch ? parseInt(timeMatch[1], 10) : 0;
+      const minutes = timeMatch ? parseInt(timeMatch[2], 10) : 0;
+      return new Date(fallbackYear, month, day, hours, minutes);
+    }
+
+    // Check for YYYY-MM-DD
+    const ymdMatch = cleaned.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if (ymdMatch) {
+      const year = parseInt(ymdMatch[1], 10);
+      const month = parseInt(ymdMatch[2], 10) - 1;
+      const day = parseInt(ymdMatch[3], 10);
+      return new Date(year, month, day);
+    }
+
+    const parsed = new Date(cleaned);
+    return isNaN(parsed.getTime()) ? null : parsed;
+  };
+
+  const getQuotationVerticalTimeline = (rec: B2BQuotationRecord) => {
+    const currIdx = getStatusStepIndex(rec.status);
+    const baseDate = rec.timestamp;
+
+    const defaultNotes: Record<'Diajukan' | 'SPH Terbit' | 'Proses PO' | 'Selesai', string> = {
+      'Diajukan': `Permintaan SPH & spesifikasi volume (${rec.volumeM3} m³) diterima via portal RFQ korporat.`,
+      'SPH Terbit': `Dokumen SPH Resmi No. ${rec.id} berkop surat PT MITRA BERSIH 24 JAM & KBLI 37001 diterbitkan untuk ${rec.companyName}.`,
+      'Proses PO': `Verifikasi PO / SPK No. ${rec.poNumber || 'PO-B2B'} dan konfirmasi izin site kawasan ${rec.location}.`,
+      'Selesai': 'Pekerjaan operasional limbah tuntas di lokasi site. Berita Acara BAST ditandatangani dan Manifes Resmi IPLT (DLH) terbit 100%.'
+    };
+
+    const steps: Array<{
+      key: 'Diajukan' | 'SPH Terbit' | 'Proses PO' | 'Selesai';
+      label: 'Diajukan' | 'SPH Terbit' | 'Proses PO' | 'Selesai';
+      sub: string;
+      icon: string;
+    }> = [
+      { key: 'Diajukan', label: 'Diajukan', sub: 'Penerimaan Permohonan SPH & RFQ', icon: 'fa-paper-plane' },
+      { key: 'SPH Terbit', label: 'SPH Terbit', sub: 'Penerbitan Surat Penawaran Harga Resmi', icon: 'fa-file-invoice' },
+      { key: 'Proses PO', label: 'Proses PO', sub: 'Verifikasi Purchase Order (PO) & SPK', icon: 'fa-file-signature' },
+      { key: 'Selesai', label: 'Selesai', sub: 'Pekerjaan Tuntas, BAST & Manifes IPLT Terbit', icon: 'fa-check-double' }
+    ];
+
+    return steps.map((st, idx) => {
+      const isCompleted = idx < currIdx;
+      const isCurrent = idx === currIdx;
+      const isUpcoming = idx > currIdx;
+
+      const recorded = rec.statusHistory?.find((h) => h.stage === st.key);
+
+      let dateStr = '';
+      let noteStr = '';
+
+      if (recorded) {
+        dateStr = recorded.time;
+        noteStr = recorded.note || defaultNotes[st.key];
+      } else if (idx === 0) {
+        dateStr = baseDate;
+        noteStr = defaultNotes[st.key];
+      } else if (isCompleted || isCurrent) {
+        dateStr = `${baseDate.split(' ')[0]} (Tercapai)`;
+        noteStr = defaultNotes[st.key];
+      } else {
+        dateStr = 'Menunggu tahapan sebelumnya';
+        noteStr = `Menunggu proses verifikasi administrasi/operasional untuk tahapan ${st.label}.`;
+      }
+
+      return {
+        ...st,
+        stepNumber: idx + 1,
+        isCompleted,
+        isCurrent,
+        isUpcoming,
+        date: dateStr,
+        notes: noteStr
+      };
+    });
+  };
+
+  const handleAdvanceSphStatus = (id: string) => {
+    setB2bQuotationHistory((prev) => {
+      const updated = prev.map((item) => {
+        if (item.id === id) {
+          const now = new Date();
+          const timeStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+          let nextStatus: ('Diajukan' | 'SPH Terbit' | 'Proses PO' | 'Selesai') = 'Diajukan';
+          let nextProgress = 25;
+          let note = '';
+
+          if (item.status === 'Diajukan') {
+            nextStatus = 'SPH Terbit';
+            nextProgress = 50;
+            note = 'SPH Resmi No. ' + item.id + ' diterbitkan oleh Tim B2B';
+          } else if (item.status === 'SPH Terbit') {
+            nextStatus = 'Proses PO';
+            nextProgress = 75;
+            note = 'Verifikasi PO / Surat Perintah Kerja dari ' + item.companyName;
+          } else if (item.status === 'Proses PO') {
+            nextStatus = 'Selesai';
+            nextProgress = 100;
+            note = 'Pekerjaan tuntas, BAST ditandatangani & Manifes IPLT resmi terbit';
+          } else {
+            nextStatus = 'Diajukan';
+            nextProgress = 25;
+            note = 'Permohonan di-reset ke tahap awal';
+          }
+
+          const existingHistory: Array<{
+            time: string;
+            stage: 'Diajukan' | 'SPH Terbit' | 'Proses PO' | 'Selesai';
+            progressPercent: number;
+            note?: string;
+          }> = item.statusHistory || [
+            { time: item.timestamp, stage: 'Diajukan', progressPercent: 25, note: 'Permintaan SPH diajukan' }
+          ];
+
+          let updatedHistory: Array<{
+            time: string;
+            stage: 'Diajukan' | 'SPH Terbit' | 'Proses PO' | 'Selesai';
+            progressPercent: number;
+            note?: string;
+          }>;
+          if (nextStatus === 'Diajukan') {
+            updatedHistory = [{ time: timeStr, stage: 'Diajukan', progressPercent: 25, note: 'Permohonan di-reset ke tahap awal' }];
+          } else {
+            updatedHistory = [
+              ...existingHistory,
+              { time: timeStr, stage: nextStatus, progressPercent: nextProgress, note }
+            ];
+          }
+
+          return { ...item, status: nextStatus, statusHistory: updatedHistory };
+        }
+        return item;
+      });
+      try {
+        localStorage.setItem('mitra_bersih_b2b_quotation_history', JSON.stringify(updated));
+      } catch {
+        // ignore
+      }
+      return updated;
+    });
+    setCalcToast('Status progress SPH berhasil diperbarui ke tahap berikutnya.');
+  };
+
+  const handleSaveTimelineStepNote = (
+    quotationId: string,
+    stage: 'Diajukan' | 'SPH Terbit' | 'Proses PO' | 'Selesai',
+    newNoteText: string
+  ) => {
+    const trimmed = newNoteText.trim();
+    if (!trimmed) return;
+
+    const now = new Date();
+    const updateTimeStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')} (Updated)`;
+
+    setB2bQuotationHistory((prev) => {
+      const updated = prev.map((item) => {
+        if (item.id === quotationId) {
+          const defaultNotes: Record<'Diajukan' | 'SPH Terbit' | 'Proses PO' | 'Selesai', string> = {
+            'Diajukan': `Permintaan SPH & spesifikasi volume (${item.volumeM3} m³) diterima via portal RFQ korporat.`,
+            'SPH Terbit': `Dokumen SPH Resmi No. ${item.id} berkop surat PT MITRA BERSIH 24 JAM & KBLI 37001 diterbitkan untuk ${item.companyName}.`,
+            'Proses PO': `Verifikasi PO / SPK No. ${item.poNumber || 'PO-B2B'} dan konfirmasi izin site kawasan ${item.location}.`,
+            'Selesai': 'Pekerjaan operasional limbah tuntas di lokasi site. Berita Acara BAST ditandatangani dan Manifes Resmi IPLT (DLH) terbit 100%.'
+          };
+
+          const stageProgress: Record<'Diajukan' | 'SPH Terbit' | 'Proses PO' | 'Selesai', number> = {
+            'Diajukan': 25,
+            'SPH Terbit': 50,
+            'Proses PO': 75,
+            'Selesai': 100
+          };
+
+          const existingHistory: Array<{
+            time: string;
+            stage: 'Diajukan' | 'SPH Terbit' | 'Proses PO' | 'Selesai';
+            progressPercent: number;
+            note?: string;
+          }> = item.statusHistory ? [...item.statusHistory] : [
+            { time: item.timestamp, stage: 'Diajukan' as const, progressPercent: 25, note: defaultNotes['Diajukan'] }
+          ];
+
+          const foundIdx = existingHistory.findIndex((h) => h.stage === stage);
+          if (foundIdx >= 0) {
+            existingHistory[foundIdx] = {
+              ...existingHistory[foundIdx],
+              note: trimmed
+            };
+          } else {
+            existingHistory.push({
+              time: updateTimeStr,
+              stage,
+              progressPercent: stageProgress[stage],
+              note: trimmed
+            });
+          }
+
+          return {
+            ...item,
+            statusHistory: existingHistory
+          };
+        }
+        return item;
+      });
+
+      try {
+        localStorage.setItem('mitra_bersih_b2b_quotation_history', JSON.stringify(updated));
+      } catch {
+        // ignore
+      }
+      return updated;
+    });
+
+    setEditingTimelineStep(null);
+    setTimelineFeedback({
+      quotationId,
+      stage,
+      message: 'Catatan diperbarui'
+    });
+
+    setTimeout(() => {
+      setTimelineFeedback((cur) => (cur && cur.quotationId === quotationId && cur.stage === stage ? null : cur));
+    }, 3500);
+  };
+
+  const handleAddStageComment = (quotationId: string, stage: string) => {
+    const inputKey = `${quotationId}_${stage}`;
+    const text = (stageCommentInputs[inputKey] || '').trim();
+    if (!text) return;
+
+    const now = new Date();
+    const timeStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+    const newComment = {
+      id: `comm-${Date.now()}`,
+      time: timeStr,
+      text,
+      author: 'Admin Operasional'
+    };
+
+    setB2bQuotationHistory((prev) => {
+      const updated = prev.map((item) => {
+        if (item.id === quotationId) {
+          const existingComments = item.stageComments || {};
+          const stageList = existingComments[stage] || [];
+          return {
+            ...item,
+            stageComments: {
+              ...existingComments,
+              [stage]: [...stageList, newComment]
+            }
+          };
+        }
+        return item;
+      });
+
+      try {
+        localStorage.setItem('mitra_bersih_b2b_quotation_history', JSON.stringify(updated));
+      } catch {
+        // ignore
+      }
+      return updated;
+    });
+
+    setStageCommentInputs((prev) => ({ ...prev, [inputKey]: '' }));
+    setTimelineFeedback({
+      quotationId,
+      stage,
+      message: 'Komentar internal disimpan'
+    });
+    setTimeout(() => {
+      setTimelineFeedback((cur) => (cur && cur.quotationId === quotationId && cur.stage === stage ? null : cur));
+    }, 3000);
+  };
+
+  const handleDeleteStageComment = (quotationId: string, stage: string, commentId: string) => {
+    setB2bQuotationHistory((prev) => {
+      const updated = prev.map((item) => {
+        if (item.id === quotationId && item.stageComments) {
+          const existingComments = item.stageComments;
+          const stageList = existingComments[stage] || [];
+          return {
+            ...item,
+            stageComments: {
+              ...existingComments,
+              [stage]: stageList.filter((c) => c.id !== commentId)
+            }
+          };
+        }
+        return item;
+      });
+
+      try {
+        localStorage.setItem('mitra_bersih_b2b_quotation_history', JSON.stringify(updated));
+      } catch {
+        // ignore
+      }
+      return updated;
+    });
+  };
 
   // QRIS Payment Modal State
   const [isQrisModalOpen, setIsQrisModalOpen] = useState<boolean>(false);
@@ -3243,7 +3719,10 @@ export default function App() {
       siteAddress: sphAddress.trim(),
       siteRequirements: sphSiteRequirements.join(', ') || 'Standar K3 Normal',
       complianceStatus: 'Manifes IPLT Kayumanis & KBLI 37001',
-      status: 'Diajukan'
+      status: 'Diajukan',
+      statusHistory: [
+        { time: formattedDate, stage: 'Diajukan', progressPercent: 25, note: 'Permintaan SPH diajukan ke WhatsApp B2B' }
+      ]
     };
 
     setB2bQuotationHistory((prev) => {
@@ -12957,6 +13436,171 @@ startxref
 
             {/* Modal Body */}
             <div className="b2b-report-body">
+              {/* Summary Card: Total Count of Quotations by Status */}
+              <div className="b2b-status-summary-card">
+                <div className="b2b-status-summary-top">
+                  <div className="b2b-status-summary-title-wrap">
+                    <div className="b2b-status-summary-icon">
+                      <i className="fas fa-chart-pie"></i>
+                    </div>
+                    <div>
+                      <h4 className="b2b-status-summary-title">Ringkasan Status Permohonan Quotation SPH</h4>
+                      <p className="b2b-status-summary-desc">
+                        Total {sphStatusCounts.total} berkas penawaran korporat dalam sistem pemantauan operasional &amp; audit DLH
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Primary High-Level Status Badges: In Progress & Completed */}
+                  <div className="b2b-status-primary-stats">
+                    <div
+                      className={`b2b-primary-stat-pill in-progress ${b2bHistoryStatusFilter === 'in-progress' ? 'active' : ''}`}
+                      onClick={() => {
+                        setB2bReportActiveTab('quotations');
+                        setB2bHistoryStatusFilter(b2bHistoryStatusFilter === 'in-progress' ? 'all' : 'in-progress');
+                      }}
+                      title="Klik untuk filter berkas yang sedang berjalan (Diajukan, SPH Terbit, Proses PO)"
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <span className="b2b-stat-indicator pulsing" />
+                      <span className="b2b-stat-text">In Progress:</span>
+                      <strong className="b2b-stat-num">{sphStatusCounts.inProgress}</strong>
+                    </div>
+
+                    <div
+                      className={`b2b-primary-stat-pill completed ${b2bHistoryStatusFilter === 'Selesai' ? 'active' : ''}`}
+                      onClick={() => {
+                        setB2bReportActiveTab('quotations');
+                        setB2bHistoryStatusFilter(b2bHistoryStatusFilter === 'Selesai' ? 'all' : 'Selesai');
+                      }}
+                      title="Klik untuk filter berkas yang telah tuntas selesai (Manifes IPLT & BAST terbit)"
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <i className="fas fa-check-circle text-emerald-500"></i>
+                      <span className="b2b-stat-text">Completed:</span>
+                      <strong className="b2b-stat-num">{sphStatusCounts.selesai}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status Distribution Proportion Bar */}
+                <div className="b2b-status-dist-bar-wrap">
+                  <div className="b2b-status-dist-bar">
+                    <div
+                      className="b2b-dist-fill diajukan"
+                      style={{ width: `${sphStatusCounts.total > 0 ? (sphStatusCounts.diajukan / sphStatusCounts.total) * 100 : 0}%` }}
+                      title={`Diajukan: ${sphStatusCounts.diajukan}`}
+                    />
+                    <div
+                      className="b2b-dist-fill terbit"
+                      style={{ width: `${sphStatusCounts.total > 0 ? (sphStatusCounts.terbit / sphStatusCounts.total) * 100 : 0}%` }}
+                      title={`SPH Terbit: ${sphStatusCounts.terbit}`}
+                    />
+                    <div
+                      className="b2b-dist-fill proses"
+                      style={{ width: `${sphStatusCounts.total > 0 ? (sphStatusCounts.proses / sphStatusCounts.total) * 100 : 0}%` }}
+                      title={`Proses PO: ${sphStatusCounts.proses}`}
+                    />
+                    <div
+                      className="b2b-dist-fill selesai"
+                      style={{ width: `${sphStatusCounts.total > 0 ? (sphStatusCounts.selesai / sphStatusCounts.total) * 100 : 0}%` }}
+                      title={`Selesai: ${sphStatusCounts.selesai}`}
+                    />
+                  </div>
+                </div>
+
+                {/* Granular Status Breakdown Mini-Cards */}
+                <div className="b2b-status-breakdown-grid">
+                  <button
+                    type="button"
+                    className={`b2b-status-mini-card all ${b2bHistoryStatusFilter === 'all' ? 'active' : ''}`}
+                    onClick={() => {
+                      setB2bReportActiveTab('quotations');
+                      setB2bHistoryStatusFilter('all');
+                    }}
+                    title="Tampilkan seluruh permohonan SPH"
+                  >
+                    <div className="b2b-mini-card-label">Total Quotations</div>
+                    <div className="b2b-mini-card-val">{sphStatusCounts.total}</div>
+                    <div className="b2b-mini-card-sub">100% total berkas</div>
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`b2b-status-mini-card diajukan ${b2bHistoryStatusFilter === 'Diajukan' ? 'active' : ''}`}
+                    onClick={() => {
+                      setB2bReportActiveTab('quotations');
+                      setB2bHistoryStatusFilter('Diajukan');
+                    }}
+                    title="Filter status: Diajukan (Penerimaan RFQ & Spesifikasi)"
+                  >
+                    <div className="b2b-mini-card-label">
+                      <span className="b2b-mini-dot blue" /> Diajukan
+                    </div>
+                    <div className="b2b-mini-card-val">{sphStatusCounts.diajukan}</div>
+                    <div className="b2b-mini-card-sub">
+                      {sphStatusCounts.total > 0 ? Math.round((sphStatusCounts.diajukan / sphStatusCounts.total) * 100) : 0}% dari total
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`b2b-status-mini-card terbit ${b2bHistoryStatusFilter === 'SPH Terbit' ? 'active' : ''}`}
+                    onClick={() => {
+                      setB2bReportActiveTab('quotations');
+                      setB2bHistoryStatusFilter('SPH Terbit');
+                    }}
+                    title="Filter status: SPH Terbit (Quotation Resmi Terbit)"
+                  >
+                    <div className="b2b-mini-card-label">
+                      <span className="b2b-mini-dot green" /> SPH Terbit
+                    </div>
+                    <div className="b2b-mini-card-val">{sphStatusCounts.terbit}</div>
+                    <div className="b2b-mini-card-sub">
+                      {sphStatusCounts.total > 0 ? Math.round((sphStatusCounts.terbit / sphStatusCounts.total) * 100) : 0}% dari total
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`b2b-status-mini-card proses ${b2bHistoryStatusFilter === 'Proses PO' ? 'active' : ''}`}
+                    onClick={() => {
+                      setB2bReportActiveTab('quotations');
+                      setB2bHistoryStatusFilter('Proses PO');
+                    }}
+                    title="Filter status: Proses PO (Verifikasi SPK)"
+                  >
+                    <div className="b2b-mini-card-label">
+                      <span className="b2b-mini-dot amber" /> Proses PO
+                    </div>
+                    <div className="b2b-mini-card-val">{sphStatusCounts.proses}</div>
+                    <div className="b2b-mini-card-sub">
+                      {sphStatusCounts.total > 0 ? Math.round((sphStatusCounts.proses / sphStatusCounts.total) * 100) : 0}% dari total
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    className={`b2b-status-mini-card selesai ${b2bHistoryStatusFilter === 'Selesai' ? 'active' : ''}`}
+                    onClick={() => {
+                      setB2bReportActiveTab('quotations');
+                      setB2bHistoryStatusFilter('Selesai');
+                    }}
+                    title="Filter status: Selesai / Completed (BAST & Manifes IPLT Terbit)"
+                  >
+                    <div className="b2b-mini-card-label">
+                      <span className="b2b-mini-dot purple" /> Selesai
+                    </div>
+                    <div className="b2b-mini-card-val">{sphStatusCounts.selesai}</div>
+                    <div className="b2b-mini-card-sub">
+                      {sphStatusCounts.total > 0 ? Math.round((sphStatusCounts.selesai / sphStatusCounts.total) * 100) : 0}% dari total
+                    </div>
+                  </button>
+                </div>
+              </div>
+
               {/* Executive Metrics Overview */}
               <div className="b2b-metrics-grid">
                 <div className="b2b-metric-card">
@@ -13070,11 +13714,12 @@ startxref
                         value={b2bHistoryStatusFilter}
                         onChange={(e) => setB2bHistoryStatusFilter(e.target.value)}
                       >
-                        <option value="all">Semua Status SPH</option>
-                        <option value="Diajukan">Status: Diajukan</option>
-                        <option value="SPH Terbit">Status: SPH Terbit</option>
-                        <option value="Proses PO">Status: Proses PO</option>
-                        <option value="Selesai">Status: Selesai</option>
+                        <option value="all">Semua Status SPH ({sphStatusCounts.total})</option>
+                        <option value="in-progress">In Progress: {sphStatusCounts.inProgress}</option>
+                        <option value="Diajukan">Diajukan ({sphStatusCounts.diajukan})</option>
+                        <option value="SPH Terbit">SPH Terbit ({sphStatusCounts.terbit})</option>
+                        <option value="Proses PO">Proses PO ({sphStatusCounts.proses})</option>
+                        <option value="Selesai">Completed: {sphStatusCounts.selesai}</option>
                       </select>
                     </div>
 
@@ -13115,14 +13760,16 @@ startxref
                           <th>Layanan &amp; Volume</th>
                           <th>Nilai Penawaran (IDR)</th>
                           <th>Lokasi Kawasan</th>
-                          <th>Status</th>
+                          <th>Progress Timeline &amp; Status SPH</th>
+                          <th>Tren Histori Status (Sparkline)</th>
                           <th>Aksi</th>
                         </tr>
                       </thead>
                       <tbody>
                         {b2bQuotationHistory
                           .filter((rec) => {
-                            if (b2bHistoryStatusFilter !== 'all' && rec.status !== b2bHistoryStatusFilter) return false;
+                            if (b2bHistoryStatusFilter === 'in-progress' && rec.status === 'Selesai') return false;
+                            if (b2bHistoryStatusFilter !== 'all' && b2bHistoryStatusFilter !== 'in-progress' && rec.status !== b2bHistoryStatusFilter) return false;
                             if (b2bHistorySearch.trim()) {
                               const q = b2bHistorySearch.toLowerCase();
                               return (
@@ -13145,70 +13792,730 @@ startxref
                                 ? 'selesai'
                                 : 'diajukan';
 
+                            const currIdx = getStatusStepIndex(rec.status);
+
                             return (
-                              <tr key={rec.id}>
-                                <td>
-                                  <strong style={{ color: '#0369A1' }}>{rec.id}</strong>
-                                  <div style={{ fontSize: '11px', color: '#64748B' }}>{rec.timestamp}</div>
-                                </td>
-                                <td>
-                                  <strong>{rec.companyName}</strong>
-                                  <div style={{ fontSize: '11px', color: '#64748B' }}>
-                                    PIC: {rec.picName || '-'} ({rec.picRole})
-                                  </div>
-                                  {rec.npwp && (
-                                    <div style={{ fontSize: '10.5px', color: '#0284C7' }}>NPWP: {rec.npwp}</div>
-                                  )}
-                                </td>
-                                <td>
-                                  <span style={{ fontFamily: 'monospace', fontWeight: 600, color: '#334155' }}>
-                                    {rec.poNumber || '-'}
-                                  </span>
-                                </td>
-                                <td>
-                                  <div>{rec.serviceName}</div>
-                                  <div style={{ fontSize: '11px', color: '#059669', fontWeight: 700 }}>
-                                    {rec.volumeM3} m³ • {rec.contractType}
-                                  </div>
-                                </td>
-                                <td>
-                                  <strong style={{ color: '#0F172A' }}>{formatRupiah(rec.grandTotal)}</strong>
-                                  <div style={{ fontSize: '10.5px', color: '#64748B' }}>
-                                    DPP: {formatRupiah(rec.totalDpp)} + PPN
-                                  </div>
-                                </td>
-                                <td>
-                                  <div style={{ fontSize: '12px' }}>{rec.location}</div>
-                                </td>
-                                <td>
-                                  <span className={`b2b-status-pill ${statusClass}`}>
-                                    <i className="fas fa-circle" style={{ fontSize: '6px' }}></i>
-                                    {rec.status}
-                                  </span>
-                                </td>
-                                <td>
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      const text = `*STATUS SPH ${rec.id} - PT MITRA BERSIH 24 JAM*\nPerusahaan: ${rec.companyName}\nLayanan: ${rec.serviceName} (${rec.volumeM3} m3)\nTotal: ${formatRupiah(rec.grandTotal)}\nStatus: ${rec.status}`;
-                                      navigator.clipboard.writeText(text);
-                                      setCalcToast(`Detail SPH ${rec.id} disalin ke clipboard!`);
-                                    }}
-                                    style={{
-                                      background: '#F1F5F9',
-                                      border: '1px solid #CBD5E1',
-                                      borderRadius: '6px',
-                                      padding: '4px 8px',
-                                      fontSize: '11px',
-                                      cursor: 'pointer',
-                                      fontWeight: 600
-                                    }}
-                                    title="Salin ringkasan SPH"
-                                  >
-                                    <i className="fas fa-copy"></i>
-                                  </button>
-                                </td>
-                              </tr>
+                              <React.Fragment key={rec.id}>
+                                <tr>
+                                  <td>
+                                    <strong style={{ color: '#0369A1' }}>{rec.id}</strong>
+                                    <div style={{ fontSize: '11px', color: '#64748B' }}>{rec.timestamp}</div>
+                                  </td>
+                                  <td>
+                                    <strong>{rec.companyName}</strong>
+                                    <div style={{ fontSize: '11px', color: '#64748B' }}>
+                                      PIC: {rec.picName || '-'} ({rec.picRole})
+                                    </div>
+                                    {rec.npwp && (
+                                      <div style={{ fontSize: '10.5px', color: '#0284C7' }}>NPWP: {rec.npwp}</div>
+                                    )}
+                                  </td>
+                                  <td>
+                                    <span style={{ fontFamily: 'monospace', fontWeight: 600, color: '#334155' }}>
+                                      {rec.poNumber || '-'}
+                                    </span>
+                                  </td>
+                                  <td>
+                                    <div>{rec.serviceName}</div>
+                                    <div style={{ fontSize: '11px', color: '#059669', fontWeight: 700 }}>
+                                      {rec.volumeM3} m³ • {rec.contractType}
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <strong style={{ color: '#0F172A' }}>{formatRupiah(rec.grandTotal)}</strong>
+                                    <div style={{ fontSize: '10.5px', color: '#64748B' }}>
+                                      DPP: {formatRupiah(rec.totalDpp)} + PPN
+                                    </div>
+                                  </td>
+                                  <td>
+                                    <div style={{ fontSize: '12px' }}>{rec.location}</div>
+                                  </td>
+                                  <td className="b2b-status-timeline-cell">
+                                    <div className="b2b-status-header-row">
+                                      <span className={`b2b-status-pill ${statusClass}`}>
+                                        <i className="fas fa-circle" style={{ fontSize: '6px' }}></i>
+                                        {rec.status}
+                                      </span>
+                                      <span className="b2b-status-step-count">
+                                        Tahap {currIdx + 1}/4
+                                      </span>
+                                    </div>
+
+                                    {/* Visual Progress Timeline with SVG graphics & CSS transitions */}
+                                    <div
+                                      className="b2b-row-timeline-wrap"
+                                      title={`Status: ${rec.status} (Tahap ${currIdx + 1} dari 4: ${SPH_STATUS_STEPS[currIdx]?.sub || ''})`}
+                                    >
+                                      <div className="b2b-timeline-track">
+                                        <div
+                                          className="b2b-timeline-fill"
+                                          style={{
+                                            width: `${(currIdx / 3) * 100}%`,
+                                            background:
+                                              currIdx === 3
+                                                ? 'linear-gradient(90deg, #10B981 0%, #059669 100%)'
+                                                : 'linear-gradient(90deg, #38BDF8 0%, #0284C7 100%)'
+                                          }}
+                                        />
+                                      </div>
+
+                                      <div className="b2b-timeline-steps">
+                                        {SPH_STATUS_STEPS.map((step, idx) => {
+                                          const isDone = idx < currIdx;
+                                          const isCurrent = idx === currIdx;
+                                          return (
+                                            <div
+                                              key={step.key}
+                                              className={`b2b-timeline-node ${isDone ? 'done' : ''} ${isCurrent ? 'current' : ''}`}
+                                              title={`${step.label}: ${step.sub}`}
+                                            >
+                                              <div className="b2b-timeline-dot">
+                                                {isDone ? (
+                                                  <svg className="b2b-timeline-svg-check" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                  </svg>
+                                                ) : isCurrent ? (
+                                                  <span className="b2b-timeline-pulse-core" />
+                                                ) : (
+                                                  <span className="b2b-timeline-empty-dot" />
+                                                )}
+                                              </div>
+                                              <span className="b2b-timeline-node-label">{step.label}</span>
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+
+                                    </div>
+                                  </td>
+
+                                  {/* Mini Sparkline Chart using Recharts for each quotation row */}
+                                  <td className="b2b-sparkline-cell">
+                                    {(() => {
+                                      const sparkData = getQuotationSparklineData(rec);
+                                      const sparkColor =
+                                        rec.status === 'SPH Terbit'
+                                          ? '#059669'
+                                          : rec.status === 'Proses PO'
+                                          ? '#D97706'
+                                          : rec.status === 'Selesai'
+                                          ? '#7C3AED'
+                                          : '#0284C7';
+
+                                      return (
+                                        <div className="b2b-sparkline-card">
+                                          <div className="b2b-sparkline-header">
+                                            <span className="b2b-sparkline-trend-label">
+                                              <i className="fas fa-chart-line text-sky-600"></i>
+                                              <span>Tren Waktu</span>
+                                            </span>
+                                            <span className={`b2b-sparkline-pct-badge ${statusClass}`}>
+                                              {Math.round(((currIdx + 1) / 4) * 100)}%
+                                            </span>
+                                          </div>
+
+                                          <div className="b2b-sparkline-chart-area">
+                                            <ResponsiveContainer width="100%" height={42}>
+                                              <AreaChart data={sparkData} margin={{ top: 3, right: 3, left: 3, bottom: 2 }}>
+                                                <defs>
+                                                  <linearGradient id={`sparkline-${rec.id.replace(/[^a-zA-Z0-9]/g, '-')}`} x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor={sparkColor} stopOpacity={0.45} />
+                                                    <stop offset="95%" stopColor={sparkColor} stopOpacity={0.02} />
+                                                  </linearGradient>
+                                                </defs>
+                                                <YAxis domain={[0, 100]} hide />
+                                                <RechartsTooltip
+                                                  content={({ active, payload }) => {
+                                                    if (active && payload && payload.length) {
+                                                      const d = payload[0].payload;
+                                                      return (
+                                                        <div className="b2b-recharts-tooltip-box">
+                                                          <div className="b2b-recharts-tooltip-step">
+                                                            <i className="fas fa-circle-dot"></i> {d.step}
+                                                          </div>
+                                                          <div className="b2b-recharts-tooltip-time">
+                                                            <i className="far fa-clock"></i> {d.time}
+                                                          </div>
+                                                          <div className="b2b-recharts-tooltip-status" style={{ color: d.progress > 0 ? '#34D399' : '#94A3B8' }}>
+                                                            <span>{d.progress > 0 ? '✓ Tercapai' : 'Inisiasi'}</span>
+                                                            <span>{d.progress}%</span>
+                                                          </div>
+                                                        </div>
+                                                      );
+                                                    }
+                                                    return null;
+                                                  }}
+                                                />
+                                                <Area
+                                                  type="monotone"
+                                                  dataKey="progress"
+                                                  stroke={sparkColor}
+                                                  strokeWidth={2}
+                                                  fill={`url(#sparkline-${rec.id.replace(/[^a-zA-Z0-9]/g, '-')})`}
+                                                  dot={{ r: 2.5, fill: sparkColor, stroke: '#FFFFFF', strokeWidth: 1 }}
+                                                  activeDot={{ r: 4, fill: sparkColor, stroke: '#FFFFFF', strokeWidth: 1.5 }}
+                                                  isAnimationActive={false}
+                                                />
+                                              </AreaChart>
+                                            </ResponsiveContainer>
+                                          </div>
+
+                                          <div className="b2b-sparkline-footer">
+                                            <span>{sparkData[1]?.time || sparkData[0]?.time}</span>
+                                            <span>{sparkData[sparkData.length - 1]?.time}</span>
+                                          </div>
+                                        </div>
+                                      );
+                                    })()}
+                                  </td>
+
+                                  <td>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                      <button
+                                        type="button"
+                                        onClick={() => setExpandedTrackingId(expandedTrackingId === rec.id ? null : rec.id)}
+                                        style={{
+                                          background: expandedTrackingId === rec.id ? '#0284C7' : '#EFF6FF',
+                                          color: expandedTrackingId === rec.id ? '#FFFFFF' : '#0284C7',
+                                          border: '1px solid #BFDBFE',
+                                          borderRadius: '6px',
+                                          padding: '5px 9px',
+                                          fontSize: '11px',
+                                          cursor: 'pointer',
+                                          fontWeight: 700,
+                                          display: 'inline-flex',
+                                          alignItems: 'center',
+                                          gap: '4px',
+                                          transition: 'all 0.2s ease'
+                                        }}
+                                        title={expandedTrackingId === rec.id ? 'Tutup tracking detail' : 'Buka detail audit timeline tracking SPH'}
+                                      >
+                                        <i className="fas fa-stream"></i>
+                                        <span>{expandedTrackingId === rec.id ? 'Tutup Stepper' : 'Timeline Stepper'}</span>
+                                      </button>
+
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const text = `*STATUS SPH ${rec.id} - PT MITRA BERSIH 24 JAM*\nPerusahaan: ${rec.companyName}\nLayanan: ${rec.serviceName} (${rec.volumeM3} m3)\nTotal: ${formatRupiah(rec.grandTotal)}\nStatus: ${rec.status}`;
+                                          navigator.clipboard.writeText(text);
+                                          setCalcToast(`Detail SPH ${rec.id} disalin ke clipboard!`);
+                                        }}
+                                        style={{
+                                          background: '#F1F5F9',
+                                          border: '1px solid #CBD5E1',
+                                          borderRadius: '6px',
+                                          padding: '5px 8px',
+                                          fontSize: '11px',
+                                          cursor: 'pointer',
+                                          fontWeight: 600
+                                        }}
+                                        title="Salin ringkasan SPH"
+                                      >
+                                        <i className="fas fa-copy"></i>
+                                      </button>
+                                    </div>
+                                  </td>
+                                </tr>
+
+                                {expandedTrackingId === rec.id && (
+                                  <tr className="b2b-expanded-tracking-row fade-in">
+                                    <td colSpan={9}>
+                                      <div className="b2b-expanded-tracking-card">
+                                        <div className="b2b-tracking-header">
+                                          <div className="b2b-tracking-title">
+                                            <i className="fas fa-satellite-dish text-sky-600"></i>
+                                            <span>Lacak Progres Real-Time: <strong>{rec.id}</strong> — {rec.companyName}</span>
+                                          </div>
+                                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <span style={{ fontSize: '11.5px', color: '#64748B' }}>Ubah Status (Simulasi):</span>
+                                            <button
+                                              type="button"
+                                              className="b2b-advance-status-btn"
+                                              onClick={() => handleAdvanceSphStatus(rec.id)}
+                                              title="Perbarui status ke tahap selanjutnya"
+                                            >
+                                              <i className="fas fa-step-forward"></i>
+                                              <span>Lanjut ke Tahap Berikutnya</span>
+                                            </button>
+                                          </div>
+                                        </div>
+
+                                        <div className="b2b-tracking-stages-grid">
+                                          {SPH_STATUS_STEPS.map((step, idx) => {
+                                            const isCompleted = idx < currIdx;
+                                            const isCurrent = idx === currIdx;
+                                            const stageClass = isCompleted ? 'completed' : isCurrent ? 'current' : 'upcoming';
+                                            return (
+                                              <div key={step.key} className={`b2b-tracking-stage-box ${stageClass}`}>
+                                                <div className="b2b-stage-badge">
+                                                  {isCompleted ? (
+                                                    <>
+                                                      <i className="fas fa-check-circle"></i> Selesai
+                                                    </>
+                                                  ) : isCurrent ? (
+                                                    <>
+                                                      <i className="fas fa-spinner fa-spin"></i> Sedang Berjalan
+                                                    </>
+                                                  ) : (
+                                                    <>
+                                                      <i className="fas fa-clock"></i> Menunggu
+                                                    </>
+                                                  )}
+                                                </div>
+                                                <div className="b2b-stage-name">
+                                                  {idx + 1}. {step.label}
+                                                </div>
+                                                <div className="b2b-stage-desc">
+                                                  {idx === 0 && 'Permintaan quotation SPH resmi telah masuk ke sistem operasional PT MITRA BERSIH 24 JAM.'}
+                                                  {idx === 1 && 'Dokumen penawaran harga resmi (SPH) berkop surat & KBLI 37001 telah diterbitkan dan dikirimkan ke PIC.'}
+                                                  {idx === 2 && 'Purchase Order (PO) / SPK perusahaan telah diterima. Izin masuk site & jadwal armada dikonfirmasi.'}
+                                                  {idx === 3 && 'Armada truk tangki telah menyelesaikan pengerjaan. Berita Acara BAST & manifes pembuangan IPLT terbit 100%.'}
+                                                </div>
+                                              </div>
+                                            );
+                                          })}
+                                        </div>
+
+                                        {/* Vertical Stepper Timeline Component for Each Record */}
+                                        {(() => {
+                                          const verticalSteps = getQuotationVerticalTimeline(rec);
+                                          const currentFilter = timelineDateFilters[rec.id] || { startDate: '', endDate: '' };
+                                          const currentSort = timelineSortOrders[rec.id] || 'asc';
+                                          const hasDateFilter = Boolean(currentFilter.startDate || currentFilter.endDate);
+
+                                          const filteredVerticalSteps = verticalSteps.filter((step) => {
+                                            if (!hasDateFilter) return true;
+                                            const stepDate = parseTimelineStepDate(step.date);
+                                            if (!stepDate) return false;
+
+                                            if (currentFilter.startDate) {
+                                              const start = new Date(`${currentFilter.startDate}T00:00:00`);
+                                              if (stepDate < start) return false;
+                                            }
+                                            if (currentFilter.endDate) {
+                                              const end = new Date(`${currentFilter.endDate}T23:59:59.999`);
+                                              if (stepDate > end) return false;
+                                            }
+                                            return true;
+                                          });
+
+                                          const displayedVerticalSteps = currentSort === 'desc'
+                                            ? [...filteredVerticalSteps].reverse()
+                                            : filteredVerticalSteps;
+
+                                          return (
+                                            <div className="b2b-vertical-stepper-container">
+                                              <div className="b2b-stepper-header-row">
+                                                <div>
+                                                  <h5 className="b2b-stepper-heading">
+                                                    <i className="fas fa-stream text-sky-600"></i>
+                                                    <span>Vertical Stepper Timeline Transisi Status SPH</span>
+                                                  </h5>
+                                                  <p className="b2b-stepper-subheading">
+                                                    Catatan tanggal resmi dan rincian catatan audit setiap transisi status ({rec.id})
+                                                  </p>
+                                                </div>
+                                                <div className="b2b-stepper-status-badge-wrap">
+                                                  <span className="b2b-stepper-progress-text">
+                                                    Tahapan: <strong>{currIdx + 1} dari 4</strong> ({Math.round(((currIdx + 1) / 4) * 100)}%)
+                                                  </span>
+                                                </div>
+                                              </div>
+
+                                              {/* Filter Rentang Tanggal & Pengatur Urutan (Sort) Timeline */}
+                                              <div className="b2b-timeline-date-filter-bar">
+                                                {/* Bagian Filter Rentang Tanggal */}
+                                                <div className="b2b-timeline-filter-title">
+                                                  <i className="fas fa-calendar-alt text-sky-600"></i>
+                                                  <span>Filter Tanggal:</span>
+                                                </div>
+
+                                                <div className="b2b-timeline-filter-controls">
+                                                  <div className="b2b-timeline-date-input-group">
+                                                    <label htmlFor={`filter-start-${rec.id}`}>Dari:</label>
+                                                    <input
+                                                      id={`filter-start-${rec.id}`}
+                                                      type="date"
+                                                      className="b2b-timeline-date-input"
+                                                      value={currentFilter.startDate}
+                                                      onChange={(e) => {
+                                                        const val = e.target.value;
+                                                        setTimelineDateFilters((prev) => ({
+                                                          ...prev,
+                                                          [rec.id]: {
+                                                            ...(prev[rec.id] || { startDate: '', endDate: '' }),
+                                                            startDate: val
+                                                          }
+                                                        }));
+                                                      }}
+                                                      title="Tanggal mulai filter riwayat status"
+                                                    />
+                                                  </div>
+
+                                                  <div className="b2b-timeline-date-input-group">
+                                                    <label htmlFor={`filter-end-${rec.id}`}>Sampai:</label>
+                                                    <input
+                                                      id={`filter-end-${rec.id}`}
+                                                      type="date"
+                                                      className="b2b-timeline-date-input"
+                                                      value={currentFilter.endDate}
+                                                      onChange={(e) => {
+                                                        const val = e.target.value;
+                                                        setTimelineDateFilters((prev) => ({
+                                                          ...prev,
+                                                          [rec.id]: {
+                                                            ...(prev[rec.id] || { startDate: '', endDate: '' }),
+                                                            endDate: val
+                                                          }
+                                                        }));
+                                                      }}
+                                                      title="Tanggal akhir filter riwayat status"
+                                                    />
+                                                  </div>
+
+                                                  <div className="b2b-timeline-preset-buttons">
+                                                    <button
+                                                      type="button"
+                                                      className="b2b-timeline-preset-btn"
+                                                      onClick={() => {
+                                                        const now = new Date();
+                                                        const y = now.getFullYear();
+                                                        const m = String(now.getMonth() + 1).padStart(2, '0');
+                                                        const d = String(now.getDate()).padStart(2, '0');
+                                                        const todayStr = `${y}-${m}-${d}`;
+                                                        setTimelineDateFilters((prev) => ({
+                                                          ...prev,
+                                                          [rec.id]: { startDate: todayStr, endDate: todayStr }
+                                                        }));
+                                                      }}
+                                                      title="Filter riwayat status hari ini"
+                                                    >
+                                                      Hari Ini
+                                                    </button>
+
+                                                    <button
+                                                      type="button"
+                                                      className="b2b-timeline-preset-btn"
+                                                      onClick={() => {
+                                                        setTimelineDateFilters((prev) => ({
+                                                          ...prev,
+                                                          [rec.id]: { startDate: '2026-10-01', endDate: '2026-10-31' }
+                                                        }));
+                                                      }}
+                                                      title="Filter riwayat status bulan Oktober 2026"
+                                                    >
+                                                      Okt 2026
+                                                    </button>
+                                                  </div>
+
+                                                  {hasDateFilter && (
+                                                    <button
+                                                      type="button"
+                                                      className="b2b-timeline-reset-filter-btn"
+                                                      onClick={() => {
+                                                        setTimelineDateFilters((prev) => ({
+                                                          ...prev,
+                                                          [rec.id]: { startDate: '', endDate: '' }
+                                                        }));
+                                                      }}
+                                                      title="Hapus filter rentang tanggal dan tampilkan semua tahapan"
+                                                    >
+                                                      <i className="fas fa-times-circle"></i>
+                                                      <span>Reset Filter</span>
+                                                    </button>
+                                                  )}
+                                                </div>
+
+                                                {/* Bagian Tombol Pengatur Urutan (Sort) Timeline */}
+                                                <div className="b2b-timeline-sort-section">
+                                                  <div className="b2b-timeline-sort-label">
+                                                    <i className="fas fa-arrow-down-up-across-line text-sky-600"></i>
+                                                    <span>Urutan:</span>
+                                                  </div>
+                                                  <div className="b2b-timeline-sort-btn-group" role="group" aria-label="Pengatur Urutan Kronologis">
+                                                    <button
+                                                      type="button"
+                                                      className={`b2b-timeline-sort-btn ${currentSort === 'asc' ? 'active' : ''}`}
+                                                      onClick={() => {
+                                                        setTimelineSortOrders((prev) => ({
+                                                          ...prev,
+                                                          [rec.id]: 'asc'
+                                                        }));
+                                                      }}
+                                                      title="Urutkan timeline dari terlama ke terbaru (kronologis awal: Tahap 1 -> Tahap 4)"
+                                                    >
+                                                      <i className="fas fa-arrow-down-short-wide"></i>
+                                                      <span>Terlama (Kronologis)</span>
+                                                    </button>
+                                                    <button
+                                                      type="button"
+                                                      className={`b2b-timeline-sort-btn ${currentSort === 'desc' ? 'active' : ''}`}
+                                                      onClick={() => {
+                                                        setTimelineSortOrders((prev) => ({
+                                                          ...prev,
+                                                          [rec.id]: 'desc'
+                                                        }));
+                                                      }}
+                                                      title="Urutkan timeline dari terbaru ke terlama (tahap terbaru di posisi teratas)"
+                                                    >
+                                                      <i className="fas fa-arrow-down-wide-short"></i>
+                                                      <span>Terbaru</span>
+                                                    </button>
+                                                  </div>
+                                                </div>
+
+                                                <div className="b2b-timeline-filter-info">
+                                                  {hasDateFilter ? (
+                                                    <span className="b2b-timeline-filter-badge active">
+                                                      <i className="fas fa-filter text-sky-600"></i>
+                                                      Filter Aktif: Menampilkan <strong>{filteredVerticalSteps.length}</strong> dari <strong>{verticalSteps.length}</strong> status
+                                                    </span>
+                                                  ) : (
+                                                    <span className="b2b-timeline-filter-badge">
+                                                      Menampilkan seluruh ({verticalSteps.length}) tahapan status
+                                                    </span>
+                                                  )}
+                                                  <span className="b2b-timeline-sort-badge">
+                                                    <i className={`fas ${currentSort === 'desc' ? 'fa-arrow-down-wide-short' : 'fa-arrow-down-short-wide'} text-sky-600`}></i>
+                                                    Urutan: <strong>{currentSort === 'desc' ? 'Terbaru Dulu' : 'Terlama Dulu'}</strong>
+                                                  </span>
+                                                </div>
+                                              </div>
+
+                                              {displayedVerticalSteps.length === 0 ? (
+                                                <div className="b2b-stepper-filter-empty fade-in">
+                                                  <div className="b2b-stepper-empty-icon">
+                                                    <i className="fas fa-calendar-times"></i>
+                                                  </div>
+                                                  <div className="b2b-stepper-empty-text">
+                                                    <h6 className="b2b-stepper-empty-title">Tidak Ada Riwayat Status Pada Periode Ini</h6>
+                                                    <p className="b2b-stepper-empty-desc">
+                                                      Tidak ada transisi status yang tercatat antara{' '}
+                                                      <strong>{currentFilter.startDate || 'awal'}</strong> s/d{' '}
+                                                      <strong>{currentFilter.endDate || 'sekarang'}</strong> untuk SPH {rec.id}.
+                                                    </p>
+                                                  </div>
+                                                  <button
+                                                    type="button"
+                                                    className="b2b-stepper-filter-reset-cta"
+                                                    onClick={() => {
+                                                      setTimelineDateFilters((prev) => ({
+                                                        ...prev,
+                                                        [rec.id]: { startDate: '', endDate: '' }
+                                                      }));
+                                                    }}
+                                                  >
+                                                    <i className="fas fa-rotate-left"></i>
+                                                    <span>Tampilkan Semua Status</span>
+                                                  </button>
+                                                </div>
+                                              ) : (
+                                                <div className="b2b-vertical-stepper">
+                                                  {displayedVerticalSteps.map((step, idx) => {
+                                                    const stepStateClass = step.isCompleted ? 'completed' : step.isCurrent ? 'current' : 'upcoming';
+
+                                                    return (
+                                                      <div key={step.key} className={`b2b-stepper-item ${stepStateClass}`}>
+                                                        {idx < displayedVerticalSteps.length - 1 && (
+                                                          <div className={`b2b-stepper-line ${step.isCompleted ? 'completed' : ''}`} />
+                                                        )}
+
+                                                      <div className="b2b-stepper-node">
+                                                        {step.isCompleted ? (
+                                                          <span className="b2b-stepper-icon-completed" title={`${step.label}: Selesai`}>
+                                                            <i className="fas fa-check"></i>
+                                                          </span>
+                                                        ) : step.isCurrent ? (
+                                                          <span className="b2b-stepper-icon-current" title={`${step.label}: Sedang Berjalan`}>
+                                                            <i className="fas fa-circle-dot"></i>
+                                                          </span>
+                                                        ) : (
+                                                          <span className="b2b-stepper-icon-upcoming" title={`${step.label}: Menunggu`}>
+                                                            <span>{step.stepNumber}</span>
+                                                          </span>
+                                                        )}
+                                                      </div>
+
+                                                      <div className="b2b-stepper-content">
+                                                        <div className="b2b-stepper-top-meta">
+                                                          <div className="b2b-stepper-title-area">
+                                                            <span className="b2b-stepper-step-number">Tahap {step.stepNumber}</span>
+                                                            <h6 className="b2b-stepper-step-title">{step.label}</h6>
+                                                            <span className={`b2b-stepper-status-pill ${stepStateClass}`}>
+                                                              {step.isCompleted ? 'Selesai' : step.isCurrent ? 'Sedang Berjalan' : 'Menunggu'}
+                                                            </span>
+                                                          </div>
+                                                          <div className="b2b-stepper-date">
+                                                            <i className="far fa-calendar-alt"></i>
+                                                            <span>{step.date}</span>
+                                                          </div>
+                                                        </div>
+
+                                                        <div className="b2b-stepper-notes-card">
+                                                          <div className="b2b-stepper-notes-header">
+                                                            <div className="b2b-stepper-notes-label">
+                                                              <i className="fas fa-clipboard-list text-sky-600"></i>
+                                                              <span>Catatan Transisi Status:</span>
+                                                            </div>
+                                                            {(step.isCompleted || step.isCurrent) && (
+                                                              <div className="b2b-stepper-notes-actions">
+                                                                {timelineFeedback && timelineFeedback.quotationId === rec.id && timelineFeedback.stage === step.key && (
+                                                                  <span className="b2b-stepper-note-success-badge fade-in">
+                                                                    <i className="fas fa-check-circle"></i> {timelineFeedback.message}
+                                                                  </span>
+                                                                )}
+                                                                {editingTimelineStep?.quotationId === rec.id && editingTimelineStep?.stage === step.key ? (
+                                                                  <span className="b2b-stepper-editing-indicator">
+                                                                    <i className="fas fa-pen-to-square"></i> Mode Edit
+                                                                  </span>
+                                                                ) : (
+                                                                  <button
+                                                                    type="button"
+                                                                    className="b2b-stepper-edit-note-btn"
+                                                                    onClick={() => setEditingTimelineStep({
+                                                                      quotationId: rec.id,
+                                                                      stage: step.key,
+                                                                      text: step.notes
+                                                                    })}
+                                                                    title={`Edit teks catatan transisi untuk status ${step.label}`}
+                                                                  >
+                                                                    <i className="fas fa-pen-to-square"></i>
+                                                                    <span>Edit Catatan</span>
+                                                                  </button>
+                                                                )}
+                                                              </div>
+                                                            )}
+                                                          </div>
+
+                                                          {editingTimelineStep?.quotationId === rec.id && editingTimelineStep?.stage === step.key ? (
+                                                            <div className="b2b-stepper-edit-box fade-in">
+                                                              <textarea
+                                                                className="b2b-stepper-edit-textarea"
+                                                                value={editingTimelineStep.text}
+                                                                onChange={(e) => setEditingTimelineStep({
+                                                                  ...editingTimelineStep,
+                                                                  text: e.target.value
+                                                                })}
+                                                                rows={2}
+                                                                placeholder={`Tulis pembaruan catatan audit untuk status ${step.label}...`}
+                                                                autoFocus
+                                                              />
+                                                              <div className="b2b-stepper-edit-actions">
+                                                                <button
+                                                                  type="button"
+                                                                  className="b2b-stepper-save-btn"
+                                                                  onClick={() => handleSaveTimelineStepNote(rec.id, step.key, editingTimelineStep.text)}
+                                                                >
+                                                                  <i className="fas fa-check"></i>
+                                                                  <span>Simpan Catatan</span>
+                                                                </button>
+                                                                <button
+                                                                  type="button"
+                                                                  className="b2b-stepper-cancel-btn"
+                                                                  onClick={() => setEditingTimelineStep(null)}
+                                                                >
+                                                                  <i className="fas fa-times"></i>
+                                                                  <span>Batal</span>
+                                                                </button>
+                                                                <span className="b2b-stepper-edit-hint">
+                                                                  Catatan ini akan tersimpan pada riwayat tracking resmi SPH.
+                                                                </span>
+                                                              </div>
+                                                            </div>
+                                                          ) : (
+                                                            <p className="b2b-stepper-notes-text">
+                                                              {step.notes}
+                                                            </p>
+                                                          )}
+                                                        </div>
+
+                                                        {/* Input Teks Tambahan Komentar Internal dengan Tombol Simpan */}
+                                                        {(() => {
+                                                          const stageCommentsList = rec.stageComments?.[step.key] || [];
+                                                          const inputKey = `${rec.id}_${step.key}`;
+                                                          const commentInputVal = stageCommentInputs[inputKey] || '';
+
+                                                          return (
+                                                            <div className="b2b-stepper-internal-comments-wrap">
+                                                              <div className="b2b-stepper-comments-label">
+                                                                <i className="fas fa-comment-dots text-amber-600"></i>
+                                                                <span>Komentar Internal Tambahan {stageCommentsList.length > 0 ? `(${stageCommentsList.length})` : ''}:</span>
+                                                              </div>
+
+                                                              {stageCommentsList.length > 0 && (
+                                                                <div className="b2b-stepper-comments-list">
+                                                                  {stageCommentsList.map((comm) => (
+                                                                    <div key={comm.id} className="b2b-stepper-comment-item fade-in">
+                                                                      <div className="b2b-stepper-comment-meta">
+                                                                        <span className="b2b-stepper-comment-author">
+                                                                          <i className="fas fa-user-shield text-amber-600"></i> {comm.author || 'Admin Operasional'}
+                                                                        </span>
+                                                                        <span className="b2b-stepper-comment-time">
+                                                                          <i className="far fa-clock"></i> {comm.time}
+                                                                        </span>
+                                                                        <button
+                                                                          type="button"
+                                                                          className="b2b-stepper-comment-del-btn"
+                                                                          onClick={() => handleDeleteStageComment(rec.id, step.key, comm.id)}
+                                                                          title="Hapus komentar ini"
+                                                                        >
+                                                                          <i className="fas fa-times"></i>
+                                                                        </button>
+                                                                      </div>
+                                                                      <p className="b2b-stepper-comment-text">
+                                                                        {comm.text}
+                                                                      </p>
+                                                                    </div>
+                                                                  ))}
+                                                                </div>
+                                                              )}
+
+                                                              <div className="b2b-stepper-comment-input-row">
+                                                                <input
+                                                                  type="text"
+                                                                  className="b2b-stepper-comment-input"
+                                                                  placeholder={`Tinggalkan komentar internal status ${step.label} (e.g. Catatan admin, instruksi driver, verifikasi site)...`}
+                                                                  value={commentInputVal}
+                                                                  onChange={(e) => setStageCommentInputs({
+                                                                    ...stageCommentInputs,
+                                                                    [inputKey]: e.target.value
+                                                                  })}
+                                                                  onKeyDown={(e) => {
+                                                                    if (e.key === 'Enter') {
+                                                                      e.preventDefault();
+                                                                      handleAddStageComment(rec.id, step.key);
+                                                                    }
+                                                                  }}
+                                                                />
+                                                                <button
+                                                                  type="button"
+                                                                  className="b2b-stepper-comment-save-btn"
+                                                                  onClick={() => handleAddStageComment(rec.id, step.key)}
+                                                                  disabled={!commentInputVal.trim()}
+                                                                  title={`Simpan komentar internal untuk status ${step.label}`}
+                                                                >
+                                                                  <i className="fas fa-paper-plane"></i>
+                                                                  <span>Simpan</span>
+                                                                </button>
+                                                              </div>
+                                                            </div>
+                                                          );
+                                                        })()}
+                                                      </div>
+                                                    </div>
+                                                  );
+                                                })}
+                                              </div>
+                                            )}
+                                          </div>
+                                        );
+                                      })()}
+                                      </div>
+                                    </td>
+                                  </tr>
+                                )}
+                              </React.Fragment>
                             );
                           })}
                       </tbody>
