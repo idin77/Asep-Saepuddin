@@ -2948,12 +2948,14 @@ export default function App() {
       stage: 'Diajukan' | 'SPH Terbit' | 'Proses PO' | 'Selesai';
       progressPercent: number;
       note?: string;
+      category?: 'Internal' | 'Teknis' | 'Klien';
     }>;
     stageComments?: Record<string, Array<{
       id: string;
       time: string;
       text: string;
       author?: string;
+      category?: 'Internal' | 'Teknis' | 'Klien';
     }>>;
   }
 
@@ -2983,9 +2985,15 @@ export default function App() {
       complianceStatus: 'AMDAL & KBLI 37001 Validated',
       status: 'SPH Terbit',
       statusHistory: [
-        { time: '18/10 14:20', stage: 'Diajukan', progressPercent: 25, note: 'Permintaan SPH diajukan via portal RFQ' },
-        { time: '18/10 17:35', stage: 'SPH Terbit', progressPercent: 50, note: 'Dokumen SPH resmi dikirimkan ke PIC Purchasing' }
-      ]
+        { time: '18/10 14:20', stage: 'Diajukan', progressPercent: 25, note: 'Permintaan SPH diajukan via portal RFQ', category: 'Klien' },
+        { time: '18/10 17:35', stage: 'SPH Terbit', progressPercent: 50, note: 'Dokumen SPH resmi dikirimkan ke PIC Purchasing', category: 'Klien' }
+      ],
+      stageComments: {
+        'SPH Terbit': [
+          { id: 'comm-init-1', time: '18/10 18:00', text: 'Klien meminta penyesuaian termin pembayaran TOP 30 hari via email PIC Hendra.', author: 'Admin Operasional', category: 'Klien' },
+          { id: 'comm-init-2', time: '18/10 18:30', text: 'Konfirmasi ketersediaan armada tangki vakum 4.000L dengan tim Pos Sentul.', author: 'Dispatch Armada', category: 'Teknis' }
+        ]
+      }
     },
     {
       id: 'SPH-2026/B2B-042',
@@ -3012,10 +3020,15 @@ export default function App() {
       complianceStatus: 'IPLT Kayumanis DLH Bogor',
       status: 'Proses PO',
       statusHistory: [
-        { time: '19/10 09:45', stage: 'Diajukan', progressPercent: 25, note: 'Permohonan kuras grease trap rutin' },
-        { time: '19/10 11:30', stage: 'SPH Terbit', progressPercent: 50, note: 'SPH resmi diterbitkan internal' },
-        { time: '19/10 15:20', stage: 'Proses PO', progressPercent: 75, note: 'PO No. PO-MBS/2026/10-019 diverifikasi' }
-      ]
+        { time: '19/10 09:45', stage: 'Diajukan', progressPercent: 25, note: 'Permohonan kuras grease trap rutin', category: 'Klien' },
+        { time: '19/10 11:30', stage: 'SPH Terbit', progressPercent: 50, note: 'SPH resmi diterbitkan internal', category: 'Klien' },
+        { time: '19/10 15:20', stage: 'Proses PO', progressPercent: 75, note: 'PO No. PO-MBS/2026/10-019 diverifikasi', category: 'Internal' }
+      ],
+      stageComments: {
+        'Proses PO': [
+          { id: 'comm-init-3', time: '19/10 15:45', text: 'Verifikasi kelengkapan dokumen K3 & jadwal shift malam di lokasi resto.', author: 'Admin Internal', category: 'Internal' }
+        ]
+      }
     },
     {
       id: 'SPH-2026/B2B-043',
@@ -3042,7 +3055,7 @@ export default function App() {
       complianceStatus: 'ISO 14001 Audit Ready',
       status: 'Diajukan',
       statusHistory: [
-        { time: '19/10 16:30', stage: 'Diajukan', progressPercent: 25, note: 'RFQ permohonan blower IPAL diterima sistem' }
+        { time: '19/10 16:30', stage: 'Diajukan', progressPercent: 25, note: 'RFQ permohonan blower IPAL diterima sistem', category: 'Teknis' }
       ]
     },
     {
@@ -3070,11 +3083,16 @@ export default function App() {
       complianceStatus: 'Tuntas & Terverifikasi IPLT',
       status: 'Selesai',
       statusHistory: [
-        { time: '16/10 10:15', stage: 'Diajukan', progressPercent: 25, note: 'RFQ permohonan sedot WC pergudangan' },
-        { time: '16/10 13:00', stage: 'SPH Terbit', progressPercent: 50, note: 'SPH resmi diterbitkan & dikirim ke GA' },
-        { time: '17/10 09:30', stage: 'Proses PO', progressPercent: 75, note: 'PO No. PO-WKL/B2B/2026-104 disetujui' },
-        { time: '18/10 11:45', stage: 'Selesai', progressPercent: 100, note: 'Pekerjaan tuntas, Manifes IPLT & BAST diserahterimakan' }
-      ]
+        { time: '16/10 10:15', stage: 'Diajukan', progressPercent: 25, note: 'RFQ permohonan sedot WC pergudangan', category: 'Klien' },
+        { time: '16/10 13:00', stage: 'SPH Terbit', progressPercent: 50, note: 'SPH resmi diterbitkan & dikirim ke GA', category: 'Klien' },
+        { time: '17/10 09:30', stage: 'Proses PO', progressPercent: 75, note: 'PO No. PO-WKL/B2B/2026-104 disetujui', category: 'Internal' },
+        { time: '18/10 11:45', stage: 'Selesai', progressPercent: 100, note: 'Pekerjaan tuntas, Manifes IPLT & BAST diserahterimakan', category: 'Teknis' }
+      ],
+      stageComments: {
+        'Selesai': [
+          { id: 'comm-init-4', time: '18/10 12:00', text: 'Manifes resmi IPLT No. 2026/IPLT-DLH/8812 telah diarsipkan ke sistem audit.', author: 'HSE Compliance', category: 'Teknis' }
+        ]
+      }
     }
   ];
 
@@ -3101,6 +3119,7 @@ export default function App() {
     quotationId: string;
     stage: 'Diajukan' | 'SPH Terbit' | 'Proses PO' | 'Selesai';
     text: string;
+    category?: 'Internal' | 'Teknis' | 'Klien';
   } | null>(null);
   const [timelineFeedback, setTimelineFeedback] = useState<{
     quotationId: string;
@@ -3108,8 +3127,10 @@ export default function App() {
     message: string;
   } | null>(null);
   const [stageCommentInputs, setStageCommentInputs] = useState<Record<string, string>>({});
+  const [stageCommentCategories, setStageCommentCategories] = useState<Record<string, 'Internal' | 'Teknis' | 'Klien'>>({});
   const [timelineDateFilters, setTimelineDateFilters] = useState<Record<string, { startDate: string; endDate: string }>>({});
   const [timelineSortOrders, setTimelineSortOrders] = useState<Record<string, 'asc' | 'desc'>>({});
+  const [timelineCommentFilters, setTimelineCommentFilters] = useState<Record<string, 'all' | 'Internal' | 'Teknis' | 'Klien'>>({});
 
   const sphStatusCounts = useMemo(() => {
     let diajukan = 0;
@@ -3276,6 +3297,14 @@ export default function App() {
         noteStr = `Menunggu proses verifikasi administrasi/operasional untuk tahapan ${st.label}.`;
       }
 
+      let category: 'Internal' | 'Teknis' | 'Klien' = recorded?.category || (
+        st.key === 'Diajukan' || st.key === 'SPH Terbit' ? 'Klien' : st.key === 'Proses PO' ? 'Internal' : 'Teknis'
+      );
+      const lowerNote = noteStr.toLowerCase();
+      if (lowerNote.includes('[internal]')) category = 'Internal';
+      else if (lowerNote.includes('[teknis]')) category = 'Teknis';
+      else if (lowerNote.includes('[klien]')) category = 'Klien';
+
       return {
         ...st,
         stepNumber: idx + 1,
@@ -3283,7 +3312,8 @@ export default function App() {
         isCurrent,
         isUpcoming,
         date: dateStr,
-        notes: noteStr
+        notes: noteStr,
+        category
       };
     });
   };
@@ -3355,10 +3385,70 @@ export default function App() {
     setCalcToast('Status progress SPH berhasil diperbarui ke tahap berikutnya.');
   };
 
+  const handleRevertSphStatus = (id: string) => {
+    let revertedStageLabel = '';
+    let targetStageLabel = '';
+
+    setB2bQuotationHistory((prev) => {
+      const updated = prev.map((item) => {
+        if (item.id === id) {
+          const stageOrder: Array<'Diajukan' | 'SPH Terbit' | 'Proses PO' | 'Selesai'> = [
+            'Diajukan',
+            'SPH Terbit',
+            'Proses PO',
+            'Selesai'
+          ];
+          const currentIdx = stageOrder.indexOf(item.status);
+
+          if (currentIdx <= 0) {
+            return item;
+          }
+
+          revertedStageLabel = item.status;
+          const targetStatus = stageOrder[currentIdx - 1];
+          targetStageLabel = targetStatus;
+
+          const existingHistory = item.statusHistory ? [...item.statusHistory] : [
+            { time: item.timestamp, stage: 'Diajukan' as const, progressPercent: 25, note: 'Permintaan SPH diajukan' }
+          ];
+
+          // Remove the reverted step from history so it resets to upcoming
+          let updatedHistory = existingHistory.filter((h) => h.stage !== item.status);
+          if (updatedHistory.length === 0) {
+            updatedHistory = [
+              { time: item.timestamp, stage: 'Diajukan', progressPercent: 25, note: 'Permintaan SPH diajukan' }
+            ];
+          }
+
+          return {
+            ...item,
+            status: targetStatus,
+            statusHistory: updatedHistory
+          };
+        }
+        return item;
+      });
+
+      try {
+        localStorage.setItem('mitra_bersih_b2b_quotation_history', JSON.stringify(updated));
+      } catch {
+        // ignore
+      }
+      return updated;
+    });
+
+    if (revertedStageLabel && targetStageLabel) {
+      setCalcToast(`Langkah "${revertedStageLabel}" berhasil dibatalkan. Status dikembalikan ke "${targetStageLabel}".`);
+    } else {
+      setCalcToast('Status sudah pada tahap awal (Diajukan), tidak ada langkah yang dapat dihapus.');
+    }
+  };
+
   const handleSaveTimelineStepNote = (
     quotationId: string,
     stage: 'Diajukan' | 'SPH Terbit' | 'Proses PO' | 'Selesai',
-    newNoteText: string
+    newNoteText: string,
+    category?: 'Internal' | 'Teknis' | 'Klien'
   ) => {
     const trimmed = newNoteText.trim();
     if (!trimmed) return;
@@ -3376,6 +3466,13 @@ export default function App() {
             'Selesai': 'Pekerjaan operasional limbah tuntas di lokasi site. Berita Acara BAST ditandatangani dan Manifes Resmi IPLT (DLH) terbit 100%.'
           };
 
+          const defaultCategories: Record<'Diajukan' | 'SPH Terbit' | 'Proses PO' | 'Selesai', 'Internal' | 'Teknis' | 'Klien'> = {
+            'Diajukan': 'Klien',
+            'SPH Terbit': 'Klien',
+            'Proses PO': 'Internal',
+            'Selesai': 'Teknis'
+          };
+
           const stageProgress: Record<'Diajukan' | 'SPH Terbit' | 'Proses PO' | 'Selesai', number> = {
             'Diajukan': 25,
             'SPH Terbit': 50,
@@ -3383,27 +3480,32 @@ export default function App() {
             'Selesai': 100
           };
 
+          const targetCategory = category || defaultCategories[stage];
+
           const existingHistory: Array<{
             time: string;
             stage: 'Diajukan' | 'SPH Terbit' | 'Proses PO' | 'Selesai';
             progressPercent: number;
             note?: string;
+            category?: 'Internal' | 'Teknis' | 'Klien';
           }> = item.statusHistory ? [...item.statusHistory] : [
-            { time: item.timestamp, stage: 'Diajukan' as const, progressPercent: 25, note: defaultNotes['Diajukan'] }
+            { time: item.timestamp, stage: 'Diajukan' as const, progressPercent: 25, note: defaultNotes['Diajukan'], category: 'Klien' }
           ];
 
           const foundIdx = existingHistory.findIndex((h) => h.stage === stage);
           if (foundIdx >= 0) {
             existingHistory[foundIdx] = {
               ...existingHistory[foundIdx],
-              note: trimmed
+              note: trimmed,
+              category: targetCategory
             };
           } else {
             existingHistory.push({
               time: updateTimeStr,
               stage,
               progressPercent: stageProgress[stage],
-              note: trimmed
+              note: trimmed,
+              category: targetCategory
             });
           }
 
@@ -3435,11 +3537,12 @@ export default function App() {
     }, 3500);
   };
 
-  const handleAddStageComment = (quotationId: string, stage: string) => {
+  const handleAddStageComment = (quotationId: string, stage: string, customCategory?: 'Internal' | 'Teknis' | 'Klien') => {
     const inputKey = `${quotationId}_${stage}`;
     const text = (stageCommentInputs[inputKey] || '').trim();
     if (!text) return;
 
+    const category = customCategory || stageCommentCategories[inputKey] || 'Internal';
     const now = new Date();
     const timeStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
@@ -3447,7 +3550,8 @@ export default function App() {
       id: `comm-${Date.now()}`,
       time: timeStr,
       text,
-      author: 'Admin Operasional'
+      author: 'Admin Operasional',
+      category
     };
 
     setB2bQuotationHistory((prev) => {
@@ -3478,7 +3582,7 @@ export default function App() {
     setTimelineFeedback({
       quotationId,
       stage,
-      message: 'Komentar internal disimpan'
+      message: `Komentar [${category}] disimpan`
     });
     setTimeout(() => {
       setTimelineFeedback((cur) => (cur && cur.quotationId === quotationId && cur.stage === stage ? null : cur));
@@ -14027,7 +14131,7 @@ startxref
                                             <i className="fas fa-satellite-dish text-sky-600"></i>
                                             <span>Lacak Progres Real-Time: <strong>{rec.id}</strong> — {rec.companyName}</span>
                                           </div>
-                                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                                             <span style={{ fontSize: '11.5px', color: '#64748B' }}>Ubah Status (Simulasi):</span>
                                             <button
                                               type="button"
@@ -14037,6 +14141,16 @@ startxref
                                             >
                                               <i className="fas fa-step-forward"></i>
                                               <span>Lanjut ke Tahap Berikutnya</span>
+                                            </button>
+                                            <button
+                                              type="button"
+                                              className={`b2b-revert-status-btn ${currIdx <= 0 ? 'disabled' : ''}`}
+                                              onClick={() => handleRevertSphStatus(rec.id)}
+                                              disabled={currIdx <= 0}
+                                              title={currIdx <= 0 ? "Tidak ada langkah yang dapat dihapus (berada di status awal Diajukan)" : `Hapus langkah terakhir dan batalkan transisi status ke "${SPH_STATUS_STEPS[Math.max(0, currIdx - 1)].label}"`}
+                                            >
+                                              <i className="fas fa-undo"></i>
+                                              <span>Hapus Langkah</span>
                                             </button>
                                           </div>
                                         </div>
@@ -14082,27 +14196,57 @@ startxref
                                           const verticalSteps = getQuotationVerticalTimeline(rec);
                                           const currentFilter = timelineDateFilters[rec.id] || { startDate: '', endDate: '' };
                                           const currentSort = timelineSortOrders[rec.id] || 'asc';
+                                          const currentCommentFilter = timelineCommentFilters[rec.id] || 'all';
                                           const hasDateFilter = Boolean(currentFilter.startDate || currentFilter.endDate);
 
-                                          const filteredVerticalSteps = verticalSteps.filter((step) => {
-                                            if (!hasDateFilter) return true;
-                                            const stepDate = parseTimelineStepDate(step.date);
-                                            if (!stepDate) return false;
+                                          // Hitung jumlah catatan/komentar per kategori
+                                          const countCategorySteps = (cat: 'Internal' | 'Teknis' | 'Klien') => {
+                                            return verticalSteps.filter((s) => {
+                                              if (s.category === cat) return true;
+                                              const comms = rec.stageComments?.[s.key] || [];
+                                              return comms.some((c) => (c.category || 'Internal') === cat);
+                                            }).length;
+                                          };
+                                          const internalCount = countCategorySteps('Internal');
+                                          const teknisCount = countCategorySteps('Teknis');
+                                          const klienCount = countCategorySteps('Klien');
 
-                                            if (currentFilter.startDate) {
-                                              const start = new Date(`${currentFilter.startDate}T00:00:00`);
-                                              if (stepDate < start) return false;
+                                          const filteredVerticalSteps = verticalSteps.filter((step) => {
+                                            if (hasDateFilter) {
+                                              const stepDate = parseTimelineStepDate(step.date);
+                                              if (!stepDate) return false;
+
+                                              if (currentFilter.startDate) {
+                                                const start = new Date(`${currentFilter.startDate}T00:00:00`);
+                                                if (stepDate < start) return false;
+                                              }
+                                              if (currentFilter.endDate) {
+                                                const end = new Date(`${currentFilter.endDate}T23:59:59.999`);
+                                                if (stepDate > end) return false;
+                                              }
                                             }
-                                            if (currentFilter.endDate) {
-                                              const end = new Date(`${currentFilter.endDate}T23:59:59.999`);
-                                              if (stepDate > end) return false;
+
+                                            if (currentCommentFilter !== 'all') {
+                                              const isStepCat = step.category === currentCommentFilter;
+                                              const comms = rec.stageComments?.[step.key] || [];
+                                              const hasCatComm = comms.some((c) => (c.category || 'Internal') === currentCommentFilter);
+                                              if (!isStepCat && !hasCatComm) {
+                                                return false;
+                                              }
                                             }
+
                                             return true;
                                           });
 
-                                          const displayedVerticalSteps = currentSort === 'desc'
-                                            ? [...filteredVerticalSteps].reverse()
-                                            : filteredVerticalSteps;
+                                          const displayedVerticalSteps = [...filteredVerticalSteps].sort((a, b) => {
+                                            const dateA = parseTimelineStepDate(a.date);
+                                            const dateB = parseTimelineStepDate(b.date);
+
+                                            if (dateA && dateB && dateA.getTime() !== dateB.getTime()) {
+                                              return currentSort === 'desc' ? dateB.getTime() - dateA.getTime() : dateA.getTime() - dateB.getTime();
+                                            }
+                                            return currentSort === 'desc' ? b.stepNumber - a.stepNumber : a.stepNumber - b.stepNumber;
+                                          });
 
                                           return (
                                             <div className="b2b-vertical-stepper-container">
@@ -14120,10 +14264,21 @@ startxref
                                                   <span className="b2b-stepper-progress-text">
                                                     Tahapan: <strong>{currIdx + 1} dari 4</strong> ({Math.round(((currIdx + 1) / 4) * 100)}%)
                                                   </span>
+                                                  {currIdx > 0 && (
+                                                    <button
+                                                      type="button"
+                                                      className="b2b-stepper-header-revert-btn fade-in"
+                                                      onClick={() => handleRevertSphStatus(rec.id)}
+                                                      title={`Hapus transisi status terakhir (${SPH_STATUS_STEPS[currIdx].label}) dan kembali ke ${SPH_STATUS_STEPS[currIdx - 1].label}`}
+                                                    >
+                                                      <i className="fas fa-rotate-left"></i>
+                                                      <span>Hapus Langkah</span>
+                                                    </button>
+                                                  )}
                                                 </div>
                                               </div>
 
-                                              {/* Filter Rentang Tanggal & Pengatur Urutan (Sort) Timeline */}
+                                              {/* Filter Bar: Rentang Tanggal, Pengatur Urutan (Sort), & Filter Jenis Catatan */}
                                               <div className="b2b-timeline-date-filter-bar">
                                                 {/* Bagian Filter Rentang Tanggal */}
                                                 <div className="b2b-timeline-filter-title">
@@ -14227,88 +14382,241 @@ startxref
                                                   )}
                                                 </div>
 
-                                                {/* Bagian Tombol Pengatur Urutan (Sort) Timeline */}
+                                                {/* Bagian Tombol Pengatur Urutan (Sort) Timeline dengan Toggle Intuitif */}
                                                 <div className="b2b-timeline-sort-section">
                                                   <div className="b2b-timeline-sort-label">
                                                     <i className="fas fa-arrow-down-up-across-line text-sky-600"></i>
                                                     <span>Urutan:</span>
                                                   </div>
-                                                  <div className="b2b-timeline-sort-btn-group" role="group" aria-label="Pengatur Urutan Kronologis">
+
+                                                  {/* Tombol Toggle Intuitif Terpadu */}
+                                                  <div className="b2b-timeline-sort-toggle-wrap">
                                                     <button
                                                       type="button"
-                                                      className={`b2b-timeline-sort-btn ${currentSort === 'asc' ? 'active' : ''}`}
+                                                      className={`b2b-timeline-sort-toggle-pill ${currentSort === 'desc' ? 'is-desc' : 'is-asc'}`}
                                                       onClick={() => {
                                                         setTimelineSortOrders((prev) => ({
                                                           ...prev,
-                                                          [rec.id]: 'asc'
+                                                          [rec.id]: currentSort === 'asc' ? 'desc' : 'asc'
                                                         }));
                                                       }}
-                                                      title="Urutkan timeline dari terlama ke terbaru (kronologis awal: Tahap 1 -> Tahap 4)"
+                                                      title={`Klik toggle untuk membalik urutan: saat ini ${currentSort === 'desc' ? 'Terbaru ke Terlama (Descending)' : 'Terlama ke Terbaru (Ascending)'}`}
+                                                      aria-label="Toggle Urutan Kronologis Timeline"
                                                     >
-                                                      <i className="fas fa-arrow-down-short-wide"></i>
-                                                      <span>Terlama (Kronologis)</span>
-                                                    </button>
-                                                    <button
-                                                      type="button"
-                                                      className={`b2b-timeline-sort-btn ${currentSort === 'desc' ? 'active' : ''}`}
-                                                      onClick={() => {
-                                                        setTimelineSortOrders((prev) => ({
-                                                          ...prev,
-                                                          [rec.id]: 'desc'
-                                                        }));
-                                                      }}
-                                                      title="Urutkan timeline dari terbaru ke terlama (tahap terbaru di posisi teratas)"
-                                                    >
-                                                      <i className="fas fa-arrow-down-wide-short"></i>
-                                                      <span>Terbaru</span>
+                                                      <span className={`b2b-sort-side-text ${currentSort === 'asc' ? 'active' : ''}`}>
+                                                        <i className="fas fa-arrow-down-short-wide"></i>
+                                                        <span>Terlama</span>
+                                                      </span>
+                                                      <span className="b2b-sort-toggle-knob" aria-hidden="true">
+                                                        <i className={`fas ${currentSort === 'desc' ? 'fa-arrow-down-wide-short' : 'fa-arrow-down-short-wide'}`}></i>
+                                                      </span>
+                                                      <span className={`b2b-sort-side-text ${currentSort === 'desc' ? 'active' : ''}`}>
+                                                        <i className="fas fa-arrow-down-wide-short"></i>
+                                                        <span>Terbaru</span>
+                                                      </span>
                                                     </button>
                                                   </div>
                                                 </div>
 
+                                                {/* Bagian Menu Dropdown & Filter Chips Jenis Komentar / Catatan */}
+                                                <div className="b2b-timeline-comment-filter-section">
+                                                  <div className="b2b-timeline-comment-filter-label">
+                                                    <i className="fas fa-tags text-sky-600"></i>
+                                                    <span>Jenis Catatan:</span>
+                                                  </div>
+
+                                                  {/* Menu Dropdown Cepat */}
+                                                  <select
+                                                    className="b2b-comment-filter-select"
+                                                    value={currentCommentFilter}
+                                                    onChange={(e) => {
+                                                      const val = e.target.value as 'all' | 'Internal' | 'Teknis' | 'Klien';
+                                                      setTimelineCommentFilters((prev) => ({
+                                                        ...prev,
+                                                        [rec.id]: val
+                                                      }));
+                                                    }}
+                                                    title="Saring catatan timeline berdasarkan jenis komentar"
+                                                    aria-label="Filter Jenis Catatan Timeline"
+                                                  >
+                                                    <option value="all">Semua Jenis ({verticalSteps.length})</option>
+                                                    <option value="Internal">Internal ({internalCount})</option>
+                                                    <option value="Teknis">Teknis ({teknisCount})</option>
+                                                    <option value="Klien">Klien ({klienCount})</option>
+                                                  </select>
+
+                                                  {/* Filter Chips Interaktif */}
+                                                  <div className="b2b-comment-filter-chips" role="group" aria-label="Filter chips jenis catatan">
+                                                    <button
+                                                      type="button"
+                                                      className={`b2b-comment-chip is-all ${currentCommentFilter === 'all' ? 'active' : ''}`}
+                                                      onClick={() => {
+                                                        setTimelineCommentFilters((prev) => ({
+                                                          ...prev,
+                                                          [rec.id]: 'all'
+                                                        }));
+                                                      }}
+                                                      title="Tampilkan semua catatan tanpa filter kategori"
+                                                    >
+                                                      <i className="fas fa-layer-group"></i>
+                                                      <span>Semua</span>
+                                                      <span className="b2b-comment-chip-count">{verticalSteps.length}</span>
+                                                    </button>
+
+                                                    <button
+                                                      type="button"
+                                                      className={`b2b-comment-chip is-internal ${currentCommentFilter === 'Internal' ? 'active' : ''}`}
+                                                      onClick={() => {
+                                                        setTimelineCommentFilters((prev) => ({
+                                                          ...prev,
+                                                          [rec.id]: currentCommentFilter === 'Internal' ? 'all' : 'Internal'
+                                                        }));
+                                                      }}
+                                                      title="Saring catatan jenis Internal (administrasi, verifikasi PO, koordinasi SOP)"
+                                                    >
+                                                      <i className="fas fa-shield-halved"></i>
+                                                      <span>Internal</span>
+                                                      <span className="b2b-comment-chip-count">{internalCount}</span>
+                                                    </button>
+
+                                                    <button
+                                                      type="button"
+                                                      className={`b2b-comment-chip is-teknis ${currentCommentFilter === 'Teknis' ? 'active' : ''}`}
+                                                      onClick={() => {
+                                                        setTimelineCommentFilters((prev) => ({
+                                                          ...prev,
+                                                          [rec.id]: currentCommentFilter === 'Teknis' ? 'all' : 'Teknis'
+                                                        }));
+                                                      }}
+                                                      title="Saring catatan jenis Teknis (armada, mesin spiral, blower, volume, manifes IPLT)"
+                                                    >
+                                                      <i className="fas fa-screwdriver-wrench"></i>
+                                                      <span>Teknis</span>
+                                                      <span className="b2b-comment-chip-count">{teknisCount}</span>
+                                                    </button>
+
+                                                    <button
+                                                      type="button"
+                                                      className={`b2b-comment-chip is-klien ${currentCommentFilter === 'Klien' ? 'active' : ''}`}
+                                                      onClick={() => {
+                                                        setTimelineCommentFilters((prev) => ({
+                                                          ...prev,
+                                                          [rec.id]: currentCommentFilter === 'Klien' ? 'all' : 'Klien'
+                                                        }));
+                                                      }}
+                                                      title="Saring catatan jenis Klien (dokumen penawaran SPH, RFQ, komunikasi PIC)"
+                                                    >
+                                                      <i className="fas fa-handshake"></i>
+                                                      <span>Klien</span>
+                                                      <span className="b2b-comment-chip-count">{klienCount}</span>
+                                                    </button>
+                                                  </div>
+
+                                                  {currentCommentFilter !== 'all' && (
+                                                    <button
+                                                      type="button"
+                                                      className="b2b-comment-filter-reset-btn"
+                                                      onClick={() => {
+                                                        setTimelineCommentFilters((prev) => ({
+                                                          ...prev,
+                                                          [rec.id]: 'all'
+                                                        }));
+                                                      }}
+                                                      title="Reset filter jenis catatan ke Semua"
+                                                    >
+                                                      <i className="fas fa-times"></i>
+                                                      <span>Reset Jenis</span>
+                                                    </button>
+                                                  )}
+                                                </div>
+
                                                 <div className="b2b-timeline-filter-info">
-                                                  {hasDateFilter ? (
+                                                  {hasDateFilter && (
                                                     <span className="b2b-timeline-filter-badge active">
                                                       <i className="fas fa-filter text-sky-600"></i>
-                                                      Filter Aktif: Menampilkan <strong>{filteredVerticalSteps.length}</strong> dari <strong>{verticalSteps.length}</strong> status
+                                                      Tanggal Aktif: <strong>{filteredVerticalSteps.length}</strong>/{verticalSteps.length}
                                                     </span>
-                                                  ) : (
+                                                  )}
+                                                  {currentCommentFilter !== 'all' && (
+                                                    <span className={`b2b-timeline-filter-badge active is-${currentCommentFilter.toLowerCase()}`}>
+                                                      <i className="fas fa-tag"></i>
+                                                      Jenis: <strong>{currentCommentFilter}</strong> ({filteredVerticalSteps.length} status)
+                                                    </span>
+                                                  )}
+                                                  {!hasDateFilter && currentCommentFilter === 'all' && (
                                                     <span className="b2b-timeline-filter-badge">
                                                       Menampilkan seluruh ({verticalSteps.length}) tahapan status
                                                     </span>
                                                   )}
-                                                  <span className="b2b-timeline-sort-badge">
+                                                  <button
+                                                    type="button"
+                                                    className="b2b-timeline-sort-badge clickable"
+                                                    onClick={() => {
+                                                      setTimelineSortOrders((prev) => ({
+                                                        ...prev,
+                                                        [rec.id]: currentSort === 'asc' ? 'desc' : 'asc'
+                                                      }));
+                                                    }}
+                                                    title="Klik untuk beralih antara Terlama & Terbaru"
+                                                  >
                                                     <i className={`fas ${currentSort === 'desc' ? 'fa-arrow-down-wide-short' : 'fa-arrow-down-short-wide'} text-sky-600`}></i>
                                                     Urutan: <strong>{currentSort === 'desc' ? 'Terbaru Dulu' : 'Terlama Dulu'}</strong>
-                                                  </span>
+                                                    <span className="b2b-sort-badge-toggle-hint">
+                                                      <i className="fas fa-rotate"></i> Toggle
+                                                    </span>
+                                                  </button>
                                                 </div>
                                               </div>
 
                                               {displayedVerticalSteps.length === 0 ? (
                                                 <div className="b2b-stepper-filter-empty fade-in">
                                                   <div className="b2b-stepper-empty-icon">
-                                                    <i className="fas fa-calendar-times"></i>
+                                                    <i className={currentCommentFilter !== 'all' ? 'fas fa-tags' : 'fas fa-calendar-times'}></i>
                                                   </div>
                                                   <div className="b2b-stepper-empty-text">
-                                                    <h6 className="b2b-stepper-empty-title">Tidak Ada Riwayat Status Pada Periode Ini</h6>
+                                                    <h6 className="b2b-stepper-empty-title">
+                                                      {currentCommentFilter !== 'all'
+                                                        ? `Tidak Ada Catatan Berjenis "${currentCommentFilter}"`
+                                                        : 'Tidak Ada Riwayat Status Pada Periode Ini'}
+                                                    </h6>
                                                     <p className="b2b-stepper-empty-desc">
-                                                      Tidak ada transisi status yang tercatat antara{' '}
-                                                      <strong>{currentFilter.startDate || 'awal'}</strong> s/d{' '}
-                                                      <strong>{currentFilter.endDate || 'sekarang'}</strong> untuk SPH {rec.id}.
+                                                      {currentCommentFilter !== 'all'
+                                                        ? `Tidak ditemukan transisi status atau komentar berjenis "${currentCommentFilter}" untuk permohonan SPH ${rec.id}. Silakan pilih jenis catatan lain atau klik reset filter.`
+                                                        : `Tidak ada transisi status yang tercatat antara ${currentFilter.startDate || 'awal'} s/d ${currentFilter.endDate || 'sekarang'} untuk SPH ${rec.id}.`}
                                                     </p>
                                                   </div>
-                                                  <button
-                                                    type="button"
-                                                    className="b2b-stepper-filter-reset-cta"
-                                                    onClick={() => {
-                                                      setTimelineDateFilters((prev) => ({
-                                                        ...prev,
-                                                        [rec.id]: { startDate: '', endDate: '' }
-                                                      }));
-                                                    }}
-                                                  >
-                                                    <i className="fas fa-rotate-left"></i>
-                                                    <span>Tampilkan Semua Status</span>
-                                                  </button>
+                                                  <div className="b2b-stepper-empty-actions-wrap">
+                                                    {currentCommentFilter !== 'all' && (
+                                                      <button
+                                                        type="button"
+                                                        className="b2b-stepper-filter-reset-cta"
+                                                        onClick={() => {
+                                                          setTimelineCommentFilters((prev) => ({
+                                                            ...prev,
+                                                            [rec.id]: 'all'
+                                                          }));
+                                                        }}
+                                                      >
+                                                        <i className="fas fa-rotate-left"></i>
+                                                        <span>Reset Filter Jenis Catatan</span>
+                                                      </button>
+                                                    )}
+                                                    {hasDateFilter && (
+                                                      <button
+                                                        type="button"
+                                                        className="b2b-stepper-filter-reset-cta secondary"
+                                                        onClick={() => {
+                                                          setTimelineDateFilters((prev) => ({
+                                                            ...prev,
+                                                            [rec.id]: { startDate: '', endDate: '' }
+                                                          }));
+                                                        }}
+                                                      >
+                                                        <i className="fas fa-calendar-times"></i>
+                                                        <span>Reset Filter Tanggal</span>
+                                                      </button>
+                                                    )}
+                                                  </div>
                                                 </div>
                                               ) : (
                                                 <div className="b2b-vertical-stepper">
@@ -14357,6 +14665,12 @@ startxref
                                                             <div className="b2b-stepper-notes-label">
                                                               <i className="fas fa-clipboard-list text-sky-600"></i>
                                                               <span>Catatan Transisi Status:</span>
+                                                              <span className={`b2b-comment-category-pill is-${step.category.toLowerCase()}`} title={`Jenis Catatan: ${step.category}`}>
+                                                                {step.category === 'Internal' && <i className="fas fa-shield-halved"></i>}
+                                                                {step.category === 'Teknis' && <i className="fas fa-screwdriver-wrench"></i>}
+                                                                {step.category === 'Klien' && <i className="fas fa-handshake"></i>}
+                                                                <span>{step.category}</span>
+                                                              </span>
                                                             </div>
                                                             {(step.isCompleted || step.isCurrent) && (
                                                               <div className="b2b-stepper-notes-actions">
@@ -14370,19 +14684,33 @@ startxref
                                                                     <i className="fas fa-pen-to-square"></i> Mode Edit
                                                                   </span>
                                                                 ) : (
-                                                                  <button
-                                                                    type="button"
-                                                                    className="b2b-stepper-edit-note-btn"
-                                                                    onClick={() => setEditingTimelineStep({
-                                                                      quotationId: rec.id,
-                                                                      stage: step.key,
-                                                                      text: step.notes
-                                                                    })}
-                                                                    title={`Edit teks catatan transisi untuk status ${step.label}`}
-                                                                  >
-                                                                    <i className="fas fa-pen-to-square"></i>
-                                                                    <span>Edit Catatan</span>
-                                                                  </button>
+                                                                  <>
+                                                                    <button
+                                                                      type="button"
+                                                                      className="b2b-stepper-edit-note-btn"
+                                                                      onClick={() => setEditingTimelineStep({
+                                                                        quotationId: rec.id,
+                                                                        stage: step.key,
+                                                                        text: step.notes,
+                                                                        category: step.category
+                                                                      })}
+                                                                      title={`Edit teks catatan transisi untuk status ${step.label}`}
+                                                                    >
+                                                                      <i className="fas fa-pen-to-square"></i>
+                                                                      <span>Edit Catatan</span>
+                                                                    </button>
+                                                                    {step.isCurrent && currIdx > 0 && (
+                                                                      <button
+                                                                        type="button"
+                                                                        className="b2b-stepper-step-revert-btn"
+                                                                        onClick={() => handleRevertSphStatus(rec.id)}
+                                                                        title={`Hapus langkah transisi ${step.label} dan kembalikan status ke ${SPH_STATUS_STEPS[currIdx - 1].label}`}
+                                                                      >
+                                                                        <i className="fas fa-undo"></i>
+                                                                        <span>Hapus Langkah</span>
+                                                                      </button>
+                                                                    )}
+                                                                  </>
                                                                 )}
                                                               </div>
                                                             )}
@@ -14390,6 +14718,31 @@ startxref
 
                                                           {editingTimelineStep?.quotationId === rec.id && editingTimelineStep?.stage === step.key ? (
                                                             <div className="b2b-stepper-edit-box fade-in">
+                                                              {/* Pemilih Kategori saat Edit Catatan */}
+                                                              <div className="b2b-stepper-edit-cat-row">
+                                                                <span className="b2b-stepper-edit-cat-title">
+                                                                  <i className="fas fa-tag text-sky-600"></i> Kategori Catatan:
+                                                                </span>
+                                                                <div className="b2b-stepper-edit-cat-chips">
+                                                                  {(['Internal', 'Teknis', 'Klien'] as const).map((cat) => (
+                                                                    <button
+                                                                      key={cat}
+                                                                      type="button"
+                                                                      className={`b2b-edit-cat-chip is-${cat.toLowerCase()} ${(editingTimelineStep.category || step.category) === cat ? 'active' : ''}`}
+                                                                      onClick={() => setEditingTimelineStep({
+                                                                        ...editingTimelineStep,
+                                                                        category: cat
+                                                                      })}
+                                                                    >
+                                                                      {cat === 'Internal' && <i className="fas fa-shield-halved"></i>}
+                                                                      {cat === 'Teknis' && <i className="fas fa-screwdriver-wrench"></i>}
+                                                                      {cat === 'Klien' && <i className="fas fa-handshake"></i>}
+                                                                      <span>{cat}</span>
+                                                                    </button>
+                                                                  ))}
+                                                                </div>
+                                                              </div>
+
                                                               <textarea
                                                                 className="b2b-stepper-edit-textarea"
                                                                 value={editingTimelineStep.text}
@@ -14405,7 +14758,12 @@ startxref
                                                                 <button
                                                                   type="button"
                                                                   className="b2b-stepper-save-btn"
-                                                                  onClick={() => handleSaveTimelineStepNote(rec.id, step.key, editingTimelineStep.text)}
+                                                                  onClick={() => handleSaveTimelineStepNote(
+                                                                    rec.id,
+                                                                    step.key,
+                                                                    editingTimelineStep.text,
+                                                                    editingTimelineStep.category || step.category
+                                                                  )}
                                                                 >
                                                                   <i className="fas fa-check"></i>
                                                                   <span>Simpan Catatan</span>
@@ -14419,7 +14777,7 @@ startxref
                                                                   <span>Batal</span>
                                                                 </button>
                                                                 <span className="b2b-stepper-edit-hint">
-                                                                  Catatan ini akan tersimpan pada riwayat tracking resmi SPH.
+                                                                  Catatan ini akan tersimpan pada kategori [{editingTimelineStep.category || step.category}].
                                                                 </span>
                                                               </div>
                                                             </div>
@@ -14430,26 +14788,43 @@ startxref
                                                           )}
                                                         </div>
 
-                                                        {/* Input Teks Tambahan Komentar Internal dengan Tombol Simpan */}
+                                                        {/* Input Teks Tambahan Komentar Internal dengan Tombol Simpan & Filter Jenis */}
                                                         {(() => {
                                                           const stageCommentsList = rec.stageComments?.[step.key] || [];
+                                                          const displayedStageComments = currentCommentFilter === 'all'
+                                                            ? stageCommentsList
+                                                            : stageCommentsList.filter((c) => (c.category || 'Internal') === currentCommentFilter);
                                                           const inputKey = `${rec.id}_${step.key}`;
+                                                          const currentInputCat = stageCommentCategories[inputKey] || 'Internal';
                                                           const commentInputVal = stageCommentInputs[inputKey] || '';
 
                                                           return (
                                                             <div className="b2b-stepper-internal-comments-wrap">
                                                               <div className="b2b-stepper-comments-label">
                                                                 <i className="fas fa-comment-dots text-amber-600"></i>
-                                                                <span>Komentar Internal Tambahan {stageCommentsList.length > 0 ? `(${stageCommentsList.length})` : ''}:</span>
+                                                                <span>
+                                                                  Komentar Tambahan {stageCommentsList.length > 0 ? `(${stageCommentsList.length})` : ''}:
+                                                                </span>
+                                                                {currentCommentFilter !== 'all' && stageCommentsList.length > 0 && (
+                                                                  <span className="b2b-comments-filter-active-hint">
+                                                                    Menampilkan {displayedStageComments.length} jenis [{currentCommentFilter}]
+                                                                  </span>
+                                                                )}
                                                               </div>
 
-                                                              {stageCommentsList.length > 0 && (
+                                                              {displayedStageComments.length > 0 ? (
                                                                 <div className="b2b-stepper-comments-list">
-                                                                  {stageCommentsList.map((comm) => (
+                                                                  {displayedStageComments.map((comm) => (
                                                                     <div key={comm.id} className="b2b-stepper-comment-item fade-in">
                                                                       <div className="b2b-stepper-comment-meta">
                                                                         <span className="b2b-stepper-comment-author">
                                                                           <i className="fas fa-user-shield text-amber-600"></i> {comm.author || 'Admin Operasional'}
+                                                                        </span>
+                                                                        <span className={`b2b-stage-comment-badge is-${(comm.category || 'Internal').toLowerCase()}`}>
+                                                                          {(comm.category || 'Internal') === 'Internal' && <i className="fas fa-shield-halved"></i>}
+                                                                          {(comm.category || 'Internal') === 'Teknis' && <i className="fas fa-screwdriver-wrench"></i>}
+                                                                          {(comm.category || 'Internal') === 'Klien' && <i className="fas fa-handshake"></i>}
+                                                                          <span>{comm.category || 'Internal'}</span>
                                                                         </span>
                                                                         <span className="b2b-stepper-comment-time">
                                                                           <i className="far fa-clock"></i> {comm.time}
@@ -14469,13 +14844,36 @@ startxref
                                                                     </div>
                                                                   ))}
                                                                 </div>
-                                                              )}
+                                                              ) : stageCommentsList.length > 0 && currentCommentFilter !== 'all' ? (
+                                                                <div className="b2b-stage-comments-cat-empty">
+                                                                  <i className="fas fa-info-circle"></i> Tidak ada komentar berjenis [{currentCommentFilter}] pada status ini.
+                                                                </div>
+                                                              ) : null}
 
                                                               <div className="b2b-stepper-comment-input-row">
+                                                                <div className="b2b-comment-cat-picker-wrap">
+                                                                  <select
+                                                                    className={`b2b-comment-cat-picker is-${currentInputCat.toLowerCase()}`}
+                                                                    value={currentInputCat}
+                                                                    onChange={(e) => {
+                                                                      const val = e.target.value as 'Internal' | 'Teknis' | 'Klien';
+                                                                      setStageCommentCategories((prev) => ({
+                                                                        ...prev,
+                                                                        [inputKey]: val
+                                                                      }));
+                                                                    }}
+                                                                    title="Pilih jenis komentar yang akan dicatat"
+                                                                    aria-label="Pilih jenis komentar baru"
+                                                                  >
+                                                                    <option value="Internal">🛡️ Internal</option>
+                                                                    <option value="Teknis">🔧 Teknis</option>
+                                                                    <option value="Klien">🤝 Klien</option>
+                                                                  </select>
+                                                                </div>
                                                                 <input
                                                                   type="text"
                                                                   className="b2b-stepper-comment-input"
-                                                                  placeholder={`Tinggalkan komentar internal status ${step.label} (e.g. Catatan admin, instruksi driver, verifikasi site)...`}
+                                                                  placeholder={`Tulis catatan [${currentInputCat}] status ${step.label}...`}
                                                                   value={commentInputVal}
                                                                   onChange={(e) => setStageCommentInputs({
                                                                     ...stageCommentInputs,
@@ -14484,16 +14882,16 @@ startxref
                                                                   onKeyDown={(e) => {
                                                                     if (e.key === 'Enter') {
                                                                       e.preventDefault();
-                                                                      handleAddStageComment(rec.id, step.key);
+                                                                      handleAddStageComment(rec.id, step.key, currentInputCat);
                                                                     }
                                                                   }}
                                                                 />
                                                                 <button
                                                                   type="button"
                                                                   className="b2b-stepper-comment-save-btn"
-                                                                  onClick={() => handleAddStageComment(rec.id, step.key)}
+                                                                  onClick={() => handleAddStageComment(rec.id, step.key, currentInputCat)}
                                                                   disabled={!commentInputVal.trim()}
-                                                                  title={`Simpan komentar internal untuk status ${step.label}`}
+                                                                  title={`Simpan komentar [${currentInputCat}] untuk status ${step.label}`}
                                                                 >
                                                                   <i className="fas fa-paper-plane"></i>
                                                                   <span>Simpan</span>
