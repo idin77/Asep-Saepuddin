@@ -17,6 +17,11 @@ import articleImg1 from './assets/images/septic_tank_signs_1791232849125.jpg';
 import articleImg2 from './assets/images/septic_vacuum_truck_1791232864840.jpg';
 import articleImg3 from './assets/images/clogged_drain_cleaning_1791232881201.jpg';
 import articleImg4 from './assets/images/fresh_drain_garden_1791232895094.jpg';
+import { InteractiveHubMap, ServiceHubMap } from './components/InteractiveHubMap';
+import { ServiceBookingCalendar } from './components/ServiceBookingCalendar';
+import { GeminiChatbot } from './components/GeminiChatbot';
+import { downloadB2bMonthlyPdf } from './utils/generateB2bMonthlyPdf';
+export { InteractiveHubMap, ServiceHubMap, ServiceBookingCalendar, downloadB2bMonthlyPdf, GeminiChatbot };
 
 function highlightMatch(text: string, query: string): React.ReactNode {
   if (!query || !query.trim()) return text;
@@ -516,7 +521,7 @@ export const BOGOR_AREA_DETAILS: BogorAreaDetail[] = [
   }
 ];
 
-interface FAQItem {
+export interface FAQItem {
   id: number;
   question: string;
   category: string;
@@ -526,16 +531,21 @@ interface FAQItem {
   waTopicText?: string;
 }
 
-const FAQ_CATEGORIES = [
-  'Topik Populer',
-  'Tarif & Biaya',
-  'Pemesanan',
-  'Armada & Waktu',
-  'Garansi',
-  'Tanpa Bongkar',
-  '24 Jam Nonstop',
-  'Pencegahan'
-];
+export const getUniqueFaqCategories = (items: FAQItem[]): string[] => {
+  const uniqueCats = Array.from(new Set(items.map((item) => item.category).filter(Boolean)));
+  return ['Topik Populer', ...uniqueCats];
+};
+
+export const FAQ_CATEGORY_ICONS: Record<string, string> = {
+  'Topik Populer': 'fas fa-fire',
+  'Tarif & Biaya': 'fas fa-tags',
+  'Pemesanan': 'fas fa-calendar-check',
+  'Armada & Waktu': 'fas fa-truck-fast',
+  'Garansi': 'fas fa-shield-halved',
+  'Tanpa Bongkar': 'fas fa-screwdriver-wrench',
+  '24 Jam Nonstop': 'fas fa-clock',
+  'Pencegahan': 'fas fa-shield-heart'
+};
 
 export interface NewsletterSubscriber {
   id: string;
@@ -769,7 +779,7 @@ export const ARTICLE_CATEGORY_CONFIGS: ArticleCategoryConfig[] = [
 
 export const ARTICLE_CATEGORIES = ARTICLE_CATEGORY_CONFIGS.map((c) => c.name);
 
-const FAQ_DATA: FAQItem[] = [
+export const FAQ_DATA: FAQItem[] = [
   {
     id: 1,
     question: 'Apakah ada biaya tambahan atau biaya tersembunyi (biaya siluman)?',
@@ -960,6 +970,12 @@ const FAQ_DATA: FAQItem[] = [
   }
 ];
 
+// Dynamically generate filter categories for all unique categories present in FAQ_DATA
+export const FAQ_CATEGORIES: string[] = [
+  'Topik Populer',
+  ...Array.from(new Set(FAQ_DATA.map((item) => item.category).filter(Boolean)))
+];
+
 export const FAQ_JSON_LD = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
@@ -972,6 +988,660 @@ export const FAQ_JSON_LD = {
     }
   }))
 };
+
+export interface FAQFilterButtonsProps {
+  categories?: string[];
+  activeCategory?: string;
+  onSelectCategory?: (category: string) => void;
+  items?: FAQItem[];
+  searchQuery?: string;
+  className?: string;
+  ariaLabel?: string;
+}
+
+export const FAQFilterButtons: React.FC<FAQFilterButtonsProps> = ({
+  categories: explicitCategories,
+  activeCategory = 'Topik Populer',
+  onSelectCategory,
+  items = FAQ_DATA,
+  className = '',
+  ariaLabel = 'Filter kategori FAQ'
+}) => {
+  const pillsRef = useRef<HTMLDivElement>(null);
+
+  // Dynamically generate filter categories for all unique categories present in items (FAQ_DATA)
+  const resolvedCategories = useMemo(() => {
+    if (explicitCategories && explicitCategories.length > 0) {
+      return explicitCategories;
+    }
+    const uniqueCats = Array.from(new Set(items.map((it) => it.category).filter(Boolean)));
+    return ['Topik Populer', ...uniqueCats];
+  }, [explicitCategories, items]);
+
+  const handleSelectCategory = (cat: string, e?: React.MouseEvent<HTMLButtonElement>) => {
+    onSelectCategory?.(cat);
+    if (e?.currentTarget) {
+      e.currentTarget.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center'
+      });
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, currentIndex: number) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      const nextIndex = (currentIndex + 1) % resolvedCategories.length;
+      const nextCat = resolvedCategories[nextIndex];
+      onSelectCategory?.(nextCat);
+      const nextBtn = pillsRef.current?.querySelectorAll<HTMLButtonElement>('.faq-filter-pill')[nextIndex];
+      nextBtn?.focus();
+      nextBtn?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      const prevIndex = (currentIndex - 1 + resolvedCategories.length) % resolvedCategories.length;
+      const prevCat = resolvedCategories[prevIndex];
+      onSelectCategory?.(prevCat);
+      const prevBtn = pillsRef.current?.querySelectorAll<HTMLButtonElement>('.faq-filter-pill')[prevIndex];
+      prevBtn?.focus();
+      prevBtn?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    } else if (e.key === 'Home') {
+      e.preventDefault();
+      const firstCat = resolvedCategories[0];
+      onSelectCategory?.(firstCat);
+      const firstBtn = pillsRef.current?.querySelectorAll<HTMLButtonElement>('.faq-filter-pill')[0];
+      firstBtn?.focus();
+      firstBtn?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    } else if (e.key === 'End') {
+      e.preventDefault();
+      const lastIndex = resolvedCategories.length - 1;
+      const lastCat = resolvedCategories[lastIndex];
+      onSelectCategory?.(lastCat);
+      const lastBtn = pillsRef.current?.querySelectorAll<HTMLButtonElement>('.faq-filter-pill')[lastIndex];
+      lastBtn?.focus();
+      lastBtn?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+  };
+
+  return (
+    <div
+      ref={pillsRef}
+      className={`faq-filter-pills ${className}`}
+      role="tablist"
+      aria-label={ariaLabel}
+    >
+      {resolvedCategories.map((cat, index) => {
+        const count = cat === 'Topik Populer'
+          ? items.length
+          : items.filter((it) => it.category === cat).length;
+        const isActive = activeCategory === cat;
+        const iconClass = FAQ_CATEGORY_ICONS[cat] || 'fas fa-tag';
+        const tabId = `faq-tab-${cat.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+
+        return (
+          <button
+            key={cat}
+            id={tabId}
+            type="button"
+            role="tab"
+            aria-selected={isActive}
+            aria-controls="faq-list-results"
+            tabIndex={isActive ? 0 : -1}
+            data-category={cat}
+            className={`faq-filter-pill ${isActive ? 'active' : ''}`}
+            onClick={(e) => handleSelectCategory(cat, e)}
+            onKeyDown={(e) => handleKeyDown(e, index)}
+            title={`Saring pertanyaan kategori: ${cat} (${count} topik)`}
+          >
+            <i className={`${iconClass} faq-filter-pill-icon`} aria-hidden="true"></i>
+            <span>{cat}</span>
+            <span
+              className={`faq-filter-pill-count ${isActive ? 'active' : ''}`}
+              title={`${count} pertanyaan pada kategori ${cat}`}
+              aria-label={`${count} pertanyaan`}
+            >
+              {count}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+};
+
+export interface FAQProps {
+  categories?: string[];
+  activeCategory?: string;
+  onSelectCategory?: (category: string) => void;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
+  onSearchClear?: () => void;
+  isSearchActive?: boolean;
+  markSearchFilterRunning?: () => void;
+  items?: FAQItem[];
+  filteredItems?: FAQItem[];
+  openItemId?: number | null;
+  onToggleItem?: (id: number) => void;
+  onShareItem?: (item: FAQItem) => void;
+  onChatItem?: (item: FAQItem) => void;
+  copiedFaqId?: number | null;
+  onCopyFullText?: (item: FAQItem) => void;
+  getShareWaUrl?: (item: FAQItem) => string;
+  getShareTelegramUrl?: (item: FAQItem) => string;
+  getShareFacebookUrl?: (item: FAQItem) => string;
+  getShareTwitterUrl?: (item: FAQItem) => string;
+  className?: string;
+}
+
+export const FAQ: React.FC<FAQProps> = ({
+  categories: controlledCategories,
+  activeCategory: controlledCategory,
+  onSelectCategory: controlledSelectCategory,
+  searchQuery: controlledSearch,
+  onSearchChange: controlledSearchChange,
+  onSearchClear: controlledSearchClear,
+  isSearchActive: controlledSearchActive,
+  markSearchFilterRunning: controlledMarkSearchFilter,
+  items = FAQ_DATA,
+  filteredItems: controlledFilteredItems,
+  openItemId: controlledOpenItem,
+  onToggleItem: controlledToggleItem,
+  onShareItem,
+  onChatItem,
+  copiedFaqId,
+  onCopyFullText,
+  getShareWaUrl,
+  getShareTelegramUrl,
+  getShareFacebookUrl,
+  getShareTwitterUrl,
+  className = ''
+}) => {
+  // Dynamically generate filter categories for all unique categories in items (FAQ_DATA)
+  const categories = useMemo(() => {
+    if (controlledCategories && controlledCategories.length > 0) {
+      return controlledCategories;
+    }
+    const uniqueCats = Array.from(new Set(items.map((it) => it.category).filter(Boolean)));
+    return ['Topik Populer', ...uniqueCats];
+  }, [controlledCategories, items]);
+
+  // Internal fallback states when standalone/uncontrolled
+  const [internalCategory, setInternalCategory] = useState<string>(categories[0] || 'Topik Populer');
+  const [internalSearch, setInternalSearch] = useState<string>('');
+  const [internalOpenItem, setInternalOpenItem] = useState<number | null>(null);
+  const [internalTyping, setInternalTyping] = useState<boolean>(false);
+  const internalTypingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const activeCategory = controlledCategory !== undefined ? controlledCategory : internalCategory;
+  const searchQuery = controlledSearch !== undefined ? controlledSearch : internalSearch;
+  const openItemId = controlledOpenItem !== undefined ? controlledOpenItem : internalOpenItem;
+  const isSearchActive = controlledSearchActive !== undefined ? controlledSearchActive : internalTyping;
+
+  const handleCategorySelect = (cat: string) => {
+    if (controlledSelectCategory) {
+      controlledSelectCategory(cat);
+    } else {
+      setInternalCategory(cat);
+    }
+    if (searchQuery.trim() && controlledMarkSearchFilter) {
+      controlledMarkSearchFilter();
+    }
+  };
+
+  const handleSearchChange = (val: string) => {
+    if (controlledSearchChange) {
+      controlledSearchChange(val);
+    } else {
+      setInternalSearch(val);
+      setInternalTyping(true);
+      if (internalTypingTimeoutRef.current) clearTimeout(internalTypingTimeoutRef.current);
+      internalTypingTimeoutRef.current = setTimeout(() => setInternalTyping(false), 550);
+    }
+  };
+
+  const handleSearchClear = () => {
+    if (controlledSearchClear) {
+      controlledSearchClear();
+    } else {
+      setInternalSearch('');
+      setInternalTyping(false);
+      if (internalTypingTimeoutRef.current) clearTimeout(internalTypingTimeoutRef.current);
+    }
+  };
+
+  const handleToggle = (id: number) => {
+    if (controlledToggleItem) {
+      controlledToggleItem(id);
+    } else {
+      setInternalOpenItem((prev) => (prev === id ? null : id));
+    }
+  };
+
+  // Derive filtered items if not supplied
+  const effectiveFilteredItems = useMemo(() => {
+    if (controlledFilteredItems !== undefined) {
+      return controlledFilteredItems;
+    }
+    const q = searchQuery.trim().toLowerCase();
+    return items.filter((item) => {
+      const matchCat = activeCategory === 'Topik Populer' || item.category === activeCategory;
+      if (!matchCat) return false;
+      if (!q) return true;
+      const inQuestion = item.question.toLowerCase().includes(q);
+      const inAnswer = item.answerText.toLowerCase().includes(q);
+      const inKeywords = item.keywords.some((k) => k.toLowerCase().includes(q));
+      const inCategory = item.category.toLowerCase().includes(q);
+      return inQuestion || inAnswer || inKeywords || inCategory;
+    });
+  }, [items, controlledFilteredItems, activeCategory, searchQuery]);
+
+  return (
+    <section className={`faq-section ${className}`} id="faq">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_JSON_LD) }}
+      />
+      <div className="container">
+        <div className="section-header fade-in">
+          <span className="section-badge">TANYA JAWAB</span>
+          <h2 className="section-title">Pertanyaan Sering Diajukan<br />(FAQ Pelanggan)</h2>
+          <p className="section-subtitle">
+            Jawaban lengkap seputar cara pemesanan, jangkauan wilayah spesifik Bogor, estimasi waktu kedatangan, dan prosedur garansi Mitra Bersih.
+          </p>
+        </div>
+
+        {/* Real-time FAQ Search Bar & Dynamic Category Filters */}
+        <div className={`faq-search-container fade-in ${isSearchActive ? 'is-typing search-active' : ''} ${searchQuery.trim() ? 'has-query' : ''}`}>
+          <div className={`faq-search-box ${isSearchActive ? 'is-typing faq-search-pulse search-active is-processing' : ''} ${searchQuery.trim() ? 'has-query' : ''}`}>
+            <i className={`fas fa-search faq-search-icon ${isSearchActive ? 'icon-searching' : ''}`}></i>
+            <input
+              type="text"
+              id="faq-search-input"
+              data-testid="faq-search-input"
+              className={`faq-search-input ${
+                isSearchActive
+                  ? 'search-active soft-yellow-glow faq-search-input-filtering is-typing is-processing faq-search-pulse pulse-border typing-pulse'
+                  : ''
+              }`}
+              placeholder="Cari pertanyaan... (contoh: tarif, garansi, gang sempit, 24 jam, cara pesan)"
+              value={searchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              onInput={controlledMarkSearchFilter}
+              onKeyDown={controlledMarkSearchFilter}
+              onKeyUp={controlledMarkSearchFilter}
+              onFocus={() => {
+                if (searchQuery.trim() && controlledMarkSearchFilter) controlledMarkSearchFilter();
+              }}
+              aria-label="Cari pertanyaan FAQ"
+              aria-busy={isSearchActive}
+            />
+            {isSearchActive && (
+              <span className="faq-search-typing-indicator" title="Sedang menyaring pertanyaan...">
+                <span className="typing-pulse-dot"></span>
+                <span className="typing-pulse-text">Menyaring</span>
+              </span>
+            )}
+            {searchQuery && (
+              <button
+                type="button"
+                className="faq-search-clear"
+                onClick={handleSearchClear}
+                title="Hapus pencarian"
+                aria-label="Hapus kata kunci pencarian"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            )}
+          </div>
+
+          <div className="faq-filter-row">
+            <FAQFilterButtons
+              categories={categories}
+              activeCategory={activeCategory}
+              onSelectCategory={handleCategorySelect}
+              items={items}
+              searchQuery={searchQuery}
+            />
+
+            <div className="faq-count-badge">
+              {isSearchActive && searchQuery.trim() ? (
+                <span className="faq-count-searching">
+                  <i className="fas fa-spinner fa-spin" style={{ marginRight: '6px', color: '#D97706' }}></i>
+                  Menyaring pertanyaan cerdas...
+                </span>
+              ) : searchQuery || activeCategory !== 'Topik Populer' ? (
+                <span>
+                  Ditemukan <strong>{effectiveFilteredItems.length}</strong> dari {items.length} pertanyaan
+                </span>
+              ) : (
+                <span>Total {items.length} topik populer</span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="faq-container fade-in" id="faq-list-results">
+          {isSearchActive && searchQuery.trim() ? (
+            <div
+              key={`faq-skeleton-${activeCategory}`}
+              className="faq-loading-skeleton-container faq-results-refresh faq-scale-in"
+              role="status"
+              aria-live="polite"
+              aria-label="Menyaring pertanyaan FAQ dengan AI"
+            >
+              <div className="faq-filtering-progress-box">
+                <div className="faq-filtering-progress-track">
+                  <div className="faq-filtering-progress-bar"></div>
+                </div>
+                <div className="faq-filtering-status-info">
+                  <div className="faq-filtering-status-left">
+                    <span className="faq-ai-filter-sparkle">
+                      <i className="fas fa-wand-magic-sparkles"></i>
+                    </span>
+                    <span className="faq-ai-filter-text">
+                      <strong>AI Smart Filter:</strong> Menyaring pertanyaan relevan untuk &ldquo;{searchQuery}&rdquo;...
+                    </span>
+                  </div>
+                  <span className="faq-filtering-loading-tag">
+                    <i className="fas fa-circle-notch fa-spin"></i> Menyaring Jawaban
+                  </span>
+                </div>
+              </div>
+
+              <div className="faq-skeleton-list">
+                {[1, 2, 3].map((idx) => (
+                  <div
+                    key={`faq-skeleton-${idx}`}
+                    className={`faq-skeleton-card ${idx === 1 ? 'is-expanded-preview' : ''}`}
+                    style={{ animationDelay: `${(idx - 1) * 0.08}s` }}
+                  >
+                    <div className="faq-skeleton-bar">
+                      <div className="faq-skeleton-badge skeleton-shimmer"></div>
+                      <div className="faq-skeleton-content">
+                        <div
+                          className="faq-skeleton-line skeleton-title skeleton-shimmer"
+                          style={{ width: idx === 1 ? '78%' : idx === 2 ? '64%' : '82%' }}
+                        ></div>
+                        <div className="faq-skeleton-meta-row">
+                          <div
+                            className="faq-skeleton-tag skeleton-shimmer"
+                            style={{ width: idx === 1 ? '90px' : idx === 2 ? '75px' : '100px' }}
+                          ></div>
+                          <div
+                            className="faq-skeleton-line skeleton-subtitle skeleton-shimmer"
+                            style={{ width: idx === 1 ? '36%' : idx === 2 ? '28%' : '42%' }}
+                          ></div>
+                        </div>
+                      </div>
+                      <div className="faq-skeleton-action skeleton-shimmer"></div>
+                    </div>
+
+                    {idx === 1 && (
+                      <div className="faq-skeleton-answer">
+                        <div className="faq-skeleton-line skeleton-body skeleton-shimmer" style={{ width: '94%' }}></div>
+                        <div className="faq-skeleton-line skeleton-body skeleton-shimmer" style={{ width: '86%' }}></div>
+                        <div className="faq-skeleton-line skeleton-body skeleton-shimmer" style={{ width: '62%' }}></div>
+                        <div className="faq-skeleton-btn-row">
+                          <div className="faq-skeleton-btn skeleton-shimmer" style={{ width: '185px' }}></div>
+                          <div className="faq-skeleton-btn skeleton-shimmer" style={{ width: '135px' }}></div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : effectiveFilteredItems.length === 0 ? (
+            <div key={`faq-empty-${searchQuery}-${activeCategory}`} className="faq-empty-state faq-results-refresh faq-scale-in">
+              <i className="fas fa-search"></i>
+              <h4>Tidak Ada Pertanyaan Ditemukan</h4>
+              <p>
+                Maaf, tidak ada tanya jawab yang cocok dengan kata kunci &ldquo;{searchQuery}&rdquo;{activeCategory !== 'Topik Populer' ? ` pada kategori ${activeCategory}` : ''}. Silakan coba kata kunci lain atau konsultasikan langsung dengan customer support teknis kami.
+              </p>
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  className="faq-empty-reset-btn"
+                  onClick={() => {
+                    handleSearchClear();
+                    handleCategorySelect(categories[0] || 'Topik Populer');
+                  }}
+                >
+                  <i className="fas fa-redo-alt" style={{ marginRight: '6px' }}></i>
+                  Tampilkan Semua Topik Populer
+                </button>
+                <a
+                  href={`https://wa.me/6285715654183?text=${encodeURIComponent(`Halo Mitra Bersih, saya ingin tanya kendala spesifik: ${searchQuery}`)}`}
+                  className="faq-cta-btn"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ fontSize: '13.5px', padding: '10px 20px' }}
+                >
+                  <i className="fab fa-whatsapp"></i> Tanya Langsung via WA
+                </a>
+              </div>
+            </div>
+          ) : (
+            <div key={`faq-list-${searchQuery}-${activeCategory}`} className="faq-list faq-results-refresh faq-scale-in">
+              {effectiveFilteredItems.map((item, index) => {
+                const isOpen = openItemId === item.id;
+                const directWaMessage =
+                  `Halo Admin CS Mitra Bersih,\n\n` +
+                  `Saya ingin bertanya seputar pertanyaan spesifik dari FAQ website:\n` +
+                  `❓ *Pertanyaan:* "${item.question}"\n` +
+                  `📂 *Kategori:* ${item.category}\n\n` +
+                  `*Kebutuhan:* Mohon info penjelasan teknis, estimasi tarif pengerjaan, dan ketersediaan jadwal armada untuk area Bogor.\n\n` +
+                  `Terima kasih!`;
+                const directWaUrl = `https://wa.me/6285715654183?text=${encodeURIComponent(directWaMessage)}`;
+
+                return (
+                  <div
+                    key={item.id}
+                    id={`faq-${item.id}`}
+                    className={`faq-item ${isOpen ? 'active' : ''}`}
+                    style={{ animationDelay: `${Math.min(index * 0.035, 0.28)}s` }}
+                  >
+                    <div className="faq-question-bar">
+                      <button
+                        type="button"
+                        className="faq-question"
+                        onClick={() => handleToggle(item.id)}
+                        aria-expanded={isOpen}
+                        aria-controls={`faq-answer-${item.id}`}
+                      >
+                        <div className="faq-question-text">
+                          <span className="faq-q-badge">{item.id}</span>
+                          <span>{highlightMatch(item.question, searchQuery)}</span>
+                        </div>
+                      </button>
+                      <div className="faq-question-actions">
+                        {onShareItem && (
+                          <button
+                            type="button"
+                            className="faq-share-trigger-btn"
+                            onClick={() => onShareItem(item)}
+                            title="Bagikan jawaban pertanyaan ini ke media sosial atau pesan instan"
+                            aria-label={`Bagikan jawaban untuk: ${item.question}`}
+                          >
+                            <i className="fas fa-share-alt"></i>
+                            <span className="faq-share-trigger-label">Bagikan</span>
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          className="faq-toggle-btn"
+                          onClick={() => handleToggle(item.id)}
+                          aria-expanded={isOpen}
+                          aria-label={isOpen ? `Tutup jawaban FAQ nomor ${item.id}` : `Buka jawaban FAQ nomor ${item.id}`}
+                        >
+                          <div className="faq-toggle-icon">
+                            <i className={`fas ${isOpen ? 'fa-minus' : 'fa-plus'}`}></i>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+
+                    <div
+                      id={`faq-answer-${item.id}`}
+                      className={`faq-answer-collapse ${isOpen ? 'open' : ''}`}
+                      aria-hidden={!isOpen}
+                    >
+                      <div className="faq-answer">
+                        {item.answer}
+
+                        {/* Tombol Tanya Admin via WhatsApp & Bagikan Jawaban */}
+                        <div className="faq-item-action">
+                          <div className="faq-item-action-header">
+                            <div className="faq-item-action-icon">
+                              <i className="fab fa-whatsapp"></i>
+                            </div>
+                            <div className="faq-item-action-text">
+                              <strong>Punya pertanyaan spesifik terkait hal ini?</strong>
+                              <span>Tanyakan langsung ke Admin Mitra Bersih via WhatsApp 24 jam dengan detail pertanyaan otomatis terisi.</span>
+                            </div>
+                          </div>
+                          <div className="faq-item-action-btns">
+                            <a
+                              href={directWaUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="faq-item-wa-btn"
+                              aria-label={`Tanya Admin via WhatsApp tentang: ${item.question}`}
+                            >
+                              <i className="fab fa-whatsapp"></i>
+                              <span>Tanya Admin via WhatsApp</span>
+                            </a>
+                            {onChatItem && (
+                              <button
+                                type="button"
+                                onClick={() => onChatItem(item)}
+                                className="faq-item-custom-btn"
+                                title="Kustomisasi dengan menyertakan nama dan alamat Bogor"
+                                aria-label={`Kustomisasi detail dengan nama dan lokasi untuk pertanyaan: ${item.question}`}
+                              >
+                                <i className="fas fa-edit"></i>
+                                <span>Sertakan Nama &amp; Wilayah</span>
+                              </button>
+                            )}
+                            {onShareItem && (
+                              <button
+                                type="button"
+                                onClick={() => onShareItem(item)}
+                                className="faq-item-share-btn"
+                                title="Bagikan jawaban informatif ini ke media sosial atau pesan instan"
+                                aria-label={`Bagikan jawaban untuk: ${item.question}`}
+                              >
+                                <i className="fas fa-share-alt"></i>
+                                <span>Bagikan Jawaban</span>
+                              </button>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Quick Share Strip */}
+                        <div className="faq-item-share-strip">
+                          <span className="faq-share-strip-title">
+                            <i className="fas fa-share-nodes"></i> Bagikan Solusi:
+                          </span>
+                          <div className="faq-share-strip-links">
+                            {getShareWaUrl && (
+                              <a
+                                href={getShareWaUrl(item)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="faq-strip-btn faq-strip-wa"
+                                title="Bagikan ke WhatsApp"
+                                aria-label="Bagikan ke WhatsApp"
+                              >
+                                <i className="fab fa-whatsapp"></i>
+                                <span>WhatsApp</span>
+                              </a>
+                            )}
+                            {getShareTelegramUrl && (
+                              <a
+                                href={getShareTelegramUrl(item)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="faq-strip-btn faq-strip-telegram"
+                                title="Bagikan ke Telegram"
+                                aria-label="Bagikan ke Telegram"
+                              >
+                                <i className="fab fa-telegram"></i>
+                                <span>Telegram</span>
+                              </a>
+                            )}
+                            {getShareFacebookUrl && (
+                              <a
+                                href={getShareFacebookUrl(item)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="faq-strip-btn faq-strip-facebook"
+                                title="Bagikan ke Facebook"
+                                aria-label="Bagikan ke Facebook"
+                              >
+                                <i className="fab fa-facebook-f"></i>
+                                <span>Facebook</span>
+                              </a>
+                            )}
+                            {getShareTwitterUrl && (
+                              <a
+                                href={getShareTwitterUrl(item)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="faq-strip-btn faq-strip-twitter"
+                                title="Bagikan ke X / Twitter"
+                                aria-label="Bagikan ke X"
+                              >
+                                <i className="fab fa-x-twitter"></i>
+                                <span>X</span>
+                              </a>
+                            )}
+                            {onCopyFullText && (
+                              <button
+                                type="button"
+                                onClick={() => onCopyFullText(item)}
+                                className="faq-strip-btn faq-strip-copy"
+                                title="Salin teks jawaban lengkap"
+                                aria-label="Salin teks jawaban lengkap"
+                              >
+                                <i className={`fas ${copiedFaqId === item.id ? 'fa-check text-green-600' : 'fa-copy'}`}></i>
+                                <span>{copiedFaqId === item.id ? 'Tersalin!' : 'Salin Teks'}</span>
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Quick Contact Box inside FAQ */}
+          <div className="faq-cta-card fade-in">
+            <div className="faq-cta-info">
+              <h4>Punya Pertanyaan Spesifik Lainnya?</h4>
+              <p>Konsultasikan kendala saluran atau septic tank Anda secara gratis bersama customer support teknis kami sekarang.</p>
+            </div>
+            <a
+              href="https://wa.me/6285715654183?text=Halo%20Mitra%20Bersih,%20saya%20ingin%20tanya%20seputar%20layanan%20sedot%20WC%20di%20Bogor"
+              className="faq-cta-btn"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <i className="fab fa-whatsapp"></i>
+              Tanya CS Kami (24 Jam)
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export { FAQ as FaqComponent, FAQ as FAQSection };
 
 interface ArticlePoint {
   heading: string;
@@ -1776,7 +2446,7 @@ const TESTIMONI_WA_TOPICS = [
   }
 ];
 
-interface MapHub {
+export interface MapHub {
   id: string;
   name: string;
   shortLabel: string;
@@ -1789,7 +2459,7 @@ interface MapHub {
   coordinates: { lat: number; lng: number };
 }
 
-const MAP_HUBS: MapHub[] = [
+export const MAP_HUBS: MapHub[] = [
   {
     id: 'kota-bogor',
     name: 'Pos Pusat Kota Bogor (Workshop Utama)',
@@ -2651,6 +3321,41 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [isScrolled, setIsScrolled] = useState(false);
+
+  // Global Dark Mode Theme State
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    try {
+      const savedTheme = localStorage.getItem('mitra_theme');
+      if (savedTheme === 'dark' || savedTheme === 'light') {
+        return savedTheme;
+      }
+      if (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        return 'dark';
+      }
+    } catch {
+      // ignore
+    }
+    return 'light';
+  });
+
+  useEffect(() => {
+    try {
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+      localStorage.setItem('mitra_theme', theme);
+    } catch {
+      // storage unavailable
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
   const [lightboxImg, setLightboxImg] = useState<string | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(1);
   const [selectedArticle, setSelectedArticle] = useState<ArticleItem | null>(null);
@@ -3114,6 +3819,8 @@ export default function App() {
   const [b2bReportActiveTab, setB2bReportActiveTab] = useState<'quotations' | 'services' | 'audit'>('quotations');
   const [b2bHistorySearch, setB2bHistorySearch] = useState<string>('');
   const [b2bHistoryStatusFilter, setB2bHistoryStatusFilter] = useState<string>('all');
+  const [b2bReportSelectedMonth, setB2bReportSelectedMonth] = useState<string>('Oktober 2026');
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState<boolean>(false);
   const [expandedTrackingId, setExpandedTrackingId] = useState<string | null>(null);
   const [editingTimelineStep, setEditingTimelineStep] = useState<{
     quotationId: string;
@@ -4104,6 +4811,23 @@ export default function App() {
 
     exportToCsv(`Laporan_Audit_Compliance_B2B_${dateStr}.csv`, headers, metaRows);
     setCalcToast('Berhasil mengunduh Laporan Rekap Komprehensif Audit Compliance ke CSV / Excel.');
+  };
+
+  // 4. Export B2B Corporate Monthly Report in PDF Format
+  const handleDownloadB2bMonthlyPdf = (periodMonth: string = b2bReportSelectedMonth) => {
+    setIsGeneratingPdf(true);
+    try {
+      downloadB2bMonthlyPdf(b2bQuotationHistory, {
+        periodMonth,
+        printedBy: 'Divisi HSE & Finance PT MITRA BERSIH 24 JAM'
+      });
+      setCalcToast(`Berhasil mengunduh Laporan Bulanan B2B (${periodMonth}) dalam format PDF resmi dengan Rekap Manifes IPLT & Kepatuhan Audit Lingkungan.`);
+    } catch (err) {
+      console.error('Failed to download B2B monthly PDF:', err);
+      setCalcToast('Terjadi kendala saat menyusun dokumen PDF. Silakan coba kembali.');
+    } finally {
+      setTimeout(() => setIsGeneratingPdf(false), 600);
+    }
   };
 
   const handleCopyCalcSummary = () => {
@@ -5200,7 +5924,7 @@ startxref
         setIsScrolled(false);
       }
 
-      const sections = ['home', 'layanan', 'kalkulator-cepat', 'tentang', 'faq', 'galeri', 'artikel', 'ulasan', 'lokasi', 'kontak'];
+      const sections = ['home', 'layanan', 'jadwal-booking', 'kalkulator-cepat', 'tentang', 'faq', 'galeri', 'artikel', 'ulasan', 'lokasi', 'kontak'];
       const scrollPos = window.scrollY + 120;
 
       for (const sectionId of sections) {
@@ -5728,6 +6452,15 @@ startxref
             </li>
             <li>
               <a
+                href="#jadwal-booking"
+                onClick={(e) => scrollToSection(e, 'jadwal-booking')}
+                className={activeSection === 'jadwal-booking' ? 'active' : ''}
+              >
+                Booking Tanggal
+              </a>
+            </li>
+            <li>
+              <a
                 href="#kalkulator-cepat"
                 onClick={(e) => scrollToSection(e, 'kalkulator-cepat')}
                 className={activeSection === 'kalkulator-cepat' ? 'active' : ''}
@@ -5798,9 +6531,50 @@ startxref
                 Kontak
               </a>
             </li>
+            <li className="nav-menu-theme-item">
+              <button
+                type="button"
+                className="mobile-theme-toggle-btn"
+                onClick={toggleTheme}
+                aria-label={theme === 'dark' ? 'Beralih ke mode terang' : 'Beralih ke mode gelap'}
+                aria-pressed={theme === 'dark'}
+                title={theme === 'dark' ? 'Beralih ke Mode Terang' : 'Beralih ke Mode Gelap'}
+              >
+                <span className="mobile-theme-icon">
+                  <i className={theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon'}></i>
+                </span>
+                <span className="mobile-theme-text">
+                  Tema: <strong>{theme === 'dark' ? 'Mode Gelap' : 'Mode Terang'}</strong>
+                </span>
+                <span className="mobile-theme-toggle-switch" aria-hidden="true">
+                  <span className={`mobile-theme-switch-knob ${theme === 'dark' ? 'active' : ''}`}></span>
+                </span>
+              </button>
+            </li>
           </ul>
 
           <div className="nav-actions">
+            {/* Global Dark Mode Theme Toggle */}
+            <button
+              type="button"
+              className={`theme-toggle-btn ${theme === 'dark' ? 'dark-active' : 'light-active'}`}
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? 'Beralih ke mode terang (Light Mode)' : 'Beralih ke mode gelap (Dark Mode)'}
+              aria-pressed={theme === 'dark'}
+              title={theme === 'dark' ? 'Beralih ke Mode Terang (Light Mode)' : 'Beralih ke Mode Gelap (Dark Mode)'}
+            >
+              <span className="theme-toggle-icon" aria-hidden="true">
+                {theme === 'dark' ? (
+                  <i className="fas fa-sun"></i>
+                ) : (
+                  <i className="fas fa-moon"></i>
+                )}
+              </span>
+              <span className="theme-toggle-label">
+                {theme === 'dark' ? 'Terang' : 'Gelap'}
+              </span>
+            </button>
+
             <a
               href="tel:+6285715654183"
               className="nav-call-btn"
@@ -6384,7 +7158,14 @@ startxref
         </div>
       </section>
 
-
+      {/* SECTION KALENDER & RESERVASI TANGGAL LAYANAN DENGAN KETERSEDIAAN ARMADA */}
+      <section className="booking-calendar-section" id="jadwal-booking">
+        <div className="container">
+          <ServiceBookingCalendar
+            initialArea={layananArea !== 'all' ? selectedLayananOption.districtBadge : 'Bogor Barat'}
+          />
+        </div>
+      </section>
 
       {/* WHY US */}
       <section className="why-us" id="tentang">
@@ -6839,23 +7620,18 @@ startxref
             </div>
 
             <div className="faq-filter-row">
-              <div className="faq-filter-pills">
-                {FAQ_CATEGORIES.map((cat) => (
-                  <button
-                    key={cat}
-                    type="button"
-                    className={`faq-filter-pill ${faqCategory === cat ? 'active' : ''}`}
-                    onClick={() => {
-                      setFaqCategory(cat);
-                      if (faqSearch.trim()) {
-                        markSearchFilterRunning();
-                      }
-                    }}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
+              <FAQFilterButtons
+                categories={FAQ_CATEGORIES}
+                activeCategory={faqCategory}
+                onSelectCategory={(cat) => {
+                  setFaqCategory(cat);
+                  if (faqSearch.trim()) {
+                    markSearchFilterRunning();
+                  }
+                }}
+                items={FAQ_DATA}
+                searchQuery={faqSearch}
+              />
 
               <div className="faq-count-badge">
                 {isSearchActive && faqSearch.trim() ? (
@@ -8657,6 +9433,16 @@ startxref
                 </button>
                 <button
                   type="button"
+                  className="calc-b2b-pdf-btn"
+                  onClick={() => handleDownloadB2bMonthlyPdf(b2bReportSelectedMonth)}
+                  disabled={isGeneratingPdf}
+                  title="Unduh Laporan Bulanan B2B Resmi (.PDF) berisi rekapitulasi manifes IPLT, total biaya, dan status audit lingkungan"
+                >
+                  <i className={`fas ${isGeneratingPdf ? 'fa-spinner fa-spin' : 'fa-file-pdf'}`}></i>
+                  <span>{isGeneratingPdf ? 'Menyusun PDF...' : 'Unduh Laporan PDF'}</span>
+                </button>
+                <button
+                  type="button"
                   className="calc-b2b-quick-csv-btn"
                   onClick={handleExportB2bServicesCsv}
                   title="Unduh langsung data layanan B2B terfilter ke format CSV / Excel"
@@ -9643,791 +10429,15 @@ startxref
             </p>
           </div>
 
-          {/* Pos Selector Pills / Buttons */}
-          <div className="lokasi-tabs fade-in">
-            <span className="lokasi-tabs-label">
-              <i className="fas fa-map-marker-alt" style={{ marginRight: '6px' }}></i>
-              Pilih Pos Siaga Armada Terdekat Anda:
-            </span>
-            <div className="lokasi-tabs-grid">
-              {MAP_HUBS.map((hub, idx) => (
-                <button
-                  key={hub.id}
-                  type="button"
-                  className={`lokasi-tab-btn ${selectedMapHub === idx ? 'active' : ''}`}
-                  onClick={() => {
-                    setSelectedLokasiKecamatan('');
-                    triggerMapZoom(idx);
-                  }}
-                  title={`Klik untuk fokuskan peta ke ${hub.name}`}
-                >
-                  <i className="fas fa-truck-moving"></i>
-                  <span>{hub.shortLabel}</span>
-                  {selectedMapHub === idx && <span className="lokasi-tab-dot"></span>}
-                </button>
-              ))}
-            </div>
-
-            {/* Quick Area / Subdistrict Dropdown to Jump to Hub with Zoom */}
-            <div className="lokasi-area-jump-row">
-              <span className="lokasi-area-jump-label">
-                <i className="fas fa-crosshairs"></i> Atau cari pos berdasarkan kecamatan Anda:
-              </span>
-              <div className="lokasi-area-select-box">
-                <select
-                  className="lokasi-area-select"
-                  value={selectedLokasiKecamatan}
-                  onChange={(e) => handleLokasiKecamatanSelect(e.target.value)}
-                  aria-label="Pilih kecamatan untuk fokuskan peta"
-                >
-                  <option value="">-- Pilih Kecamatan di Bogor (Peta Langsung Zoom ke Pos Terdekat) --</option>
-                  {BOGOR_AREA_DETAILS.map((area) => (
-                    <option key={area.name} value={area.name}>
-                      {area.name} ({area.type}) → {area.hub} [{area.estTime}]
-                    </option>
-                  ))}
-                </select>
-                <i className="fas fa-chevron-down lokasi-select-caret"></i>
-              </div>
-            </div>
-          </div>
-
-          {/* Main Map & Info Card Grid */}
-          <div className="lokasi-grid fade-in">
-            {/* Interactive Map Viewport with Subtle Zoom-In Animation */}
-            <div className="lokasi-map-wrapper">
-              {/* Map Top Header with Live GPS Status & View Mode Switcher */}
-              <div className="lokasi-map-topbar">
-                <div className="lokasi-map-status">
-                  <span className="lokasi-pulse-dot"></span>
-                  <span className="lokasi-map-status-title">LIVE GPS ARMADA BOGOR</span>
-                  <span className="lokasi-gps-sync-badge">
-                    <i className="fas fa-satellite"></i> 11/11 Unit Online
-                  </span>
-                </div>
-
-                <div className="lokasi-map-actions-top">
-                  <div className="lokasi-view-mode-tabs" role="tablist" aria-label="Pilih Tampilan Peta">
-                    <button
-                      type="button"
-                      className={`lokasi-mode-pill ${mapViewMode === 'visual' ? 'active' : ''}`}
-                      onClick={() => setMapViewMode('visual')}
-                      role="tab"
-                      aria-selected={mapViewMode === 'visual'}
-                      title="Peta Interaktif Radar & Pos Siaga"
-                    >
-                      <i className="fas fa-radar"></i> Radar Live ({REALTIME_FLEET_TRUCKS.length} Truk)
-                    </button>
-                    <button
-                      type="button"
-                      className={`lokasi-mode-pill ${mapViewMode === 'google' ? 'active' : ''}`}
-                      onClick={() => setMapViewMode('google')}
-                      role="tab"
-                      aria-selected={mapViewMode === 'google'}
-                      title="Tampilan Google Maps Navigasi"
-                    >
-                      <i className="fas fa-map-location-dot"></i> Google Maps
-                    </button>
-                  </div>
-
-                  <button
-                    type="button"
-                    className="lokasi-gps-refresh-btn"
-                    onClick={handleRefreshGps}
-                    title="Segarkan data GPS satelit real-time"
-                    aria-label="Segarkan sinyal GPS"
-                  >
-                    <i className={`fas fa-rotate-right ${isGpsRefreshing ? 'fa-spin' : ''}`}></i>
-                    <span>{lastGpsSync}</span>
-                  </button>
-                </div>
-              </div>
-
-              {/* Marker Filter Buttons (Only in Visual Mode) */}
-              {mapViewMode === 'visual' && (
-                <div className="lokasi-marker-filter-bar">
-                  <div className="lokasi-marker-filter-top">
-                    <span className="lokasi-marker-filter-label">
-                      <i className="fas fa-filter"></i> Filter Titik Peta:
-                    </span>
-                    <div className="lokasi-marker-filter-chips">
-                      <button
-                        type="button"
-                        className={`lokasi-filter-chip ${markerCategoryFilter === 'all' ? 'active' : ''}`}
-                        onClick={() => setMarkerCategoryFilter('all')}
-                      >
-                        Semua Titik ({POS_ARMADA_MARKERS.length + REALTIME_FLEET_TRUCKS.length})
-                      </button>
-                      <button
-                        type="button"
-                        className={`lokasi-filter-chip ${markerCategoryFilter === 'pos' ? 'active' : ''}`}
-                        onClick={() => setMarkerCategoryFilter('pos')}
-                      >
-                        <i className="fas fa-warehouse"></i> Pos Armada Siaga ({POS_ARMADA_MARKERS.length} Kecamatan)
-                      </button>
-                      <button
-                        type="button"
-                        className={`lokasi-filter-chip ${markerCategoryFilter === 'trucks' ? 'active' : ''}`}
-                        onClick={() => setMarkerCategoryFilter('trucks')}
-                      >
-                        <i className="fas fa-truck-moving"></i> Posisi Truk Real-Time ({REALTIME_FLEET_TRUCKS.length})
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Quick Subdistrict Pos Siaga Selector Chips */}
-                  <div className="lokasi-pos-kecamatan-strip">
-                    <span className="lokasi-pos-kecamatan-label">
-                      <i className="fas fa-map-pin"></i> Pos Armada Siaga per Kecamatan:
-                    </span>
-                    <div className="lokasi-pos-kecamatan-scroll" tabIndex={0} aria-label="Daftar pos armada per kecamatan">
-                      {POS_ARMADA_MARKERS.map((pos) => {
-                        const isPosSelected = activeMapMarker?.type === 'pos' && activeMapMarker.id === pos.id;
-                        return (
-                          <button
-                            key={`chip-${pos.id}`}
-                            type="button"
-                            className={`pos-kecamatan-chip ${isPosSelected ? 'active' : ''}`}
-                            onClick={() => {
-                              setActiveMapMarker({ type: 'pos', id: pos.id });
-                              const hubIdx = MAP_HUBS.findIndex((h) => h.id === pos.hubId);
-                              if (hubIdx !== -1) setSelectedMapHub(hubIdx);
-                              if (markerCategoryFilter === 'trucks') setMarkerCategoryFilter('all');
-                            }}
-                            title={`Lihat Pos Siaga Kecamatan ${pos.kecamatan} (${pos.truckCount} Truk Standby)`}
-                          >
-                            <span className="pos-chip-dot"></span>
-                            <span className="pos-chip-title">{pos.shortLabel.replace(/^Pos (Kec\.\s*)?/, '')}</span>
-                            <span className="pos-chip-count">{pos.truckCount} Truk</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Map Viewport: Visual Digital Radar vs Google Maps */}
-              <div className="lokasi-iframe-container">
-                {mapViewMode === 'visual' ? (
-                  <div className="lokasi-interactive-canvas">
-                    {/* SVG Vector Map of Greater Bogor */}
-                    <svg className="lokasi-canvas-svg" viewBox="0 0 1000 650" preserveAspectRatio="none">
-                      <defs>
-                        <pattern id="radar-grid" width="45" height="45" patternUnits="userSpaceOnUse">
-                          <path d="M 45 0 L 0 0 0 45" fill="none" stroke="rgba(255, 214, 10, 0.08)" strokeWidth="0.8" />
-                        </pattern>
-                        <linearGradient id="road-gold" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.5" />
-                          <stop offset="50%" stopColor="#FFD60A" stopOpacity="0.9" />
-                          <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.5" />
-                        </linearGradient>
-                        <linearGradient id="river-blue" x1="0%" y1="0%" x2="0%" y2="100%">
-                          <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.4" />
-                          <stop offset="100%" stopColor="#0284C7" stopOpacity="0.3" />
-                        </linearGradient>
-                      </defs>
-
-                      {/* Map Background with Coordinates Grid */}
-                      <rect width="1000" height="650" fill="#0B1329" />
-                      <rect width="1000" height="650" fill="url(#radar-grid)" />
-
-                      {/* Sungai Ciliwung Natural Curve */}
-                      <path
-                        d="M 520 0 Q 510 180 500 270 T 520 380 T 490 510 T 680 650"
-                        fill="none"
-                        stroke="url(#river-blue)"
-                        strokeWidth="7"
-                        strokeLinecap="round"
-                      />
-
-                      {/* Tol Jagorawi Main Artery (Cibinong - Sentul - Bogor - Ciawi) */}
-                      <path
-                        d="M 680 0 L 670 170 L 730 260 L 580 370 L 670 480 L 850 650"
-                        fill="none"
-                        stroke="url(#road-gold)"
-                        strokeWidth="4.5"
-                        strokeDasharray="9 4"
-                      />
-
-                      {/* Jl. Raya Parung - Kemang to Kota Bogor */}
-                      <path
-                        d="M 280 0 L 290 130 L 400 240 L 470 340"
-                        fill="none"
-                        stroke="rgba(255, 255, 255, 0.35)"
-                        strokeWidth="3.5"
-                      />
-
-                      {/* Jl. Sholeh Iskandar & Yasmin Ring Road */}
-                      <path
-                        d="M 330 290 L 540 310 L 650 330"
-                        fill="none"
-                        stroke="rgba(255, 214, 10, 0.6)"
-                        strokeWidth="3.5"
-                      />
-
-                      {/* Jl. Raya Dramaga to Bogor Barat */}
-                      <path
-                        d="M 120 370 L 260 365 L 430 350 L 490 355"
-                        fill="none"
-                        stroke="rgba(255, 255, 255, 0.35)"
-                        strokeWidth="3.5"
-                      />
-
-                      {/* Jl. Raya Ciawi - Puncak */}
-                      <path
-                        d="M 660 480 Q 750 520 850 560 T 980 650"
-                        fill="none"
-                        stroke="rgba(255, 214, 10, 0.6)"
-                        strokeWidth="3.5"
-                      />
-
-                      {/* Radar Range Rings */}
-                      <circle cx="490" cy="340" r="140" fill="none" stroke="rgba(255, 214, 10, 0.16)" strokeWidth="1" strokeDasharray="4 4" />
-                      <circle cx="490" cy="340" r="280" fill="none" stroke="rgba(255, 214, 10, 0.11)" strokeWidth="1" strokeDasharray="6 6" />
-                      <circle cx="490" cy="340" r="420" fill="none" stroke="rgba(255, 214, 10, 0.07)" strokeWidth="1" />
-                    </svg>
-
-                    {/* District Area Watermark Labels */}
-                    <div className="lokasi-district-tags" aria-hidden="true">
-                      <span className="district-tag" style={{ left: '26%', top: '12%' }}>KEC. PARUNG</span>
-                      <span className="district-tag" style={{ left: '46%', top: '16%' }}>KEC. BOJONGGEDE</span>
-                      <span className="district-tag" style={{ left: '68%', top: '18%' }}>KEC. CIBINONG</span>
-                      <span className="district-tag" style={{ left: '76%', top: '32%' }}>SENTUL CITY</span>
-                      <span className="district-tag" style={{ left: '41%', top: '38%' }}>TANAH SAREAL</span>
-                      <span className="district-tag highlight" style={{ left: '50%', top: '44%' }}>KOTA BOGOR (PUSAT)</span>
-                      <span className="district-tag" style={{ left: '20%', top: '64%' }}>KEC. DRAMAGA</span>
-                      <span className="district-tag" style={{ left: '36%', top: '68%' }}>KEC. CIOMAS</span>
-                      <span className="district-tag" style={{ left: '68%', top: '64%' }}>KEC. CIAWI</span>
-                      <span className="district-tag" style={{ left: '85%', top: '76%' }}>PUNCAK / CISARUA</span>
-                    </div>
-
-                    {/* Interactive Pos Armada Siaga Markers */}
-                    {(markerCategoryFilter === 'all' || markerCategoryFilter === 'pos') &&
-                      POS_ARMADA_MARKERS.map((pos) => {
-                        const isPosSelected = activeMapMarker?.type === 'pos' && activeMapMarker.id === pos.id;
-                        return (
-                          <div
-                            key={pos.id}
-                            className={`pos-armada-marker ${isPosSelected ? 'active' : ''}`}
-                            style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
-                            onClick={() => {
-                              setActiveMapMarker({ type: 'pos', id: pos.id });
-                              const hubIdx = MAP_HUBS.findIndex((h) => h.id === pos.hubId);
-                              if (hubIdx !== -1) setSelectedMapHub(hubIdx);
-                            }}
-                            title={`Pos Siaga: ${pos.name} (${pos.truckCount} Truk Standby)`}
-                          >
-                            <span className="pos-armada-pulse-ring"></span>
-                            <div className="pos-armada-icon-box">
-                              <i className="fas fa-warehouse"></i>
-                            </div>
-                            <div className="pos-armada-tooltip-tag">
-                              <span className="pos-armada-tag-name">{pos.shortLabel}</span>
-                              <span className="pos-armada-tag-count">{pos.truckCount} Truk Ready</span>
-                            </div>
-                          </div>
-                        );
-                      })}
-
-                    {/* Interactive Real-Time Fleet Truck Markers */}
-                    {(markerCategoryFilter === 'all' || markerCategoryFilter === 'trucks') &&
-                      REALTIME_FLEET_TRUCKS.map((truck) => {
-                        const isTruckSelected = activeMapMarker?.type === 'truck' && activeMapMarker.id === truck.id;
-                        return (
-                          <div
-                            key={truck.id}
-                            className={`fleet-truck-marker status-${truck.status} ${isTruckSelected ? 'active' : ''}`}
-                            style={{ left: `${truck.x}%`, top: `${truck.y}%` }}
-                            onClick={() => {
-                              setActiveMapMarker({ type: 'truck', id: truck.id });
-                              const hubIdx = MAP_HUBS.findIndex((h) => h.id === truck.hubId);
-                              if (hubIdx !== -1) setSelectedMapHub(hubIdx);
-                            }}
-                            title={`Armada: ${truck.unitCode} (${truck.plate}) - ${truck.statusLabel}`}
-                          >
-                            <span className={`fleet-truck-pulse status-${truck.status}`}></span>
-                            <div className="fleet-truck-icon-circle">
-                              <i className="fas fa-truck-moving"></i>
-                            </div>
-                            <div className="fleet-truck-tag">
-                              <span className="fleet-truck-unit">{truck.unitCode}</span>
-                              <span className="fleet-truck-plate">{truck.plate}</span>
-                              {truck.status === 'dispatched' && (
-                                <span className="fleet-truck-speed">{truck.speed}</span>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })}
-
-                    {/* Interactive Marker Popover Card Overlay */}
-                    {activeMapMarker && (
-                      <div className="map-marker-popover fade-in">
-                        {activeMapMarker.type === 'truck' && (() => {
-                          const truck = REALTIME_FLEET_TRUCKS.find((t) => t.id === activeMapMarker.id) || REALTIME_FLEET_TRUCKS[0];
-                          return (
-                            <div className="map-popover-card">
-                              <div className="map-popover-header">
-                                <div className="map-popover-title-row">
-                                  <span className={`map-popover-status-badge status-${truck.status}`}>
-                                    <span className="status-ping"></span>
-                                    {truck.statusLabel}
-                                  </span>
-                                  <button
-                                    type="button"
-                                    className="map-popover-close-btn"
-                                    onClick={() => setActiveMapMarker(null)}
-                                    aria-label="Tutup info armada"
-                                  >
-                                    <i className="fas fa-times"></i>
-                                  </button>
-                                </div>
-                                <h4 className="map-popover-title">
-                                  <i className="fas fa-truck"></i> {truck.unitCode} ({truck.plate})
-                                </h4>
-                                <p className="map-popover-subtitle">
-                                  📍 Wilayah Operasi: <strong>Kecamatan {truck.kecamatan}</strong> ({truck.subdistrict})
-                                </p>
-                              </div>
-
-                              <div className="map-popover-body">
-                                <div className="map-popover-meta-grid">
-                                  <div className="map-popover-meta-item">
-                                    <label>Tipe Unit:</label>
-                                    <span>{truck.truckType}</span>
-                                  </div>
-                                  <div className="map-popover-meta-item">
-                                    <label>Kapasitas Tangki:</label>
-                                    <span>{truck.capacity}</span>
-                                  </div>
-                                  <div className="map-popover-meta-item">
-                                    <label>Panjang Selang:</label>
-                                    <span>{truck.hoseLength}</span>
-                                  </div>
-                                  <div className="map-popover-meta-item">
-                                    <label>Estimasi Tiba:</label>
-                                    <span className="text-eta">
-                                      <i className="fas fa-bolt"></i> {truck.eta} (~{truck.distanceKm} km)
-                                    </span>
-                                  </div>
-                                </div>
-                                <div className="map-popover-driver-row">
-                                  <i className="fas fa-user-check"></i>
-                                  <span>Petugas: <strong>{truck.driver}</strong> • Pangkalan: {truck.hubName}</span>
-                                </div>
-                              </div>
-
-                              <div className="map-popover-footer">
-                                <a
-                                  href={`https://wa.me/6285715654183?text=${encodeURIComponent(
-                                    `Halo Admin Mitra Bersih 24 Jam,\nSaya melihat di Peta Real-Time unit *${truck.unitCode} (${truck.plate})* sedang siaga di area *Kecamatan ${truck.kecamatan}*.\nMohon konfirmasi kedatangan armada ini ke alamat saya. Terima kasih!`
-                                  )}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="map-popover-cta-btn"
-                                >
-                                  <i className="fab fa-whatsapp"></i>
-                                  <span>Panggil Unit Ini Sekarang</span>
-                                </a>
-                              </div>
-                            </div>
-                          );
-                        })()}
-
-                        {activeMapMarker.type === 'pos' && (() => {
-                          const pos = POS_ARMADA_MARKERS.find((p) => p.id === activeMapMarker.id) || POS_ARMADA_MARKERS[0];
-                          return (
-                            <div className="map-popover-card">
-                              <div className="map-popover-header">
-                                <div className="map-popover-title-row">
-                                  <span className="map-popover-status-badge pos-badge">
-                                    <i className="fas fa-warehouse"></i> {pos.badge}
-                                  </span>
-                                  <button
-                                    type="button"
-                                    className="map-popover-close-btn"
-                                    onClick={() => setActiveMapMarker(null)}
-                                    aria-label="Tutup info pos"
-                                  >
-                                    <i className="fas fa-times"></i>
-                                  </button>
-                                </div>
-                                <h4 className="map-popover-title">{pos.name}</h4>
-                                <p className="map-popover-subtitle">
-                                  📍 Wilayah Naungan: <strong>{pos.kecamatan}</strong>
-                                </p>
-                              </div>
-
-                              <div className="map-popover-body">
-                                <div className="map-popover-meta-grid">
-                                  <div className="map-popover-meta-item">
-                                    <label>Armada Standby:</label>
-                                    <span className="text-highlight">
-                                      <i className="fas fa-truck-moving"></i> {pos.truckCount} Truk Tangki Ready
-                                    </span>
-                                  </div>
-                                  <div className="map-popover-meta-item">
-                                    <label>Estimasi Respon:</label>
-                                    <span className="text-eta">
-                                      <i className="fas fa-clock"></i> {pos.estArrival}
-                                    </span>
-                                  </div>
-                                </div>
-                                <p className="map-popover-address">
-                                  <i className="fas fa-map-marker-alt"></i> {pos.address}
-                                </p>
-                              </div>
-
-                              <div className="map-popover-footer">
-                                <a
-                                  href={`https://wa.me/6285715654183?text=${encodeURIComponent(
-                                    `Halo Admin Mitra Bersih 24 Jam,\nSaya ingin order sedot WC dari *${pos.name}* (${pos.shortLabel}).\nMohon info ketersediaan armada terdekat ke wilayah saya di Bogor. Terima kasih!`
-                                  )}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="map-popover-cta-btn"
-                                >
-                                  <i className="fab fa-whatsapp"></i>
-                                  <span>Hubungi Pos Ini via WA</span>
-                                </a>
-                              </div>
-                            </div>
-                          );
-                        })()}
-                      </div>
-                    )}
-
-                    {/* Interactive Legend Strip at bottom of visual canvas */}
-                    <div className="lokasi-canvas-legend">
-                      <div className="legend-item">
-                        <span className="legend-dot status-standby"></span>
-                        <span>Siaga (6 Truk)</span>
-                      </div>
-                      <div className="legend-item">
-                        <span className="legend-dot status-dispatched"></span>
-                        <span>Meluncur (3 Truk)</span>
-                      </div>
-                      <div className="legend-item">
-                        <span className="legend-dot status-service"></span>
-                        <span>Pengerjaan (2 Truk)</span>
-                      </div>
-                      <div className="legend-item">
-                        <span className="legend-icon pos-icon">
-                          <i className="fas fa-warehouse"></i>
-                        </span>
-                        <span>Pos Siaga ({POS_ARMADA_MARKERS.length} Titik)</span>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div
-                    key={`map-zoom-viewport-${selectedMapHub}-${mapZoomKey}`}
-                    className={`lokasi-map-animator ${isMapZooming ? 'map-zooming' : ''}`}
-                  >
-                    <iframe
-                      key={`map-iframe-${selectedMapHub}`}
-                      title={`Peta Lokasi ${MAP_HUBS[selectedMapHub].name}`}
-                      src={`https://maps.google.com/maps?q=${encodeURIComponent(MAP_HUBS[selectedMapHub].mapQuery)}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
-                      width="100%"
-                      height="100%"
-                      style={{ border: 0 }}
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                      allowFullScreen
-                    ></iframe>
-
-                    {isMapZooming && (
-                      <div className="lokasi-map-focus-overlay">
-                        <div className="lokasi-map-focus-badge">
-                          <span className="lokasi-map-radar-pulse"></span>
-                          <i className="fas fa-crosshairs"></i>
-                          <span>Fokus Pos: <strong>{MAP_HUBS[selectedMapHub].shortLabel}</strong></span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Floating Map Bottom Bar */}
-              <div className="lokasi-map-footer">
-                <div className="lokasi-map-coords">
-                  <i className="fas fa-compass"></i>
-                  <span>
-                    Koordinat Pusat: {MAP_HUBS[selectedMapHub].coordinates.lat}, {MAP_HUBS[selectedMapHub].coordinates.lng} (Wilayah {MAP_HUBS[selectedMapHub].shortLabel})
-                  </span>
-                </div>
-                <div className="lokasi-map-footer-links">
-                  {mapViewMode === 'google' ? (
-                    <button
-                      type="button"
-                      className="lokasi-switch-back-btn"
-                      onClick={() => setMapViewMode('visual')}
-                    >
-                      <i className="fas fa-radar"></i> Kembali ke Radar Real-Time
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      className="lokasi-switch-back-btn"
-                      onClick={() => setMapViewMode('google')}
-                    >
-                      <i className="fas fa-map-location-dot"></i> Buka Google Maps
-                    </button>
-                  )}
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(MAP_HUBS[selectedMapHub].mapQuery)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="lokasi-open-gmaps-btn"
-                    title="Buka rute navigasi di Google Maps eksternal"
-                  >
-                    <i className="fas fa-external-link-alt"></i> Navigasi Google Maps
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            {/* Hub Details & Real-Time Action Card */}
-            <div key={`hub-detail-card-${selectedMapHub}-${activeMapMarker?.id || 'hub'}`} className="lokasi-detail-card">
-              {activeMapMarker?.type === 'truck' ? (() => {
-                const truck = REALTIME_FLEET_TRUCKS.find((t) => t.id === activeMapMarker.id) || REALTIME_FLEET_TRUCKS[0];
-                return (
-                  <>
-                    <div className="lokasi-card-header">
-                      <span className="lokasi-card-tag">ARMADA AKTIF TERPILIH</span>
-                      <h3 className="lokasi-card-title">{truck.unitCode} • {truck.plate}</h3>
-                      <div className="lokasi-card-eta">
-                        <i className="fas fa-bolt"></i>
-                        <span>Estimasi Tiba: <strong>{truck.eta}</strong> (~{truck.distanceKm} km ke lokasi Anda)</span>
-                      </div>
-                    </div>
-
-                    <div className="lokasi-card-body">
-                      <div className="lokasi-info-item">
-                        <div className="lokasi-info-icon">
-                          <i className="fas fa-location-crosshairs"></i>
-                        </div>
-                        <div className="lokasi-info-text">
-                          <label>Posisi Terkini Real-Time:</label>
-                          <p>Kecamatan {truck.kecamatan} ({truck.subdistrict})</p>
-                        </div>
-                      </div>
-
-                      <div className="lokasi-info-item">
-                        <div className="lokasi-info-icon">
-                          <i className="fas fa-signal"></i>
-                        </div>
-                        <div className="lokasi-info-text">
-                          <label>Status Armada &amp; Kecepatan:</label>
-                          <p><strong>{truck.statusLabel}</strong> • Kecepatan GPS: {truck.speed}</p>
-                        </div>
-                      </div>
-
-                      <div className="lokasi-info-item">
-                        <div className="lokasi-info-icon">
-                          <i className="fas fa-truck-droplet"></i>
-                        </div>
-                        <div className="lokasi-info-text">
-                          <label>Tipe Tangki &amp; Fasilitas:</label>
-                          <p>{truck.truckType} ({truck.capacity}) + {truck.hoseLength}</p>
-                        </div>
-                      </div>
-
-                      <div className="lokasi-info-item">
-                        <div className="lokasi-info-icon">
-                          <i className="fas fa-user-shield"></i>
-                        </div>
-                        <div className="lokasi-info-text">
-                          <label>Kru Teknisi &amp; Pangkalan Pos:</label>
-                          <p>{truck.driver} • {truck.hubName}</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="lokasi-card-actions">
-                      <a
-                        href={`https://wa.me/6285715654183?text=${encodeURIComponent(
-                          `Halo Admin Mitra Bersih 24 Jam,\nSaya ingin meminta kedatangan unit *${truck.unitCode} (${truck.plate})* yang sedang siaga di area *Kecamatan ${truck.kecamatan}* Bogor.\nMohon info kesiapan armada menuju alamat saya. Terima kasih!`
-                        )}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="lokasi-dispatch-btn"
-                      >
-                        <i className="fab fa-whatsapp"></i>
-                        <span>Panggil {truck.unitCode} via WA</span>
-                      </a>
-
-                      <a
-                        href="tel:+6285715654183"
-                        className="lokasi-call-btn"
-                        title="Telepon Panggilan Cepat"
-                      >
-                        <i className="fas fa-phone-alt"></i>
-                        <span>Telepon Cepat: +62 857-1565-4183</span>
-                      </a>
-                    </div>
-                  </>
-                );
-              })() : activeMapMarker?.type === 'pos' ? (() => {
-                const pos = POS_ARMADA_MARKERS.find((p) => p.id === activeMapMarker.id) || POS_ARMADA_MARKERS[0];
-                return (
-                  <>
-                    <div className="lokasi-card-header">
-                      <span className="lokasi-card-tag pos-tag">POS SIAGA KECAMATAN AKTIF</span>
-                      <h3 className="lokasi-card-title">{pos.name}</h3>
-                      <div className="lokasi-card-eta">
-                        <i className="fas fa-bolt"></i>
-                        <span>Estimasi Respon: <strong>{pos.estArrival}</strong> ke lokasi Anda</span>
-                      </div>
-                    </div>
-
-                    <div className="lokasi-card-body">
-                      <div className="lokasi-info-item">
-                        <div className="lokasi-info-icon">
-                          <i className="fas fa-warehouse"></i>
-                        </div>
-                        <div className="lokasi-info-text">
-                          <label>Status &amp; Kategori Pos:</label>
-                          <p><strong>{pos.badge}</strong> • Pangkalan Simpul {MAP_HUBS.find((h) => h.id === pos.hubId)?.shortLabel || 'Bogor'}</p>
-                        </div>
-                      </div>
-
-                      <div className="lokasi-info-item">
-                        <div className="lokasi-info-icon">
-                          <i className="fas fa-map-location-dot"></i>
-                        </div>
-                        <div className="lokasi-info-text">
-                          <label>Alamat Titik Pangkalan Siaga:</label>
-                          <p>{pos.address}</p>
-                        </div>
-                      </div>
-
-                      <div className="lokasi-info-item">
-                        <div className="lokasi-info-icon">
-                          <i className="fas fa-layer-group"></i>
-                        </div>
-                        <div className="lokasi-info-text">
-                          <label>Kecamatan Naungan Siaga:</label>
-                          <p>Kecamatan <strong>{pos.kecamatan}</strong> &amp; sekitarnya</p>
-                        </div>
-                      </div>
-
-                      <div className="lokasi-info-item">
-                        <div className="lokasi-info-icon">
-                          <i className="fas fa-truck-moving"></i>
-                        </div>
-                        <div className="lokasi-info-text">
-                          <label>Kesiapan Armada Standby:</label>
-                          <p><strong>{pos.truckCount} Truk Tangki Vakum</strong> Siaga Siap Berangkat 24 Jam</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="lokasi-card-actions">
-                      <a
-                        href={`https://wa.me/6285715654183?text=${encodeURIComponent(
-                          `Halo Mitra Bersih 24 Jam,\nSaya melihat titik pos siaga *${pos.name}* (Kecamatan ${pos.kecamatan}) di peta interaktif.\nMohon info ketersediaan armada terdekat ke alamat saya di Bogor. Terima kasih!`
-                        )}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="lokasi-dispatch-btn"
-                      >
-                        <i className="fab fa-whatsapp"></i>
-                        <span>Panggil Armada Pos {pos.shortLabel} via WA</span>
-                      </a>
-
-                      <a
-                        href="tel:+6285715654183"
-                        className="lokasi-call-btn"
-                        title="Telepon Panggilan Cepat"
-                      >
-                        <i className="fas fa-phone-alt"></i>
-                        <span>Telepon Cepat: +62 857-1565-4183</span>
-                      </a>
-                    </div>
-                  </>
-                );
-              })() : (
-                <>
-                  <div className="lokasi-card-header">
-                    <span className="lokasi-card-tag">POS OPERASIONAL AKTIF</span>
-                    <h3 className="lokasi-card-title">{MAP_HUBS[selectedMapHub].name}</h3>
-                    <div className="lokasi-card-eta">
-                      <i className="fas fa-bolt"></i>
-                      <span>Estimasi Tiba: <strong>{MAP_HUBS[selectedMapHub].estTime}</strong></span>
-                    </div>
-                  </div>
-
-                  <div className="lokasi-card-body">
-                    <div className="lokasi-info-item">
-                      <div className="lokasi-info-icon">
-                        <i className="fas fa-map-pin"></i>
-                      </div>
-                      <div className="lokasi-info-text">
-                        <label>Alamat / Pangkalan Siaga:</label>
-                        <p>{MAP_HUBS[selectedMapHub].address}</p>
-                      </div>
-                    </div>
-
-                    <div className="lokasi-info-item">
-                      <div className="lokasi-info-icon">
-                        <i className="fas fa-layer-group"></i>
-                      </div>
-                      <div className="lokasi-info-text">
-                        <label>Cakupan Kecamatan &amp; Kelurahan:</label>
-                        <p>{MAP_HUBS[selectedMapHub].coverage}</p>
-                      </div>
-                    </div>
-
-                    <div className="lokasi-info-item">
-                      <div className="lokasi-info-icon">
-                        <i className="fas fa-truck"></i>
-                      </div>
-                      <div className="lokasi-info-text">
-                        <label>Kesiapan Armada Standby:</label>
-                        <p>{MAP_HUBS[selectedMapHub].trucks}</p>
-                      </div>
-                    </div>
-
-                    <div className="lokasi-info-item">
-                      <div className="lokasi-info-icon">
-                        <i className="fas fa-clock"></i>
-                      </div>
-                      <div className="lokasi-info-text">
-                        <label>Jam Operasional:</label>
-                        <p><strong>Siaga 24 Jam Nonstop</strong> (Setiap Hari Termasuk Libur)</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="lokasi-card-actions">
-                    <a
-                      href={`https://wa.me/6285715654183?text=${encodeURIComponent(
-                        `Halo Mitra Bersih, saya butuh penanganan sedot WC / saluran mampet di area ${MAP_HUBS[selectedMapHub].shortLabel} Bogor. Mohon kirimkan armada terdekat ke alamat saya.`
-                      )}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="lokasi-dispatch-btn"
-                    >
-                      <i className="fab fa-whatsapp"></i>
-                      <span>Panggil Armada Pos Ini via WA</span>
-                    </a>
-
-                    <a
-                      href="tel:+6285715654183"
-                      className="lokasi-call-btn"
-                      title="Telepon Panggilan Cepat"
-                    >
-                      <i className="fas fa-phone-alt"></i>
-                      <span>Telepon Cepat: +62 857-1565-4183</span>
-                    </a>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
+          {/* Interactive Map Component replacing the static hub list */}
+          <InteractiveHubMap
+            hubs={MAP_HUBS}
+            selectedHubId={MAP_HUBS[selectedMapHub]?.id}
+            onSelectHub={(hub) => {
+              const idx = MAP_HUBS.findIndex((h) => h.id === hub.id);
+              if (idx !== -1) setSelectedMapHub(idx);
+            }}
+          />
 
           {/* Trust strip for Location */}
           <div className="lokasi-trust-bar fade-in">
@@ -11429,22 +11439,42 @@ startxref
               </div>
 
               <div className="faq-modal-filter-bar">
-                <div className="faq-modal-filter-pills">
-                  {FAQ_CATEGORIES.map((cat) => (
-                    <button
-                      key={cat}
-                      type="button"
-                      className={`faq-modal-filter-pill ${modalFaqCategory === cat ? 'active' : ''}`}
-                      onClick={() => {
-                        setModalFaqCategory(cat);
-                        if (modalFaqSearch.trim()) {
-                          markModalSearchFilterRunning();
-                        }
-                      }}
-                    >
-                      {cat}
-                    </button>
-                  ))}
+                <div className="faq-modal-filter-pills" role="tablist" aria-label="Filter kategori modal FAQ">
+                  {FAQ_CATEGORIES.map((cat) => {
+                    const count = cat === 'Topik Populer'
+                      ? FAQ_DATA.length
+                      : FAQ_DATA.filter((item) => item.category === cat).length;
+                    const isActive = modalFaqCategory === cat;
+                    const iconClass = FAQ_CATEGORY_ICONS[cat] || 'fas fa-tag';
+                    return (
+                      <button
+                        key={cat}
+                        type="button"
+                        role="tab"
+                        aria-selected={isActive}
+                        data-category={cat}
+                        className={`faq-modal-filter-pill ${isActive ? 'active' : ''}`}
+                        onClick={(e) => {
+                          setModalFaqCategory(cat);
+                          if (modalFaqSearch.trim()) {
+                            markModalSearchFilterRunning();
+                          }
+                          e.currentTarget.scrollIntoView?.({
+                            behavior: 'smooth',
+                            block: 'nearest',
+                            inline: 'center'
+                          });
+                        }}
+                        title={`Saring: ${cat} (${count} topik)`}
+                      >
+                        <i className={`${iconClass} faq-filter-pill-icon`} aria-hidden="true" style={{ marginRight: '5px' }}></i>
+                        <span>{cat}</span>
+                        <span className={`faq-modal-pill-count ${isActive ? 'active' : ''}`} style={{ marginLeft: '5px' }}>
+                          {count}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
                 <div className="faq-modal-count-badge">
                   {isModalSearchActive && modalFaqSearch.trim() ? (
@@ -13519,14 +13549,46 @@ startxref
             <div className="b2b-report-header">
               <div className="b2b-report-header-left">
                 <span className="b2b-report-badge">
-                  <i className="fas fa-file-excel"></i> Corporate Reporting &amp; Audit Portal
+                  <i className="fas fa-file-pdf text-red-500 mr-1"></i> Corporate Reporting &amp; Audit Portal
                 </span>
                 <h3 id="b2b-report-title" className="b2b-report-title">
                   <i className="fas fa-chart-line text-emerald-400"></i> Pusat Laporan B2B &amp; Riwayat Quotation SPH
                 </h3>
                 <p className="b2b-report-subtitle">
-                  Dokumentasi compliance audit lingkungan (ISO 14001 / AMDAL / UKL-UPL) PT MITRA BERSIH 24 JAM. Dilengkapi fitur ekspor data ke format CSV / Excel untuk pelaporan korporat &amp; procurement.
+                  Dokumentasi compliance audit lingkungan (ISO 14001 / AMDAL / UKL-UPL) PT MITRA BERSIH 24 JAM. Dilengkapi fitur unduh berkas resmi PDF berstempel dan ekspor data CSV / Excel.
                 </p>
+
+                {/* Period Selector & Quick PDF Download */}
+                <div className="b2b-header-quick-pdf-bar">
+                  <div className="b2b-period-select-wrap">
+                    <label htmlFor="b2b-month-select" className="b2b-period-label">
+                      <i className="fas fa-calendar-alt text-amber-500 mr-1"></i> Periode:
+                    </label>
+                    <select
+                      id="b2b-month-select"
+                      value={b2bReportSelectedMonth}
+                      onChange={(e) => setB2bReportSelectedMonth(e.target.value)}
+                      className="b2b-period-select"
+                    >
+                      <option value="Oktober 2026">Oktober 2026 (Bulan Berjalan)</option>
+                      <option value="September 2026">September 2026</option>
+                      <option value="Agustus 2026">Agustus 2026</option>
+                      <option value="Q3 2026 (Juli - September)">Kuartal 3 (Q3 2026)</option>
+                      <option value="Tahun Berjalan 2026">Tahun Berjalan 2026 (Tahunan)</option>
+                    </select>
+                  </div>
+
+                  <button
+                    type="button"
+                    className="b2b-export-pdf-main-btn"
+                    onClick={() => handleDownloadB2bMonthlyPdf(b2bReportSelectedMonth)}
+                    disabled={isGeneratingPdf}
+                    title="Unduh Laporan Bulanan B2B Resmi (.PDF) berisi Rekapitulasi Manifes IPLT, Total Biaya, dan Status Audit Lingkungan"
+                  >
+                    <i className={`fas ${isGeneratingPdf ? 'fa-spinner fa-spin' : 'fa-file-pdf'}`}></i>
+                    <span>{isGeneratingPdf ? 'Menyusun Dokumen PDF...' : `Unduh Laporan Bulanan (.PDF)`}</span>
+                  </button>
+                </div>
               </div>
               <button
                 type="button"
@@ -13830,12 +13892,23 @@ startxref
                     <div className="b2b-toolbar-actions">
                       <button
                         type="button"
+                        className="b2b-export-pdf-main-btn"
+                        onClick={() => handleDownloadB2bMonthlyPdf(b2bReportSelectedMonth)}
+                        disabled={isGeneratingPdf}
+                        title="Unduh Laporan Bulanan B2B Resmi (.PDF) berisi Rekapitulasi Manifes IPLT, Total Biaya, dan Status Audit Lingkungan"
+                      >
+                        <i className={`fas ${isGeneratingPdf ? 'fa-spinner fa-spin' : 'fa-file-pdf'}`}></i>
+                        <span>Unduh PDF ({b2bReportSelectedMonth})</span>
+                      </button>
+
+                      <button
+                        type="button"
                         className="b2b-export-main-btn"
                         onClick={handleExportQuotationHistoryCsv}
                         title="Unduh seluruh riwayat permintaan SPH ke file CSV / Excel"
                       >
                         <i className="fas fa-file-excel"></i>
-                        <span>Ekspor Riwayat SPH (.CSV)</span>
+                        <span>Ekspor SPH (.CSV)</span>
                       </button>
 
                       <button
@@ -15038,15 +15111,25 @@ startxref
                     </ul>
                   </div>
 
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      className="b2b-export-pdf-main-btn"
+                      onClick={() => handleDownloadB2bMonthlyPdf(b2bReportSelectedMonth)}
+                      disabled={isGeneratingPdf}
+                      title="Unduh berkas resmi Laporan Bulanan B2B (.PDF) lengkap dengan rekapitulasi manifes IPLT, total biaya, dan status audit lingkungan"
+                    >
+                      <i className={`fas ${isGeneratingPdf ? 'fa-spinner fa-spin' : 'fa-file-pdf'}`}></i>
+                      <span>{isGeneratingPdf ? 'Menyusun PDF...' : `Unduh Laporan Audit & Manifes (.PDF) – ${b2bReportSelectedMonth}`}</span>
+                    </button>
                     <button
                       type="button"
                       className="b2b-export-main-btn"
                       onClick={handleExportComprehensiveB2bAuditCsv}
                       title="Unduh laporan lengkap compliance audit & SPH dalam satu berkas CSV / Excel"
                     >
-                      <i className="fas fa-download"></i>
-                      <span>Unduh Laporan Audit Komprehensif (.CSV / Excel)</span>
+                      <i className="fas fa-file-excel"></i>
+                      <span>Unduh Laporan Audit Komprehensif (.CSV)</span>
                     </button>
                   </div>
                 </div>
@@ -15056,8 +15139,8 @@ startxref
             {/* Modal Footer */}
             <div className="b2b-report-footer">
               <div className="b2b-report-footer-left">
-                <i className="fas fa-check-double text-emerald-600"></i>
-                <span>Format CSV kompatibel langsung dengan Microsoft Excel, Google Sheets, &amp; LibreOffice Calc.</span>
+                <i className="fas fa-shield-alt text-emerald-600"></i>
+                <span>Format PDF resmi berstempel untuk audit PROPER / ISO 14001 &amp; format CSV untuk pembukuan Excel.</span>
               </div>
               <div className="b2b-report-footer-right">
                 <button
@@ -15071,16 +15154,29 @@ startxref
                   type="button"
                   className="b2b-export-main-btn"
                   onClick={handleExportComprehensiveB2bAuditCsv}
-                  title="Unduh rekap gabungan data layanan dan riwayat SPH"
+                  title="Unduh rekap gabungan data layanan dan riwayat SPH (.CSV)"
                 >
                   <i className="fas fa-file-excel"></i>
-                  <span>Ekspor Laporan Lengkap (.CSV)</span>
+                  <span>Ekspor CSV</span>
+                </button>
+                <button
+                  type="button"
+                  className="b2b-export-pdf-main-btn"
+                  onClick={() => handleDownloadB2bMonthlyPdf(b2bReportSelectedMonth)}
+                  disabled={isGeneratingPdf}
+                  title="Unduh berkas resmi Laporan Bulanan B2B (.PDF)"
+                >
+                  <i className={`fas ${isGeneratingPdf ? 'fa-spinner fa-spin' : 'fa-file-pdf'}`}></i>
+                  <span>{isGeneratingPdf ? 'Menyusun PDF...' : `Unduh Laporan Bulanan (.PDF)`}</span>
                 </button>
               </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* Floating Gemini AI Chatbot */}
+      <GeminiChatbot />
     </>
   );
 }
